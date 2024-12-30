@@ -17,8 +17,8 @@ export default function Login() {
             <input
               type="email"
               className="form-control"
-              id="exampleInputEmail1"
-              aria-describedby="emailHelp"
+              id="email"
+              name="email"
               placeholder="Email..."
             />
           </div>
@@ -26,7 +26,8 @@ export default function Login() {
             <input
               type="password"
               className="form-control"
-              id="exampleInputPassword1"
+              id="password"
+              name="password"
               placeholder="Password..."
             />
           </div>
