@@ -10,7 +10,7 @@ function Header() {
     { id: 3, text: "Features", path: "/features" },
     { id: 4, text: "Contact", path: "/contact" },
     { id: 0, text: "|", path: null },
-    { id: 10, text: "Login", path: "/Login" },
+    { id: 10, text: "Login", path: "/login" },
   ];
 
   /////////////////////////

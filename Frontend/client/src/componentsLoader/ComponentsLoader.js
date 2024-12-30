@@ -18,3 +18,29 @@ export const LandingPage = lazy(() =>
 /*==========================================  Componenets ===========*/
 // Navbar Component
 export const Navbar = lazy(() => import("../components/Navbar/Navbar.jsx"));
+
+//// Landing Page Components:
+// Home
+export const LpHome = lazy(() =>
+  import("../components/landingPageComponents/Home.jsx")
+);
+// About
+export const LpAbout = lazy(() =>
+  import("../components/landingPageComponents/About.jsx")
+);
+// Features
+export const LpFeatures = lazy(() =>
+  import("../components/landingPageComponents/Features.jsx")
+);
+// Contact
+export const LpContact = lazy(() =>
+  import("../components/landingPageComponents/Contact.jsx")
+);
+// Login
+export const LpLogin = lazy(() =>
+  import("../components/landingPageComponents/Login.jsx")
+);
+// Signup
+export const LpSignup = lazy(() =>
+  import("../components/landingPageComponents/Signup.jsx")
+);

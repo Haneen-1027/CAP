@@ -1,10 +1,163 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { Routes, Route } from "react-router";
+
+import {
+  LandingPage,
+  LpHome,
+  LpAbout,
+  LpFeatures,
+  LpContact,
+  LpLogin,
+  LpSignup,
+} from "../../componentsLoader/ComponentsLoader";
 
 function Main() {
   return (
-    <div className="container my-4">
-      <main>Main Section</main>
-    </div>
+    <main className="container my-5">
+      <Routes>
+        {/* Domain starts with : '/' */}
+        <Route
+          path="/"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <LandingPage />
+            </Suspense>
+          }
+        >
+          {/* Home Componenets paths: '/', '/home' */}
+          <Route
+            path="/"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpHome />
+              </Suspense>
+            }
+          ></Route>
+          <Route
+            path="/home"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpHome />
+              </Suspense>
+            }
+          ></Route>
+
+          {/* About Componenet path: '/about' */}
+          <Route
+            path="/about"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpAbout />
+              </Suspense>
+            }
+          ></Route>
+
+          {/* Features Componenet path: '/features' */}
+          <Route
+            path="/features"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpFeatures />
+              </Suspense>
+            }
+          ></Route>
+
+          {/* Contact Componenet path: '/contact' */}
+          <Route
+            path="/contact"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpContact />
+              </Suspense>
+            }
+          ></Route>
+
+          {/* Login Componenet path: '/login' */}
+          <Route
+            path="/login"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpLogin />
+              </Suspense>
+            }
+          ></Route>
+
+          {/* Signup Componenet path: '/signup' */}
+          <Route
+            path="/signup"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <LpSignup />
+              </Suspense>
+            }
+          ></Route>
+        </Route>
+      </Routes>
+    </main>
   );
 }
 
