@@ -16,15 +16,18 @@ export default function Navbar({ values }) {
     };
   }, []);
   return (
-    <nav className={"main-bg general-nav navbar navbar-expand-lg"} id="nav">
-      <div className="container nav-xsmall-screens justify-content-center  justify-content-md-between">
-        <div>
+    <nav
+      className={"main-bg general-nav navbar navbar-expand-lg w-100"}
+      id="nav"
+    >
+      <div className="d-flex nav-xsmall-screens align-items-center justify-content-center  justify-content-md-between mx-4 w-100">
+        <div className="">
           <Link className={`navbar-brand light  text-dark mid-bold`} to="/">
             <span className="primary-button-color">Coding</span>
             Assessment
           </Link>
         </div>
-        <div className="d-flex">
+        <div className="d-flex ">
           <div className="respo-nav">
             <button
               className="navbar-toggler mx-3"
@@ -38,7 +41,7 @@ export default function Navbar({ values }) {
               <span className={"navbar-toggler-icon"} />
             </button>
             <div
-              className="container collapse navbar-collapse nav-small-screns"
+              className="container-fluid collapse navbar-collapse nav-small-screns"
               id="navbarSupportedContent"
             >
               <ul className={"navbar-nav ms-auto mb-2 mb-lg-0 "}>

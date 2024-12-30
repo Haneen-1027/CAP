@@ -48,9 +48,6 @@ img {
 i {
   font-style: normal !important;
 }
-.container {
-  padding: 0 1rem !important;
-}
 
 /* Scroll */
 ::-webkit-scrollbar {
