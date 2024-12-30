@@ -1,3 +1,4 @@
+import "./Navbar.css";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 
@@ -64,7 +65,7 @@ export default function Navbar({ values }) {
                             windowWidth < 742 && val.text === "|" ? "0s" : "",
                         }}
                         className={`
-                          nav-link text-dark
+                          nav-link text-dark ${val.text === "|" ? "d-flex" : ""}
                         `}
                         to={val.path}
                       >

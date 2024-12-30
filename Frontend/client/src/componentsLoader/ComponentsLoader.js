@@ -17,4 +17,4 @@ export const LandingPage = lazy(() =>
 
 /*==========================================  Componenets ===========*/
 // Navbar Component
-export const Navbar = lazy(() => import("../components/Navbar.jsx"));
+export const Navbar = lazy(() => import("../components/Navbar/Navbar.jsx"));
