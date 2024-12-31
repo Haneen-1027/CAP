@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Navbar } from "../../componentsLoader/ComponentsLoader";
 
-function Header() {
+function Header({ userDetailes }) {
   //NavBars
   const defaultNavBarValues = [
     { id: 1, text: "Home", path: "/home" },
@@ -12,6 +12,9 @@ function Header() {
     { id: 0, text: "|", path: null },
     { id: 10, text: "Login", path: "/login" },
   ];
+  useEffect(() => {
+    console.log("Header.jsx: ", userDetailes.role);
+  }, []);
 
   /////////////////////////
   return (

@@ -9,13 +9,20 @@ import {
   LpContact,
   LpLogin,
   LpSignup,
+  AdmDashboard,
+  CompDashboard,
+  ContDashboard,
 } from "../../componentsLoader/ComponentsLoader";
+import Admin from "../../pages/Admin/Admin";
 
-function Main() {
+function Main({ userDetailes }) {
+  useEffect(() => {
+    console.log("Main.jsx: ", userDetailes.role);
+  }, []);
   return (
     <main className="container my-5">
       <Routes>
-        {/* Domain starts with : '/' */}
+        {/* Landing Page */}
         <Route
           path="/"
           element={
@@ -28,41 +35,143 @@ function Main() {
                 </div>
               }
             >
-              <LandingPage />
+              <LandingPage user={userDetailes} />
             </Suspense>
           }
         >
-          {/* Home Componenets paths: '/', '/home' */}
+          {/* Domain starts with : '/' */}
           <Route
             path="/"
             element={
-              <Suspense
-                fallback={
-                  <div className="center-container">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
+              userDetailes.role === "Admin" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
                     </div>
-                  </div>
-                }
-              >
-                <LpHome />
-              </Suspense>
+                  }
+                >
+                  <AdmDashboard />
+                </Suspense>
+              ) : userDetailes.role === "Company" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <CompDashboard />
+                </Suspense>
+              ) : userDetailes.role === "Contributer" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <ContDashboard />
+                </Suspense>
+              ) : (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <LpHome />
+                </Suspense>
+              )
             }
           ></Route>
+          {/* Home Componenet path: '/home' */}
+
           <Route
             path="/home"
             element={
-              <Suspense
-                fallback={
-                  <div className="center-container">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
+              userDetailes.role === "Admin" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
                     </div>
-                  </div>
-                }
-              >
-                <LpHome />
-              </Suspense>
+                  }
+                >
+                  <AdmDashboard />
+                </Suspense>
+              ) : userDetailes.role === "Company" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <CompDashboard />
+                </Suspense>
+              ) : userDetailes.role === "Contributer" ? (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <ContDashboard />
+                </Suspense>
+              ) : (
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <LpHome />
+                </Suspense>
+              )
             }
           ></Route>
 
@@ -152,6 +261,41 @@ function Main() {
                 }
               >
                 <LpSignup />
+              </Suspense>
+            }
+          ></Route>
+        </Route>
+        {/* Admin Page */}
+        <Route
+          path="/admin"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <Admin user={userDetailes} />
+            </Suspense>
+          }
+        >
+          {/*Admin Dashboard */}
+          <Route
+            path="/admin/home"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <AdmDashboard user={userDetailes} />
               </Suspense>
             }
           ></Route>

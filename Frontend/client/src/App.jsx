@@ -4,6 +4,14 @@ import { Footer, Header, Main } from "./componentsLoader/ComponentsLoader";
 import { jwtDecode } from "jwt-decode";
 
 function App() {
+  let userDetailes = useState({
+    role: "Admin",
+  });
+
+  useEffect(() => {
+    console.log("App.jsx: ", userDetailes.role);
+  }, []);
+
   return (
     <>
       {/* Header */}
@@ -19,7 +27,7 @@ function App() {
           </div>
         }
       >
-        <Header />
+        <Header userDetailes={userDetailes[0]} />
       </Suspense>
 
       {/* Main */}
@@ -35,7 +43,7 @@ function App() {
           </div>
         }
       >
-        <Main />
+        <Main userDetailes={userDetailes[0]} />
       </Suspense>
 
       {/* Footer */}
