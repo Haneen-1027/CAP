@@ -38,9 +38,7 @@ export default function Signup() {
               placeholder="Password..."
             />
           </div>
-          <div className="w-100 position-relative my-4">
-            <hr className="bold-hr" />
-          </div>
+
           <button type="submit" className="btn btn-primary w-100 high-bold p-2">
             Create Account
           </button>
