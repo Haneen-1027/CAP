@@ -12,6 +12,31 @@ function Header({ userDetailes }) {
     { id: 0, text: "|", path: null },
     { id: 10, text: "Login", path: "/login" },
   ];
+  //
+  const adminNavBarValues = [
+    { id: 1, text: "Home", path: "/home" },
+    { id: 2, text: "Question Bank", path: "/questions_bank" },
+    { id: 3, text: "Users", path: "/users" },
+    { id: 4, text: "Contacts", path: "/contacts" },
+    { id: 0, text: "|", path: null },
+  ];
+  //
+  const contNavBarValues = [
+    { id: 1, text: "Home", path: "/home" },
+    { id: 2, text: "About", path: "/about" },
+    { id: 3, text: "Features", path: "/features" },
+    { id: 4, text: "Contact", path: "/contact" },
+    { id: 0, text: "|", path: null },
+  ];
+  //
+  const compNavBarValues = [
+    { id: 1, text: "Home", path: "/home" },
+    { id: 2, text: "About", path: "/about" },
+    { id: 3, text: "Features", path: "/features" },
+    { id: 4, text: "Contact", path: "/contact" },
+    { id: 0, text: "|", path: null },
+  ];
+
   useEffect(() => {
     console.log("Header.jsx: ", userDetailes.role);
   }, []);
@@ -19,7 +44,18 @@ function Header({ userDetailes }) {
   /////////////////////////
   return (
     <header className="main-bg all-Mid-shadow position-relative w-100">
-      <Navbar values={defaultNavBarValues} />
+      <Navbar
+        values={
+          userDetailes.role === "Admin"
+            ? adminNavBarValues
+            : userDetailes.role === "Company"
+            ? compNavBarValues
+            : userDetailes.role === "Contributer"
+            ? contNavBarValues
+            : defaultNavBarValues
+        }
+        userDetailes={userDetailes}
+      />
     </header>
   );
 }
