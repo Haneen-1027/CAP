@@ -6,6 +6,7 @@ export default function Navbar({ values }) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
+    console.log("Navbar: ", values);
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };

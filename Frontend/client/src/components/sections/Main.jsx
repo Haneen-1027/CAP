@@ -12,6 +12,9 @@ import {
   AdmDashboard,
   CompDashboard,
   ContDashboard,
+  QuestionsBankMain,
+  ContactsMain,
+  UsersMain,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -298,7 +301,58 @@ function Main({ userDetailes }) {
                 <AdmDashboard user={userDetailes} />
               </Suspense>
             }
-          ></Route>
+          />
+          {/*Admin Questions Bank */}
+          <Route
+            path="/admin/questions_bank"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <QuestionsBankMain user={userDetailes} />
+              </Suspense>
+            }
+          />
+          {/*Admin Contacts */}
+          <Route
+            path="/admin/contacts"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <ContactsMain user={userDetailes} />
+              </Suspense>
+            }
+          />
+          {/*Admin Users */}
+          <Route
+            path="/admin/users"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <UsersMain user={userDetailes} />
+              </Suspense>
+            }
+          />
         </Route>
       </Routes>
     </main>

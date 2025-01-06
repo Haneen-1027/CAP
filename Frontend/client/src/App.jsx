@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 function App() {
   let userDetailes = useState({
-    role: "",
+    role: "Admin",
   });
 
   useEffect(() => {

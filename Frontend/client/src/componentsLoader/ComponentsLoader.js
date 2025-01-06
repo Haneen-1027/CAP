@@ -55,6 +55,15 @@ export const LpSignup = lazy(() =>
 export const AdmDashboard = lazy(() =>
   import("../components/AdminComponents/AdmDashboard.jsx")
 );
+export const QuestionsBankMain = lazy(() =>
+  import("../components/AdminComponents/QuestionsBank/QuestionsBank.jsx")
+);
+export const ContactsMain = lazy(() =>
+  import("../components/AdminComponents/Contacts/Contacts.jsx")
+);
+export const UsersMain = lazy(() =>
+  import("../components/AdminComponents/Users/Users.jsx")
+);
 //// Company Page Components:
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")

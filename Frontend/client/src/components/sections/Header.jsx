@@ -14,10 +14,10 @@ function Header({ userDetailes }) {
   ];
   //
   const adminNavBarValues = [
-    { id: 1, text: "Home", path: "/home" },
-    { id: 2, text: "Question Bank", path: "/questions_bank" },
-    { id: 3, text: "Users", path: "/users" },
-    { id: 4, text: "Contacts", path: "/contacts" },
+    { id: 1, text: "Home", path: "admin/home" },
+    { id: 2, text: "Question Bank", path: "admin/questions_bank" },
+    { id: 3, text: "Users", path: "admin/users" },
+    { id: 4, text: "Contacts", path: "admin/contacts" },
     { id: 0, text: "|", path: null },
   ];
   //
