@@ -5,6 +5,9 @@ import { jwtDecode } from "jwt-decode";
 
 function App() {
   let userDetailes = useState({
+    id: "1234560",
+    firstName: "Mena",
+    lastName: "Admin",
     role: "Admin",
   });
 

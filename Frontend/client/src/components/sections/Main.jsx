@@ -15,6 +15,7 @@ import {
   QuestionsBankMain,
   ContactsMain,
   UsersMain,
+  UserProfile,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -264,6 +265,23 @@ function Main({ userDetailes }) {
                 }
               >
                 <LpSignup />
+              </Suspense>
+            }
+          ></Route>
+          {/* User Profile Componenet path: '/profile/:id' */}
+          <Route
+            path="/profile/:id"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <UserProfile userDetailes={userDetailes} />
               </Suspense>
             }
           ></Route>

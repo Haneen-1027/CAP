@@ -49,7 +49,8 @@ export const LpLogin = lazy(() =>
 export const LpSignup = lazy(() =>
   import("../components/landingPageComponents/Signup.jsx")
 );
-
+// User Profile
+export const UserProfile = lazy(() => import("../components/UserProfile.jsx"));
 ///////////////////////////////////////////////////////////
 //// Admin Page Components:
 export const AdmDashboard = lazy(() =>
