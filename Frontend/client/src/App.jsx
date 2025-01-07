@@ -2,15 +2,17 @@ import React, { Suspense, useEffect, useState } from "react";
 import { Footer, Header, Main } from "./componentsLoader/ComponentsLoader";
 
 import { jwtDecode } from "jwt-decode";
+import { useDarkMode } from "./Context/DarkMode";
 
 function App() {
+  const { darkMode } = useDarkMode();
   let userDetailes = useState({
     id: "1234560",
     firstName: "Mena",
     lastName: "Admin",
-    email:"Admin@gmail.com",
-    bio:"Software developer with a passion for coding and learning.",
-    role: "Admin",
+    email: "Admin@gmail.com",
+    bio: "Software developer with a passion for coding and learning.",
+    role: "",
   });
 
   useEffect(() => {
@@ -32,11 +34,11 @@ function App() {
         }
       >
         {/* Header */}
-        <Header userDetailes={userDetailes[0]} />
+        <Header userDetailes={userDetailes[0]} darkMode={darkMode} />
         {/* Main */}
-        <Main userDetailes={userDetailes[0]} />
+        <Main userDetailes={userDetailes[0]} darkMode={darkMode} />
         {/* Footer */}
-        <Footer />
+        <Footer darkMode={darkMode} />
       </Suspense>
     </>
   );

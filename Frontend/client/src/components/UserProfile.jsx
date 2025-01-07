@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./UserProfile.css";
 
-export default function UserProfile({ userDetailes }) {
+export default function UserProfile({ userDetailes, darkMode }) {
   const [user, setUser] = useState({ ...userDetailes });
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...user });
@@ -25,8 +25,16 @@ export default function UserProfile({ userDetailes }) {
   };
 
   return (
-    <div className="profile-container container mt-5">
-      <div className="card shadow-lg p-4 rounded profile-card">
+    <div
+      className={`profile-container container mt-5 custom-form ${
+        darkMode ? " spic-dark-mode" : ""
+      }`}
+    >
+      <div
+        className={`${
+          darkMode ? " spic-dark-mode border-white" : ""
+        } card shadow-lg p-4 rounded profile-card`}
+      >
         <div className="row">
           <div className="col-md-6 mb-3">
             <label className="form-label">First Name:</label>
@@ -36,10 +44,12 @@ export default function UserProfile({ userDetailes }) {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className="form-control"
+                className={`${darkMode ? " spic-dark-mode" : ""} form-control`}
               />
             ) : (
-              <p className="form-text">{user.firstName}</p>
+              <p className={`${darkMode ? "text-light" : ""}  form-text`}>
+                {user.firstName}
+              </p>
             )}
           </div>
           <div className="col-md-6 mb-3">
@@ -50,10 +60,12 @@ export default function UserProfile({ userDetailes }) {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className="form-control"
+                className={`${darkMode ? " spic-dark-mode" : ""} form-control`}
               />
             ) : (
-              <p className="form-text">{user.lastName}</p>
+              <p className={`${darkMode ? "text-light" : ""}  form-text`}>
+                {user.lastName}
+              </p>
             )}
           </div>
         </div>
@@ -65,10 +77,12 @@ export default function UserProfile({ userDetailes }) {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="form-control"
+              className={`${darkMode ? " spic-dark-mode" : ""} form-control`}
             />
           ) : (
-            <p className="form-text">{user.email}</p>
+            <p className={`${darkMode ? "text-light" : ""}  form-text`}>
+              {user.email}
+            </p>
           )}
         </div>
         <div className="mb-3">
@@ -78,10 +92,14 @@ export default function UserProfile({ userDetailes }) {
               name="bio"
               value={formData.bio}
               onChange={handleInputChange}
-              className="form-control"
+              className={`${
+                darkMode ? " spic-dark-mode text-light" : ""
+              } form-control`}
             />
           ) : (
-            <p className="form-text">{user.bio}</p>
+            <p className={`${darkMode ? "text-light" : ""}  form-text`}>
+              {user.bio}
+            </p>
           )}
         </div>
         <div className="d-flex justify-content-end">

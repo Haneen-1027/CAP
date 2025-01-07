@@ -1,9 +1,12 @@
 import "./Navbar.css";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { useDarkMode } from "../../Context/DarkMode";
+import { ModeButton } from "../../componentsLoader/ComponentsLoader";
 
 export default function Navbar({ values, userDetailes }) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { darkMode, toggleDarkMode } = useDarkMode();
   let [clickOnProfile, setClickOnProfile] = useState(false);
   let [navBarOpenHandle, setNavBarOpenHandle] = useState(false);
 
@@ -31,12 +34,19 @@ export default function Navbar({ values, userDetailes }) {
   }, []);
   return (
     <nav
-      className={"main-bg general-nav navbar navbar-expand-lg w-100"}
+      className={`${
+        darkMode ? "spic-dark-mode" : "main-bg"
+      }g general-nav navbar navbar-expand-lg w-100`}
       id="nav"
     >
       <div className="d-flex nav-xsmall-screens align-items-center justify-content-center  justify-content-md-between mx-4 w-100">
         <div className="">
-          <Link className={`navbar-brand light  text-dark mid-bold`} to="/">
+          <Link
+            className={`${
+              darkMode ? " spic-dark-mode" : ""
+            } navbar-brand light  text-dark mid-bold`}
+            to="/"
+          >
             <span className="primary-button-color">Coding</span>
             Assessment
           </Link>
@@ -61,7 +71,11 @@ export default function Navbar({ values, userDetailes }) {
               }`}
               id="navbarSupportedContent"
             >
-              <ul className={"navbar-nav ms-auto mb-2 mb-lg-0 "}>
+              <ul
+                className={`navbar-nav ms-auto mb-2 mb-lg-0 ${
+                  darkMode ? " text-light" : ""
+                }`}
+              >
                 {values.map((val, index) => (
                   <li key={index} className="nav-item">
                     {val.text === "|" ? (
@@ -81,7 +95,9 @@ export default function Navbar({ values, userDetailes }) {
                             windowWidth < 742 && val.text === "|" ? "0s" : "",
                         }}
                         className={`
-                          nav-link text-dark ${val.text === "|" ? "d-flex" : ""}
+                          nav-link ${darkMode ? "text-light" : "text-dark"} ${
+                          val.text === "|" ? "d-flex" : ""
+                        }
                         `}
                         to={val.path}
                         onClick={() => setNavBarOpenHandle(false)}
@@ -103,6 +119,7 @@ export default function Navbar({ values, userDetailes }) {
               <div className="text-center nav-link position-relative m-0 mid-bold text-truncate">
                 {userDetailes.firstName} {userDetailes.lastName}
               </div>
+
               <div
                 className={`dropDawn navbar-nav position-absolute bg-white bottom-shadow d-flex flex-column justify-content-center align-items-center ${
                   clickOnProfile ? "" : "d-none"
@@ -126,6 +143,7 @@ export default function Navbar({ values, userDetailes }) {
           ) : (
             ""
           )}
+          <ModeButton darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
         </div>
       </div>
     </nav>

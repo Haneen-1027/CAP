@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Navbar } from "../../componentsLoader/ComponentsLoader";
 
-function Header({ userDetailes }) {
+function Header({ darkMode, userDetailes }) {
   //NavBars
   const defaultNavBarValues = [
     { id: 1, text: "Home", path: "/home" },
@@ -43,7 +43,11 @@ function Header({ userDetailes }) {
 
   /////////////////////////
   return (
-    <header className="main-bg all-Mid-shadow position-relative w-100">
+    <header
+      className={`${
+        darkMode ? "spic-dark-mode" : "main-bg"
+      } all-Mid-shadow position-relative w-100`}
+    >
       <Navbar
         values={
           userDetailes.role === "Admin"
@@ -55,6 +59,7 @@ function Header({ userDetailes }) {
             : defaultNavBarValues
         }
         userDetailes={userDetailes}
+        darkMode={darkMode}
       />
     </header>
   );

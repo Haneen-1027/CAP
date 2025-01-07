@@ -19,7 +19,7 @@ import {
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
-function Main({ userDetailes }) {
+function Main({ userDetailes, darkMode }) {
   useEffect(() => {
     console.log("Main.jsx: ", userDetailes.role);
   }, []);
@@ -39,7 +39,7 @@ function Main({ userDetailes }) {
                 </div>
               }
             >
-              <LandingPage user={userDetailes} />
+              <LandingPage user={userDetailes} darkMode={darkMode} />
             </Suspense>
           }
         >
@@ -60,7 +60,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <AdmDashboard />
+                  <AdmDashboard darkMode={darkMode} />
                 </Suspense>
               ) : userDetailes.role === "Company" ? (
                 <Suspense
@@ -75,7 +75,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <CompDashboard />
+                  <CompDashboard darkMode={darkMode} />
                 </Suspense>
               ) : userDetailes.role === "Contributer" ? (
                 <Suspense
@@ -90,7 +90,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <ContDashboard />
+                  <ContDashboard darkMode={darkMode} />
                 </Suspense>
               ) : (
                 <Suspense
@@ -105,7 +105,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <LpHome />
+                  <LpHome darkMode={darkMode} />
                 </Suspense>
               )
             }
@@ -128,7 +128,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <AdmDashboard />
+                  <AdmDashboard darkMode={darkMode} />
                 </Suspense>
               ) : userDetailes.role === "Company" ? (
                 <Suspense
@@ -143,7 +143,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <CompDashboard />
+                  <CompDashboard darkMode={darkMode} />
                 </Suspense>
               ) : userDetailes.role === "Contributer" ? (
                 <Suspense
@@ -158,7 +158,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <ContDashboard />
+                  <ContDashboard darkMode={darkMode} />
                 </Suspense>
               ) : (
                 <Suspense
@@ -173,7 +173,7 @@ function Main({ userDetailes }) {
                     </div>
                   }
                 >
-                  <LpHome />
+                  <LpHome darkMode={darkMode} />
                 </Suspense>
               )
             }
@@ -192,7 +192,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <LpAbout />
+                <LpAbout darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -210,7 +210,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <LpFeatures />
+                <LpFeatures darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -228,7 +228,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <LpContact />
+                <LpContact darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -246,7 +246,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <LpLogin />
+                <LpLogin darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -264,7 +264,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <LpSignup />
+                <LpSignup darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -281,7 +281,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <UserProfile userDetailes={userDetailes} />
+                <UserProfile userDetailes={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -299,7 +299,7 @@ function Main({ userDetailes }) {
                 </div>
               }
             >
-              <Admin user={userDetailes} />
+              <Admin user={userDetailes} darkMode={darkMode} />
             </Suspense>
           }
         >
@@ -316,7 +316,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <AdmDashboard user={userDetailes} />
+                <AdmDashboard user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
@@ -333,7 +333,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <QuestionsBankMain user={userDetailes} />
+                <QuestionsBankMain user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
@@ -350,7 +350,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <ContactsMain user={userDetailes} />
+                <ContactsMain user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
@@ -367,7 +367,7 @@ function Main({ userDetailes }) {
                   </div>
                 }
               >
-                <UsersMain user={userDetailes} />
+                <UsersMain user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
