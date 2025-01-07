@@ -8,6 +8,8 @@ function App() {
     id: "1234560",
     firstName: "Mena",
     lastName: "Admin",
+    email:"Admin@gmail.com",
+    bio:"Software developer with a passion for coding and learning.",
     role: "Admin",
   });
 
