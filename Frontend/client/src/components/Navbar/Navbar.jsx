@@ -10,6 +10,8 @@ export default function Navbar({ values, userDetailes }) {
   let [clickOnProfile, setClickOnProfile] = useState(false);
   let [navBarOpenHandle, setNavBarOpenHandle] = useState(false);
 
+  const roles = ["Admin", "Company", "Contributer"];
+
   function handaleProfileClick() {
     if (clickOnProfile) {
       setClickOnProfile(false);
@@ -68,19 +70,21 @@ export default function Navbar({ values, userDetailes }) {
             <div
               className={`container-fluid collapse navbar-collapse nav-small-screns ${
                 navBarOpenHandle ? "" : "d-none"
-              }`}
+              } ${darkMode ? "spic-dark-mode text-light" : ""}`}
               id="navbarSupportedContent"
             >
               <ul
                 className={`navbar-nav ms-auto mb-2 mb-lg-0 ${
-                  darkMode ? " text-light" : ""
+                  darkMode ? "spic-dark-mode text-light" : ""
                 }`}
               >
                 {values.map((val, index) => (
                   <li key={index} className="nav-item">
                     {val.text === "|" ? (
                       <div
-                        className={`nav-span d-none d-lg-flex justify-content-center align-items-center `}
+                        className={`${
+                          darkMode ? "spic-dark-mode text-light" : ""
+                        } nav-span d-none d-lg-flex justify-content-center align-items-center `}
                       >
                         <span>{val.text}</span>
                       </div>
@@ -110,7 +114,7 @@ export default function Navbar({ values, userDetailes }) {
               </ul>
             </div>
           </div>
-          {userDetailes && userDetailes.role !== "" ? (
+          {userDetailes && roles.includes(userDetailes.role) ? (
             <div
               onClick={() => handaleProfileClick()}
               style={{ cursor: "pointer" }}
