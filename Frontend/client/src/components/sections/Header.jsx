@@ -22,10 +22,10 @@ function Header({ darkMode, userDetailes }) {
   ];
   //
   const contNavBarValues = [
-    { id: 1, text: "Home", path: "/home" },
-    { id: 2, text: "About", path: "/about" },
-    { id: 3, text: "Features", path: "/features" },
-    { id: 4, text: "Contact", path: "/contact" },
+    { id: 1, text: "Home", path: "/contributer/home" },
+    { id: 2, text: "Assessments", path: "/contributer/assessments" },
+    { id: 3, text: "Three", path: "/contributer/home" },
+    { id: 4, text: "Four", path: "/contributer/home" },
     { id: 0, text: "|", path: null },
   ];
   //

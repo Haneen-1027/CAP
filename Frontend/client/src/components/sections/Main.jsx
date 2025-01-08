@@ -16,6 +16,8 @@ import {
   ContactsMain,
   UsersMain,
   UserProfile,
+  Contributer,
+  Assessments,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -368,6 +370,58 @@ function Main({ userDetailes, darkMode }) {
                 }
               >
                 <UsersMain user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
+        </Route>
+        {/* Contributer Page */}
+        <Route
+          path="/contributer"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <Contributer user={userDetailes} darkMode={darkMode} />
+            </Suspense>
+          }
+        >
+          {/*Contributer Dashboard */}
+          <Route
+            path="/contributer/home"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <ContDashboard user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
+          {/* Contributer Assessments */}
+          <Route
+            path="/contributer/assessments"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <Assessments user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />

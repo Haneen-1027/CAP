@@ -75,3 +75,7 @@ export const CompDashboard = lazy(() =>
 export const ContDashboard = lazy(() =>
   import("../components/ContributerComponents/ContDashboard.jsx")
 );
+// Assessments
+export const Assessments = lazy(() =>
+  import("../components/ContributerComponents/Assessments/Assessments.jsx")
+);
