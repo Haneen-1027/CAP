@@ -23,9 +23,16 @@ export const Contributer = lazy(() =>
 /*==========================================  Componenets ===========*/
 // Navbar Component
 export const Navbar = lazy(() => import("../components/Navbar/Navbar.jsx"));
-
 // Sub Navbar
 export const SubNavbar = lazy(() => import("../components/SubNavbar.jsx"));
+// Paganation Nav
+export const PaginationNav = lazy(() =>
+  import("../components/PaginationNav.jsx")
+);
+// FilterableDropdown
+export const FilterableDropdown = lazy(() =>
+  import("../components/FilterableDropdown.jsx")
+);
 
 //// Landing Page Components:
 // Home
