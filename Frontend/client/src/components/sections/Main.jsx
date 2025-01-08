@@ -18,6 +18,8 @@ import {
   UserProfile,
   Contributer,
   Assessments,
+  AddQuestion,
+  ViewQuestions,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -338,7 +340,46 @@ function Main({ userDetailes, darkMode }) {
                 <QuestionsBankMain user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
-          />
+          >
+            <Route
+              path="/admin/questions_bank/add_question"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <AddQuestion user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/questions_bank/preview"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <ViewQuestions user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+          </Route>
           {/*Admin Contacts */}
           <Route
             path="/admin/contacts"

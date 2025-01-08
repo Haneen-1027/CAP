@@ -24,6 +24,9 @@ export const Contributer = lazy(() =>
 // Navbar Component
 export const Navbar = lazy(() => import("../components/Navbar/Navbar.jsx"));
 
+// Sub Navbar
+export const SubNavbar = lazy(() => import("../components/SubNavbar.jsx"));
+
 //// Landing Page Components:
 // Home
 export const LpHome = lazy(() =>
@@ -61,16 +64,28 @@ export const AdmDashboard = lazy(() =>
 export const QuestionsBankMain = lazy(() =>
   import("../components/AdminComponents/QuestionsBank/QuestionsBank.jsx")
 );
+export const AddQuestion = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/AddQuestion/AddQuestion.jsx"
+  )
+);
+export const ViewQuestions = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/ViewQuestions/ViewQuestions.jsx"
+  )
+);
 export const ContactsMain = lazy(() =>
   import("../components/AdminComponents/Contacts/Contacts.jsx")
 );
 export const UsersMain = lazy(() =>
   import("../components/AdminComponents/Users/Users.jsx")
 );
+///////////////////////////////////////////////////////////
 //// Company Page Components:
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
+///////////////////////////////////////////////////////////
 //// Contributer Page Components:
 export const ContDashboard = lazy(() =>
   import("../components/ContributerComponents/ContDashboard.jsx")

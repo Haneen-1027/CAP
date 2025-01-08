@@ -174,7 +174,9 @@ canvas {
   color: var(--Headers_Colors);
   font-weight: bold;
 }
-
+.nav-link.active::before {
+  width: calc(100% - 5%);
+}
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Typing */
 @keyframes typing {
