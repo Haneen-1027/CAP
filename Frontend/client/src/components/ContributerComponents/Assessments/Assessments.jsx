@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Assessments.css";
 
-export default function ProfilePage() {
+export default function Assessments({darkMode}) {
     const [assessments, setAssessments] = useState([
         {
             id: 1,
@@ -24,18 +24,43 @@ export default function ProfilePage() {
             status: "Not Started",
             progress: 0,
         },
+        {
+            id: 4,
+            title: "React Basics Assessment",
+            description: "Test your fundamental knowledge of React.",
+            status: "Not Started",
+            progress: 0,
+        },
+        {
+            id: 5,
+            title: "JavaScript Advanced Assessment",
+            description: "Challenge yourself with advanced JavaScript questions.",
+            status: "In Progress",
+            progress: 30,
+        },
+        {
+            id: 6,
+            title: "HTML & CSS Assessment",
+            description: "Show your HTML and CSS skills.",
+            status: "In Progress",
+            progress: 87,
+        },
     ]);
 
     return (
-        <div className="container my-5">
-            <h1 className="text-center mb-4">Assessments</h1>
+        <div className={`container my-5 border abc ${
+            darkMode ? " spic-dark-mode" : ""
+          }`}>
+            <h1 className="text-center mb-5 mt-4">Assessments</h1>
             <div className="row">
                 {assessments.map((assessment) => (
-                    <div key={assessment.id} className="col-md-6 col-lg-4 mb-4">
+                    <div key={assessment.id} className="col-md-6 col-lg-4 mb-4 ">
                         <div className="card h-100 shadow-sm">
-                            <div className="card-body">
+                            <div className={`card-body ${
+            darkMode ? " spic-dark-mode" : ""
+                            }`}>
                                 <h5 className="card-title">{assessment.title}</h5>
-                                <p className="card-text text-muted">{assessment.description}</p>
+                                <p className="card-text ">{assessment.description}</p>
                                 <div className="mb-3">
                                     <div className="d-flex justify-content-between">
                                         <span>Status:</span>
