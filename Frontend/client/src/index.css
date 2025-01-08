@@ -139,7 +139,9 @@ canvas {
 .detailes-size {
   font-size: var(--DetailPageSize) !important;
 }
-
+.p-8 {
+  padding: 8rem !important;
+}
 /******* Custom variables *********/
 .main-bg {
   background-color: var(--main-bg) !important;
