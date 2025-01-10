@@ -55,7 +55,7 @@ export default function Assessments({darkMode}) {
             <div className="row">
                 {assessments.map((assessment) => (
                     <div key={assessment.id} className="col-md-6 col-lg-4 mb-4 ">
-                        <div className="card h-100 shadow-sm">
+                        <div className="card card1 h-100 shadow-sm">
                             <div className={`card-body ${
             darkMode ? " spic-dark-mode" : ""
                             }`}>
