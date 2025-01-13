@@ -445,7 +445,7 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <ContDashboard user={userDetailes} darkMode={darkMode} />
+                <ContDashboard userDetailes={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />

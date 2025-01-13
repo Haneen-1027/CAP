@@ -15,6 +15,7 @@ function App() {
     role: "Contributer",
   });
 
+
   useEffect(() => {
     console.log("App.jsx: ", userDetailes.role);
   }, []);
@@ -34,7 +35,7 @@ function App() {
         }
       >
         {/* Header */}
-        <Header userDetailes={userDetailes[0]} darkMode={darkMode} />
+        <Header userDetailes={userDetailes[0]} darkMode={darkMode}/>
         {/* Main */}
         <Main userDetailes={userDetailes[0]} darkMode={darkMode} />
         {/* Footer */}
