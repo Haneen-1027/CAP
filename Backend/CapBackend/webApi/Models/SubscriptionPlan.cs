@@ -1,0 +1,13 @@
+namespace webApi.Models;
+
+public class SubscriptionPlan
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public string Features { get; set; }
+    public int Duration { get; set; } // Duration in months
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public ICollection<Organization> Organizations { get; set; }
+}

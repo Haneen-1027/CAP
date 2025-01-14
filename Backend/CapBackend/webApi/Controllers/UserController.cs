@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using webApi.Models;
-
 namespace webApi.Controllers
+
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         // Mocked list of users (replace with a database in production)
@@ -62,7 +62,7 @@ namespace webApi.Controllers
             user.LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
             user.DateOfBirth = updatedUser.DateOfBirth;
-
+            
             return NoContent();
         }
 
