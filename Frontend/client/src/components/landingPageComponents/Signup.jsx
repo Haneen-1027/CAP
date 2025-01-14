@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function Signup() {
+export default function Signup({ darkMode }) {
   return (
-    <div className="custom-form">
+    <div className={`custom-form ${darkMode ? " spic-dark-mode" : ""}`}>
       <div className="my-4 w-100 d-flex justify-content-center">
         <h1 className="custom-form-header">Create Your Account</h1>
       </div>

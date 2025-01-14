@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router";
 
-export default function Login() {
+export default function Login({ darkMode }) {
   return (
-    <div className="custom-form">
+    <div className={`custom-form ${darkMode ? "spic-dark-mode" : ""}`}>
       <div className="my-4 w-100 d-flex justify-content-center">
         <h1 className="custom-form-header">Welcome Back!</h1>
       </div>
@@ -31,7 +31,7 @@ export default function Login() {
               placeholder="Password..."
             />
           </div>
-          <div className="d-flex justify-content-between my-4 mid-bold">
+          <div className="d-flex flex-column flex-md-row justify-content-between my-4 mid-bold">
             <Link to={"/signup"}>Forgot Your Password?</Link>
             <div>
               Don't have an Account? <Link to={"/signup"}>Sign up</Link>

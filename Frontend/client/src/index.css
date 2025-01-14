@@ -139,7 +139,9 @@ canvas {
 .detailes-size {
   font-size: var(--DetailPageSize) !important;
 }
-
+.p-8 {
+  padding: 8rem !important;
+}
 /******* Custom variables *********/
 .main-bg {
   background-color: var(--main-bg) !important;
@@ -172,7 +174,9 @@ canvas {
   color: var(--Headers_Colors);
   font-weight: bold;
 }
-
+.nav-link.active::before {
+  width: calc(100% - 5%);
+}
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Typing */
 @keyframes typing {

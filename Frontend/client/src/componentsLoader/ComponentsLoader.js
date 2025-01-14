@@ -23,6 +23,16 @@ export const Contributer = lazy(() =>
 /*==========================================  Componenets ===========*/
 // Navbar Component
 export const Navbar = lazy(() => import("../components/Navbar/Navbar.jsx"));
+// Sub Navbar
+export const SubNavbar = lazy(() => import("../components/SubNavbar.jsx"));
+// Paganation Nav
+export const PaginationNav = lazy(() =>
+  import("../components/PaginationNav.jsx")
+);
+// FilterableDropdown
+export const FilterableDropdown = lazy(() =>
+  import("../components/FilterableDropdown.jsx")
+);
 
 //// Landing Page Components:
 // Home
@@ -49,17 +59,45 @@ export const LpLogin = lazy(() =>
 export const LpSignup = lazy(() =>
   import("../components/landingPageComponents/Signup.jsx")
 );
-
+// User Profile
+export const UserProfile = lazy(() => import("../components/UserProfile.jsx"));
+// Mode Button
+export const ModeButton = lazy(() => import("../components/ModeButton.jsx"));
 ///////////////////////////////////////////////////////////
 //// Admin Page Components:
 export const AdmDashboard = lazy(() =>
   import("../components/AdminComponents/AdmDashboard.jsx")
 );
+export const QuestionsBankMain = lazy(() =>
+  import("../components/AdminComponents/QuestionsBank/QuestionsBank.jsx")
+);
+export const AddQuestion = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/AddQuestion/AddQuestion.jsx"
+  )
+);
+export const ViewQuestions = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/ViewQuestions/ViewQuestions.jsx"
+  )
+);
+export const ContactsMain = lazy(() =>
+  import("../components/AdminComponents/Contacts/Contacts.jsx")
+);
+export const UsersMain = lazy(() =>
+  import("../components/AdminComponents/Users/Users.jsx")
+);
+///////////////////////////////////////////////////////////
 //// Company Page Components:
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
+///////////////////////////////////////////////////////////
 //// Contributer Page Components:
 export const ContDashboard = lazy(() =>
   import("../components/ContributerComponents/ContDashboard.jsx")
+);
+// Assessments
+export const Assessments = lazy(() =>
+  import("../components/ContributerComponents/Assessments/Assessments.jsx")
 );

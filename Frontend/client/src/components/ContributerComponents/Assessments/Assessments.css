@@ -1,0 +1,46 @@
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .card-text {
+    font-size: 0.9rem;
+  }
+  
+  .progress {
+    background-color: #f2f2f2;
+  }
+  
+  .progress-bar {
+    transition: width 0.5s ease-in-out;
+  }
+  
+  .btn {
+    font-size: 0.875rem;
+    padding: 0.4rem 1rem;
+  }
+  
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .card1 .card2 {
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 10px; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card1:hover {
+    transform: scale(1.02); /* zoom effect on hover */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Add shadow */
+  }
+
+  .abc{
+    background-color: #f8f9fa;
+  }
