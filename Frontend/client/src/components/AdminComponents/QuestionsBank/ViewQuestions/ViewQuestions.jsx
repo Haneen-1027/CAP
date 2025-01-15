@@ -6,13 +6,15 @@ import {
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "jQuery",
-    "Bootstrap",
-    "Angular",
+    { name: "HTML", value: "html" },
+    { name: "CSS", value: "css" },
+    { name: "JavaScript", value: "js" },
+    { name: "jQuery", value: "j-query" },
+    { name: "Bootstrap", value: "bootstrap" },
+    { name: "Angular", value: "angular" },
+    { name: "React", value: "react" },
   ];
+  const [category, setCategory] = useState("");
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
@@ -21,15 +23,25 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);
   }
+  function handleCategory(e) {
+    setCategory(e.target.value);
+  }
 
+  ///////////////////////
   useEffect(() => {
-    console.log("countPerPage: ", countPerPage);
-  }, []);
+    console.log("Category from `ViewQuestions`: ", category);
+  }, [category]);
+  ///////////////
   return (
     <>
       <div className="d-flex justify-content-between align-items-center m-4">
         <div className="category">
-          <FilterableDropdown items={categories} />
+          <FilterableDropdown
+            darkMode={darkMode}
+            filterType={"Select Category:"}
+            items={categories}
+            handleFunction={handleCategory}
+          />
         </div>
         <div>
           <PaginationNav

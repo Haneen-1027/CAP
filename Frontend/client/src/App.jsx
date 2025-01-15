@@ -12,9 +12,8 @@ function App() {
     lastName: "Admin",
     email: "Admin@gmail.com",
     bio: "Software developer with a passion for coding and learning.",
-    role: "Contributer",
+    role: "Admin",
   });
-
 
   useEffect(() => {
     console.log("App.jsx: ", userDetailes.role);
@@ -35,7 +34,7 @@ function App() {
         }
       >
         {/* Header */}
-        <Header userDetailes={userDetailes[0]} darkMode={darkMode}/>
+        <Header userDetailes={userDetailes[0]} darkMode={darkMode} />
         {/* Main */}
         <Main userDetailes={userDetailes[0]} darkMode={darkMode} />
         {/* Footer */}

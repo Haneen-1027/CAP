@@ -1,42 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function FilterableDropdown({ darkMode, items }) {
+export default function FilterableDropdown({
+  darkMode,
+  filterType,
+  items,
+  handleFunction,
+}) {
   const [filterText, setFilterText] = useState("");
 
-  const handleFilterChange = (event) => {
-    setFilterText(event.target.value.toLowerCase());
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value.toLowerCase());
   };
 
+  const handleEvent = (e) => {
+    console.log(e.target.value);
+    handleFunction(e);
+  };
+  /////////////////
+  useEffect(() => {
+    //console.log("DropDown Select menue: ", items);
+  }, []);
+  ////////////////
   return (
-    <div className="dropdown">
-      <button
-        className="btn btn-primary dropdown-toggle"
-        type="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
+    <div className="">
+      <select
+        className="p-2"
+        style={{ width: "100%" }}
+        onChange={(e) => handleEvent(e)}
       >
-        Choose Category
-        <span className="caret"></span>
-      </button>
-      <ul className="dropdown-menu p-2" style={{ width: "100%" }}>
-        <input
-          className="form-control mb-2"
-          id="filterInput"
-          type="text"
-          placeholder="Search..."
-          value={filterText}
-          onChange={handleFilterChange}
-        />
+        <option value={0}>{filterType}</option>
         {items
-          .filter((item) => item.toLowerCase().includes(filterText))
+          .filter((item) => item.name.toLowerCase().includes(filterText))
           .map((item, index) => (
-            <li key={index}>
-              <a className="dropdown-item" href="#">
-                {item}
-              </a>
-            </li>
+            <option value={item.value} key={index} className="dropdown-item">
+              {item.name}
+            </option>
           ))}
-      </ul>
+      </select>
     </div>
   );
 }
