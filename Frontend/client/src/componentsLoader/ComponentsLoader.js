@@ -78,6 +78,14 @@ export const AddQuestion = lazy(() =>
     "../components/AdminComponents/QuestionsBank/AddQuestion/AddQuestion.jsx"
   )
 );
+export const MultipleChoice = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/AddQuestion/MultipleChoice.jsx"
+  )
+);
+export const Coding = lazy(() =>
+  import("../components/AdminComponents/QuestionsBank/AddQuestion/Coding.jsx")
+);
 export const ViewQuestions = lazy(() =>
   import(
     "../components/AdminComponents/QuestionsBank/ViewQuestions/ViewQuestions.jsx"

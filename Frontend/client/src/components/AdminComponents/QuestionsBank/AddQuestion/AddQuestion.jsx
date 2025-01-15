@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FilterableDropdown } from "../../../../componentsLoader/ComponentsLoader";
+import {
+  Coding,
+  FilterableDropdown,
+  MultipleChoice,
+} from "../../../../componentsLoader/ComponentsLoader";
 
 export default function AddQuestion({ userDetailes, darkMode }) {
   const [question, setQuestion] = useState({
@@ -9,6 +13,8 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     questionPrompt: "",
     questionDetails: {},
   });
+  const [isTrueFalse, setIsTrueFalse] = useState(false);
+
   //const [questionType, setQuestionType] = useState("");
   //const [questionPrompt, setQuestionPrompt] = useState("");
   //const [questionCategory, setQuestionCategory] = useState("");
@@ -36,20 +42,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     }));
   };
 
-  /*
-  const handleQuestionType = (e) => {
-    setQuestionType(e.target.value);
-  };
-  const handleQuestionMark = (e) => {
-    setQuestionMark(e.target.value);
-  };
-  const handleQuestionCategory = (e) => {
-    console.log("hi");
-    setQuestionCategory(e.target.value);
-  };
-  const handleQuestionPrompt = (e) => {
-    setQuestionPrompt(e.target.value);
-  };*/
   ////////////////////
   useEffect(() => {
     console.log("Question: ", question);
@@ -59,7 +51,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     <>
       <div className="p-4 d-flex flex-column">
         <div className="general d-flex align-items-center justify-content-between">
-          <div className="d-flex gap-1">
+          <div className="d-flex gap-4">
             <FilterableDropdown
               darkMode={darkMode}
               filterType={"Select Question Type:"}
@@ -109,11 +101,15 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             <hr className="bold-hr mid-aligment" />
           </div>
           {question["questionType"] === "mc" ? (
-            <div>Multible Choice Ya Waald!</div>
+            <MultipleChoice
+              darkMode={darkMode}
+              isTrueFalse={isTrueFalse}
+              setIsTrueFalse={setIsTrueFalse}
+            />
           ) : question["questionType"] === "essay" ? (
             <div></div>
           ) : question["questionType"] === "coding" ? (
-            <div>Aklna Hawa Ya Waald!</div>
+            <Coding darkMode={darkMode} />
           ) : (
             <div></div>
           )}

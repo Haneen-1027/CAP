@@ -170,6 +170,7 @@ canvas {
   border-radius: 30px;
   height: 40em;
   box-shadow: 0px 15px 5px -15px rgb(0 0 0 / 50%) !important;
+  overflow: auto;
 }
 /* Header */
 .custom-form-header {
