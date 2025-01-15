@@ -160,7 +160,9 @@ canvas {
   left: 0;
   transform: translateX(50%);
 }
-
+.gap-1 {
+  gap: 1rem !important;
+}
 /*/////////////////////// Custom input forms //////////////////////////*/
 /* Basic Structure */
 .custom-form {

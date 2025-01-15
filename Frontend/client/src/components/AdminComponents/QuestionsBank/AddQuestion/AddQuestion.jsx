@@ -2,68 +2,120 @@ import React, { useEffect, useState } from "react";
 import { FilterableDropdown } from "../../../../componentsLoader/ComponentsLoader";
 
 export default function AddQuestion({ userDetailes, darkMode }) {
-  const [questionType, setQuestionType] = useState("");
-  const [questionMark, setQuestionMark] = useState(2);
+  const [question, setQuestion] = useState({
+    questionType: "",
+    questionCategory: "",
+    questionMark: 2,
+    questionPrompt: "",
+    questionDetails: {},
+  });
+  //const [questionType, setQuestionType] = useState("");
+  //const [questionPrompt, setQuestionPrompt] = useState("");
+  //const [questionCategory, setQuestionCategory] = useState("");
+  //const [questionMark, setQuestionMark] = useState(2);
   const questionTypes = [
     { name: "Multible Choice", value: "mc" },
-    { name: "Essay Question", value: "essy" },
+    { name: "Essay Question", value: "essay" },
     { name: "Coding Question", value: "coding" },
   ];
+  const categories = [
+    { name: "HTML", value: "html" },
+    { name: "CSS", value: "css" },
+    { name: "JavaScript", value: "js" },
+    { name: "jQuery", value: "j-query" },
+    { name: "Bootstrap", value: "bootstrap" },
+    { name: "Angular", value: "angular" },
+    { name: "React", value: "react" },
+  ];
 
+  const handleGeneralChange = (e) => {
+    const { name, value } = e.target;
+    setQuestion((prevQuestion) => ({
+      ...prevQuestion,
+      [name]: value,
+    }));
+  };
+
+  /*
   const handleQuestionType = (e) => {
     setQuestionType(e.target.value);
   };
   const handleQuestionMark = (e) => {
-    console.log("hi");
     setQuestionMark(e.target.value);
   };
+  const handleQuestionCategory = (e) => {
+    console.log("hi");
+    setQuestionCategory(e.target.value);
+  };
+  const handleQuestionPrompt = (e) => {
+    setQuestionPrompt(e.target.value);
+  };*/
   ////////////////////
   useEffect(() => {
-    console.log(
-      "QuestionType: ",
-      questionType,
-      " and QuestionMark: ",
-      questionMark
-    );
-  }, [questionType, questionMark]);
+    console.log("Question: ", question);
+  }, [question]);
   ////////////////////
   return (
     <>
       <div className="p-4 d-flex flex-column">
         <div className="general d-flex align-items-center justify-content-between">
-          <div className="">
+          <div className="d-flex gap-1">
             <FilterableDropdown
               darkMode={darkMode}
               filterType={"Select Question Type:"}
               items={questionTypes}
-              handleFunction={handleQuestionType}
+              handleFunction={handleGeneralChange}
+              name={"questionType"}
+            />
+            <FilterableDropdown
+              darkMode={darkMode}
+              filterType={"Select Question Category:"}
+              items={categories}
+              handleFunction={handleGeneralChange}
+              name={"questionCategory"}
             />
           </div>
           <div className="form-group d-flex justify-content-evenly align-items-center">
-            <label htmlFor="exampleInputPassword1">Mark:</label>
+            <label htmlFor="mark">Mark:</label>
             <input
               type="number"
               className="form-control w-75"
               id="mark"
-              name="mark"
+              name="questionMark"
               placeholder="Question Mark"
-              onChange={(e) => handleQuestionMark(e)}
+              onChange={(e) => handleGeneralChange(e)}
             />
           </div>
         </div>
-        <div className="w-50 position-relative my-4">
+        <div className="w-50 position-relative my-3">
           {" "}
           <hr className="bold-hr mid-aligment" />
         </div>
-        <div className="details">
-          {questionType === "mc" ? (
+        <div className="details d-flex flex-column flex-start">
+          <div className="form-group">
+            <label className="h5 mid-bold" htmlFor="prompt">
+              Question:
+            </label>
+            <textarea
+              className="form-control mt-2 mb-4"
+              id="prompt"
+              name="questionPrompt"
+              placeholder="Question ..."
+              onChange={(e) => handleGeneralChange(e)}
+            />
+          </div>
+          <div className="w-50 position-relative my-3">
+            {" "}
+            <hr className="bold-hr mid-aligment" />
+          </div>
+          {question["questionType"] === "mc" ? (
             <div>Multible Choice Ya Waald!</div>
-          ) : questionType === "essy" ? (
-            <div>Essay Question Ya Waald!</div>
-          ) : questionType === "coding" ? (
+          ) : question["questionType"] === "essay" ? (
+            <div></div>
+          ) : question["questionType"] === "coding" ? (
             <div>Aklna Hawa Ya Waald!</div>
           ) : (
-            <div>E5tar Allah yerda 3nak.</div>
+            <div></div>
           )}
         </div>
       </div>

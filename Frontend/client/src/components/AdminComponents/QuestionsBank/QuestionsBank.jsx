@@ -30,7 +30,11 @@ export default function QuestionsBank({ userDetailes, darkMode }) {
           <SubNavbar values={questionsBankSubNav} />
         </Suspense>{" "}
       </div>
-      <div className={`custom-form ${darkMode ? " spic-dark-mode" : ""}`}>
+      <div
+        className={`custom-form ${
+          darkMode ? " spic-dark-mode border-light" : ""
+        }`}
+      >
         <Outlet />
       </div>
     </>

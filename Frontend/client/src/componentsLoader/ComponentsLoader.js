@@ -60,7 +60,9 @@ export const LpSignup = lazy(() =>
   import("../components/landingPageComponents/Signup.jsx")
 );
 // User Profile
-export const UserProfile = lazy(() => import("../components/UserProfile.jsx"));
+export const UserProfile = lazy(() =>
+  import("../components/UserPofile/UserProfile.jsx")
+);
 // Mode Button
 export const ModeButton = lazy(() => import("../components/ModeButton.jsx"));
 ///////////////////////////////////////////////////////////

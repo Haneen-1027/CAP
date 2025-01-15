@@ -5,6 +5,7 @@ export default function FilterableDropdown({
   filterType,
   items,
   handleFunction,
+  name,
 }) {
   const [filterText, setFilterText] = useState("");
 
@@ -27,6 +28,7 @@ export default function FilterableDropdown({
         className="p-2"
         style={{ width: "100%" }}
         onChange={(e) => handleEvent(e)}
+        name={name}
       >
         <option value={0}>{filterType}</option>
         {items
