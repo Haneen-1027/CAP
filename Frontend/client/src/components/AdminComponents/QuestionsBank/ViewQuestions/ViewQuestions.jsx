@@ -34,7 +34,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   ///////////////
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center m-4">
+      <div className="d-flex justify-content-between align-items-center p-4">
         <div className="category">
           <FilterableDropdown
             darkMode={darkMode}

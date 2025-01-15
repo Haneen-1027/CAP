@@ -63,7 +63,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
           ) : questionType === "coding" ? (
             <div>Aklna Hawa Ya Waald!</div>
           ) : (
-            <div>E5tar Ya Kalb.</div>
+            <div>E5tar Allah yerda 3nak.</div>
           )}
         </div>
       </div>
