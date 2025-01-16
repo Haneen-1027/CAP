@@ -1,13 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./Assessments.css";
 
 export default function Assessments({ darkMode }) {
+    const navigate = useNavigate();
     const [assessments, setAssessments] = useState([
         {
             id: 1,
             title: "React Basics Assessment",
             description: "Test your fundamental knowledge of React.",
-            time:"90 min",
+            time: "90 min",
             status: "Completed",
             progress: 100,
         },
@@ -15,7 +18,7 @@ export default function Assessments({ darkMode }) {
             id: 2,
             title: "JavaScript Advanced Assessment",
             description: "Challenge yourself with advanced JavaScript questions.",
-            time:"90 min",
+            time: "90 min",
             status: "In Progress",
             progress: 30,
         },
@@ -23,7 +26,7 @@ export default function Assessments({ darkMode }) {
             id: 3,
             title: "HTML & CSS Assessment",
             description: "Show your HTML and CSS skills.",
-            time:"90 min",
+            time: "90 min",
             status: "Not Started",
             progress: 0,
         },
@@ -31,7 +34,7 @@ export default function Assessments({ darkMode }) {
             id: 4,
             title: "React Basics Assessment",
             description: "Test your fundamental knowledge of React.",
-            time:"90 min",
+            time: "90 min",
             status: "Not Started",
             progress: 0,
         },
@@ -39,7 +42,7 @@ export default function Assessments({ darkMode }) {
             id: 5,
             title: "JavaScript Advanced Assessment",
             description: "Challenge yourself with advanced JavaScript questions.",
-            time:"90 min",
+            time: "90 min",
             status: "In Progress",
             progress: 30,
         },
@@ -47,11 +50,15 @@ export default function Assessments({ darkMode }) {
             id: 6,
             title: "HTML & CSS Assessment",
             description: "Show your HTML and CSS skills.",
-            time:"90 min",
+            time: "90 min",
             status: "In Progress",
             progress: 87,
         },
     ]);
+
+    const handleStartOrContinue = (id) => {
+        navigate(`/contributer/assessments/${id}`);
+    };
 
     return (
         <div className={`container my-5 border abc ${darkMode ? " spic-dark-mode" : ""
@@ -101,6 +108,7 @@ export default function Assessments({ darkMode }) {
                                     <button
                                         className="btn btn-primary btn-sm"
                                         disabled={assessment.status === "Completed"}
+                                        onClick={() => handleStartOrContinue(assessment.id)}
                                     >
                                         {assessment.status === "Not Started" ? "Start" : "Continue"}
                                     </button>

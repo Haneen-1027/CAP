@@ -20,6 +20,7 @@ import {
   Assessments,
   AddQuestion,
   ViewQuestions,
+  QuestionAssessment,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -463,6 +464,24 @@ function Main({ userDetailes, darkMode }) {
                 }
               >
                 <Assessments user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
+
+          {/* Contributer Qusetion related to Assessments */}
+          <Route
+            path="/contributer/assessments/:id"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <QuestionAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />

@@ -111,3 +111,7 @@ export const ContDashboard = lazy(() =>
 export const Assessments = lazy(() =>
   import("../components/ContributerComponents/Assessments/Assessments.jsx")
 );
+// Question related to Assessments
+export const  QuestionAssessment = lazy(() => 
+  import("../components/ContributerComponents/Assessments/QuestionAssessment.jsx")
+);
