@@ -13,7 +13,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     questionPrompt: "",
     questionDetails: {},
   });
-  const [isTrueFalse, setIsTrueFalse] = useState(false);
+  const [questionDetails, setQuestionDetails] = useState({});
 
   //const [questionType, setQuestionType] = useState("");
   //const [questionPrompt, setQuestionPrompt] = useState("");
@@ -34,6 +34,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     { name: "React", value: "react" },
   ];
 
+  //
   const handleGeneralChange = (e) => {
     const { name, value } = e.target;
     setQuestion((prevQuestion) => ({
@@ -42,16 +43,24 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     }));
   };
 
+  const addQuestion = (details) => {
+    setQuestion((prevQuestion) => ({
+      ...prevQuestion,
+      ["questionDetails"]: questionDetails,
+    }));
+  };
+
   ////////////////////
   useEffect(() => {
     console.log("Question: ", question);
   }, [question]);
+
   ////////////////////
   return (
     <>
-      <div className="p-4 d-flex flex-column">
-        <div className="general d-flex align-items-center justify-content-between">
-          <div className="d-flex gap-4">
+      <div className="position-relative p-4 d-flex flex-column">
+        <div className="general d-flex flex-column flex-md-row align-items-center justify-content-between">
+          <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
             <FilterableDropdown
               darkMode={darkMode}
               filterType={"Select Question Type:"}
@@ -103,16 +112,27 @@ export default function AddQuestion({ userDetailes, darkMode }) {
           {question["questionType"] === "mc" ? (
             <MultipleChoice
               darkMode={darkMode}
-              isTrueFalse={isTrueFalse}
-              setIsTrueFalse={setIsTrueFalse}
+              setQuestionDetails={setQuestionDetails}
             />
           ) : question["questionType"] === "essay" ? (
             <div></div>
           ) : question["questionType"] === "coding" ? (
-            <Coding darkMode={darkMode} />
+            <Coding
+              darkMode={darkMode}
+              setQuestionDetails={setQuestionDetails}
+            />
           ) : (
             <div></div>
           )}
+        </div>
+        <div className="mid-aligment d-flex justify-content-center w-50 my-4">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            onClick={() => addQuestion()}
+          >
+            Add Question
+          </button>
         </div>
       </div>
     </>
