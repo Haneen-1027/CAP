@@ -51,12 +51,12 @@ export default function QuestionAssessment({ darkMode }) {
 
     return (
         <div className={styles.container}>
-            <div className={ ` ${darkMode ? " spic-dark-mode" : styles.sidebar}`}>
+            <div className={ ` ${darkMode ? " sidebar-question" : styles.sidebar}`}>
                 <p>Question {currentQuestionIndex + 1}</p>
                 <p>{showAnswer ? "Incorrect" : "Unanswered"}</p>
                 <button className={styles.flagButton}>Flag question</button>
             </div>
-            <div className={styles.questionArea}>
+            <div className={`${darkMode ? " question-theme" : styles.questionArea}`}>
                 <h5>{questions[currentQuestionIndex].question}</h5>
                 <div>
                     {questions[currentQuestionIndex].options.map((option, index) => (
