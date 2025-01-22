@@ -37,13 +37,11 @@ export default function ContDashboard({userDetailes , darkMode}) {
             <div className={`card-body card2 text-center ${
               darkMode? "spic-dark-mode text-light" : ""
             } `}>
-              <p className={`${darkMode ? "text-light" : ""}  form-text`}>
-                my name is {user.firstName}
-              </p>
-              <h5 className="card-title">John Doe</h5>
+
+              <h5 className="card-title">{user.firstName} {user.lastName}</h5>
               <p className={`card-text ${
               darkMode? "spic-dark-mode text-white" : "text-muted"
-            }  `}>Full-Stack Developer</p>
+            }  `}>{user.bio}</p>
               <Link className="btn btn-primary btn-sm" to={`/profile/${user.id}`}>
                 View Profile
               </Link>
