@@ -1,0 +1,99 @@
+/* Container styling */
+.assessment-results-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fdfdfd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: "Arial", sans-serif;
+}
+
+/* Title styling */
+.assessment-results-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Table styling */
+.assessment-results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.assessment-results-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.assessment-results-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: bold;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.assessment-results-table td {
+    padding: 15px;
+    font-size: 0.85rem;
+    color: #555;
+    vertical-align: middle;
+}
+
+/* Title column styling */
+.assessment-title {
+    font-weight: 500;
+    color: #1d3557;
+}
+
+/* Score column styling */
+.assessment-score {
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Badge styling */
+.assessment-status-badge {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* Badge colors */
+.badge-not-started {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.badge-in-progress {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-corrected {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .assessment-results-title {
+        font-size: 1.5rem;
+    }
+
+    .assessment-results-table td {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+
+    .assessment-results-table th {
+        font-size: 0.85rem;
+    }
+}

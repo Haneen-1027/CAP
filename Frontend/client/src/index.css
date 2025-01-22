@@ -162,7 +162,111 @@ canvas {
 .p-8 {
   padding: 8rem !important;
 }
-/******* Custom variables *********/
+/**************************** Table dark mode ****************************/
+/* Container styling */
+.assessment-results-container-dark {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #2b3743 !important;
+  color: #fff !important;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+}
+
+/* Title styling */
+.assessment-results-title-dark {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #f1f1f1;
+}
+
+/* Table styling */
+.assessment-results-table-dark {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assessment-results-table-dark thead {
+  background-color: #343a40;
+  border-bottom: 2px solid #495057;
+}
+
+.assessment-results-table-dark th {
+  padding: 15px;
+  background-color: #343a40;
+  text-align: left;
+  font-weight: bold;
+  color: #adb5bd;
+  font-size: 0.9rem;
+}
+
+.assessment-results-table-dark td {
+  padding: 15px;
+  background-color: #343a40;
+  font-size: 0.85rem;
+  color: #f8f9fa;
+  vertical-align: middle;
+}
+
+/* Title column styling */
+.assessment-title-dark {
+  font-weight: 500;
+  color: #e9ecef;
+}
+
+/* Score column styling */
+.assessment-score-dark {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Badge styling */
+.assessment-status-badge-dark {
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* Badge colors */
+.badge-not-started-dark {
+  background-color: #6c757d;
+  color: #f8f9fa;
+}
+
+.badge-in-progress-dark {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-corrected-dark {
+  background-color: #28a745;
+  color: #f8f9fa;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .assessment-results-title-dark {
+      font-size: 1.5rem;
+  }
+
+  .assessment-results-table-dark td {
+      font-size: 0.8rem;
+      padding: 10px;
+  }
+
+  .assessment-results-table-dark th {
+      font-size: 0.85rem;
+  }
+}
+
+/********************** Custom variables ***********************/
 .main-bg {
   background-color: var(--main-bg) !important;
 }
