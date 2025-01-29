@@ -105,10 +105,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               onChange={(e) => handleGeneralChange(e)}
             />
           </div>
-          <div className="w-50 position-relative my-3">
-            {" "}
-            <hr className="bold-hr mid-aligment" />
-          </div>
           {question["questionType"] === "mc" ? (
             <MultipleChoice
               darkMode={darkMode}

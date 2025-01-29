@@ -17,7 +17,7 @@ export default function QuestionsBank({ userDetailes, darkMode }) {
   ];
   return (
     <>
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center w-100 align-items-center">
         <Suspense
           fallback={
             <div className="center-container">

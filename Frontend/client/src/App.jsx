@@ -12,7 +12,7 @@ function App() {
     lastName: "Admin",
     email: "Admin@gmail.com",
     bio: "Software developer with a passion for coding and learning.",
-    role: "Contributer",
+    role: "Admin",
   });
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function App() {
     <>
       <Suspense
         fallback={
-          <div className="center-container d-flex justify-content-center align-items-center">
+          <div className="center-container d-flex justify-content-center align-items-center w-100 h-100">
             <div
               className="spinner-border text-primary d-flex justify-content-center align-items-center"
               role="status"

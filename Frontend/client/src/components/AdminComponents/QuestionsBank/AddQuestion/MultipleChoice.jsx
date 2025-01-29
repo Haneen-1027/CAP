@@ -50,9 +50,15 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
     for (let i = 0; i < wrongOptionsCount; i++) {
       let row = (
         <>
-          <div key={i} className="d-flex align-items-md-center gap-2">
-            <label className="form-check-label" htmlFor="wrongQuestionsCount">
-              Option{i + 1}:
+          <div
+            key={i}
+            className="col-12 col-md-6 col-lg-4 d-flex justify-content-center  align-items-md-center gap-2 mb-4"
+          >
+            <label
+              className="form-check-label m-0"
+              htmlFor="wrongQuestionsCount"
+            >
+              Option {i < 9 ? "0" + (i + 1) : i + 1}:
             </label>
             <input
               className="form-input"
@@ -70,7 +76,7 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
     }
     return rows;
   }
-  /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////d-flex flex-column flex-md-row gap-2 flex-wrap
   useEffect(() => {
     console.log("isTrueFalse: ", isTrueFalse);
     setDetails((prevDetails) => ({
@@ -135,21 +141,29 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
         <>
           <div className="d-flex flex-column flex-md-row align-items-md-center my-3">
             <div className="d-flex align-items-md-center gap-2">
-              <label className="form-label" htmlFor="wrongQuestionsCount">
-                Wrong Questions Count
+              <label className="form-label m-0" htmlFor="wrongQuestionsCount">
+                Options Count:
               </label>
               <input
                 className="form-input flex-1 w-25"
                 type="number"
                 id="wrongQuestionsCount"
+                min={3}
+                max={20}
                 value={wrongOptionsCount}
-                onChange={(e) => setWrongOptionsCount(e.target.value)}
+                onChange={(e) =>
+                  setWrongOptionsCount(
+                    e.target.value >= 20
+                      ? 20
+                      : e.target.value <= 3
+                      ? 3
+                      : e.target.value
+                  )
+                }
               />
             </div>
           </div>
-          <div className="d-flex flex-column flex-md-row gap-2 flex-wrap">
-            {renderWrongOptions()}
-          </div>
+          <div className="row my-2">{renderWrongOptions()}</div>
           <div className="mid-aligment d-flex justify-content-center w-50 my-4">
             <button
               type="submit"
