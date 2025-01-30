@@ -9,7 +9,6 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
   const [isTrueFalse, setIsTrueFalse] = useState(false);
   const [wrongOptionsCount, setWrongOptionsCount] = useState(3);
   const [wrongOptions, setWrongOptions] = useState([]);
-  const [changesFlag, setChangesFlag] = useState(false);
 
   //
   function handleInputs(e) {
@@ -21,7 +20,6 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
   }
   async function handleWrongOptions(e, i) {
     const { value } = e.target;
-    setChangesFlag(true);
 
     setWrongOptions((prevWrongOptions) => {
       const updatedWrongOptions = [...prevWrongOptions];
@@ -39,11 +37,6 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
     });
   }
 
-  function exportDetails() {
-    console.log("h");
-    setQuestionDetails(details);
-    setChangesFlag(false);
-  }
   //
   function renderWrongOptions() {
     let rows = [];
@@ -83,17 +76,22 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
       ...prevDetails,
       ["isTrueFalse"]: isTrueFalse,
       ["correctAnswer"]: isTrueFalse ? "true" : "",
+      ["wrongOptions"]: [],
     }));
   }, [isTrueFalse]);
+  //
   useEffect(() => {
     console.log("details: ", details);
+    setQuestionDetails(details);
   }, [details]);
+  //
   useEffect(() => {
     setDetails((prevDetails) => ({
       ...details,
       ["wrongOptions"]: wrongOptions,
     }));
   }, [wrongOptions]);
+
   //////
   return (
     <>
@@ -164,16 +162,6 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
             </div>
           </div>
           <div className="row my-2">{renderWrongOptions()}</div>
-          <div className="mid-aligment d-flex justify-content-center w-50 my-4">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!changesFlag}
-              onClick={() => exportDetails()}
-            >
-              Save
-            </button>
-          </div>
         </>
       ) : (
         ""
