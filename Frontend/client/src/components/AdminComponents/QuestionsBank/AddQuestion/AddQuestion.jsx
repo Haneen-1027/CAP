@@ -4,8 +4,11 @@ import {
   FilterableDropdown,
   MultipleChoice,
 } from "../../../../componentsLoader/ComponentsLoader";
+import { useParams } from "react-router-dom";
 
 export default function AddQuestion({ userDetailes, darkMode }) {
+  const { id } = useParams();
+  const [questionId, setQuestionId] = useState("");
   const [question, setQuestion] = useState({
     questionType: "",
     questionCategory: "",
@@ -14,6 +17,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     questionDetails: {},
   });
   const [questionDetails, setQuestionDetails] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
 
   //const [questionType, setQuestionType] = useState("");
   //const [questionPrompt, setQuestionPrompt] = useState("");
@@ -51,6 +55,13 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   };
 
   ////////////////////
+  useEffect(() => {
+    if (id) {
+      setIsEditing(true);
+      setQuestionId(id);
+      console.log("This is an update for existing Question: ", id);
+    }
+  }, []);
   useEffect(() => {
     console.log("Question: ", question);
   }, [question]);
@@ -127,7 +138,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             className="btn btn-primary"
             onClick={() => addQuestion()}
           >
-            Add Question
+            {isEditing ? "Update Question" : "Add Question"}
           </button>
         </div>
       </div>

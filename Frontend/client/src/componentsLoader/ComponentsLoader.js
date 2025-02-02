@@ -33,6 +33,8 @@ export const PaginationNav = lazy(() =>
 export const FilterableDropdown = lazy(() =>
   import("../components/FilterableDropdown.jsx")
 );
+// Back Button
+export const BackBtn = lazy(() => import("../components/BackBtn.jsx"));
 
 //// Landing Page Components:
 // Home
@@ -91,6 +93,11 @@ export const ViewQuestions = lazy(() =>
     "../components/AdminComponents/QuestionsBank/ViewQuestions/ViewQuestions.jsx"
   )
 );
+export const PreviewQuestion = lazy(() =>
+  import(
+    "../components/AdminComponents/QuestionsBank/ViewQuestions/PreviewQuestion.jsx"
+  )
+);
 export const ContactsMain = lazy(() =>
   import("../components/AdminComponents/Contacts/Contacts.jsx")
 );
@@ -112,10 +119,14 @@ export const Assessments = lazy(() =>
   import("../components/ContributerComponents/Assessments/Assessments.jsx")
 );
 // Question related to Assessments
-export const  QuestionAssessment = lazy(() => 
-  import("../components/ContributerComponents/Assessments/QuestionAssessment.jsx")
+export const QuestionAssessment = lazy(() =>
+  import(
+    "../components/ContributerComponents/Assessments/QuestionAssessment.jsx"
+  )
 );
 // User Assessment Results
-export const UserAssessmentResults = lazy(()=>
-  import("../components/ContributerComponents/Results/UserAssessmentResults .jsx")
+export const UserAssessmentResults = lazy(() =>
+  import(
+    "../components/ContributerComponents/Results/UserAssessmentResults .jsx"
+  )
 );

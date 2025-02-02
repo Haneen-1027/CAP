@@ -4,6 +4,7 @@ import {
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 import questions from "./test.json"; // Adjust path based on file location
+import { Link } from "react-router-dom";
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
@@ -55,9 +56,12 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
               : "There is no Type"}
           </div>
           <div className="col-6 col-md-2 d-flex justify-content-end gap-2">
-            <div className={`btn view-button ${darkMode ? "text-light" : ""}`}>
+            <Link
+              to={`/admin/questions_bank/preview/${1234}`}
+              className={`btn view-button ${darkMode ? "text-light" : ""}`}
+            >
               <i class="fa-regular fa-eye"></i>
-            </div>
+            </Link>
             <div
               className={`btn delete-button ${darkMode ? "text-light" : ""}`}
             >

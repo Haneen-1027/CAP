@@ -22,6 +22,7 @@ import {
   ViewQuestions,
   QuestionAssessment,
   UserAssessmentResults,
+  PreviewQuestion,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 
@@ -363,6 +364,25 @@ function Main({ userDetailes, darkMode }) {
               }
             />
             <Route
+              path="/admin/questions_bank/update_question/:id"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <AddQuestion user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
               path="/admin/questions_bank/preview"
               element={
                 <Suspense
@@ -378,6 +398,25 @@ function Main({ userDetailes, darkMode }) {
                   }
                 >
                   <ViewQuestions user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/questions_bank/preview/:id"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <PreviewQuestion darkMode={darkMode} />
                 </Suspense>
               }
             />
