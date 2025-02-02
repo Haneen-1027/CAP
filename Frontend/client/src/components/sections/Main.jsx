@@ -25,6 +25,7 @@ import {
   PreviewQuestion,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
+import Company from "../../pages/Company/Company";
 
 function Main({ userDetailes, darkMode }) {
   useEffect(() => {
@@ -528,7 +529,7 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-          {/* Contributer Qusetion related to Assessments */}
+          {/* Contributer Result */}
           <Route
             path="/contributer/result"
             element={
@@ -548,6 +549,45 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
+        </Route>
+        {/* Company Page */}
+        <Route
+          path="company"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <Company user={userDetailes} darkMode={darkMode} />
+            </Suspense>
+          }
+        >
+          {/*Company Dashboard */}
+          <Route
+            path="/company/home"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <CompDashboard
+                  user={userDetailes}
+                  darkMode={darkMode}
+                />
+              </Suspense>
+            }
+          />
+
         </Route>
       </Routes>
     </main>
