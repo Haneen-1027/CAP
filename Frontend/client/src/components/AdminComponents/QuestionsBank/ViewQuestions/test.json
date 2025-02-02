@@ -1,0 +1,386 @@
+{
+  "questions": [
+    {
+      "type": "mc",
+      "mark": 5.0,
+      "prompt": "What does HTML stand for?",
+      "category": "HTML",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "HyperText Markup Language",
+        "wrongOptions": [
+          "Hyper Transfer Markup Language",
+          "HighText Machine Language",
+          "Hyperlink and Text Markup Language"
+        ]
+      }
+    },
+    {
+      "type": "essay",
+      "mark": 10.0,
+      "prompt": "Explain the importance of CSS in modern web development.",
+      "category": "CSS",
+      "detailes": {}
+    },
+    {
+      "type": "coding",
+      "mark": 15.0,
+      "prompt": "Write a JavaScript function that reverses a string.",
+      "category": "JavaScript",
+      "detailes": {
+        "testCases": [
+          {
+            "case1": {
+              "inputs": ["hello"],
+              "expectedOutput": "olleh"
+            }
+          },
+          {
+            "case2": {
+              "inputs": ["world"],
+              "expectedOutput": "dlrow"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which CSS property is used to change the background color?",
+      "category": "CSS",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "background-color",
+        "wrongOptions": ["color", "bg-color", "background"]
+      }
+    },
+    {
+      "type": "essay",
+      "mark": 10.0,
+      "prompt": "Discuss the benefits of using React for building user interfaces.",
+      "category": "React",
+      "detailes": {}
+    },
+    {
+      "type": "coding",
+      "mark": 15.0,
+      "prompt": "Create a function in Python that calculates the factorial of a number.",
+      "category": "Python",
+      "detailes": {
+        "testCases": [
+          {
+            "case1": {
+              "inputs": ["5"],
+              "expectedOutput": "120"
+            }
+          },
+          {
+            "case2": {
+              "inputs": ["3"],
+              "expectedOutput": "6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": true,
+        "correctAnswer": "false",
+        "wrongOptions": []
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid? more more more more more more more more more more more more more more more more more more more more moremore more more more more more",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid? and more more more more more moremore more moremore more more",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": true,
+        "correctAnswer": "true",
+        "wrongOptions": []
+      }
+    },
+    {
+      "type": "mc",
+      "mark": 4.0,
+      "prompt": "Which Bootstrap class is used to create a responsive grid?",
+      "category": "Bootstrap",
+      "detailes": {
+        "isTrueFalse": false,
+        "correctAnswer": "container",
+        "wrongOptions": ["grid", "box", "layout"]
+      }
+    }
+  ],
+  "return": "Added 150 Questions"
+}

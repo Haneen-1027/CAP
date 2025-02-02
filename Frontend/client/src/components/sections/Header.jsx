@@ -45,7 +45,7 @@ function Header({ darkMode, userDetailes }) {
     <header
       className={`${
         darkMode ? "spic-dark-mode" : "main-bg"
-      } all-Mid-shadow position-relative w-100`}
+      } all-Mid-shadow w-100 sticky-top`}
     >
       <Navbar
         values={

@@ -3,6 +3,7 @@ import {
   FilterableDropdown,
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
+import questions from "./test.json"; // Adjust path based on file location
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
@@ -25,8 +26,53 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
-  const [questionsCount, setQuestionsCount] = useState(124);
+  const [questionsCount, setQuestionsCount] = useState(33);
 
+  //
+  function renderQuestions() {
+    const questionsList = questions.questions;
+    return questionsList.map((q, index) => (
+      <>
+        <div key={index} className="row d-flex align-items-center p-2">
+          <div className="col-4 col-md-2 d-flex gap-4">
+            <div className="">{index < 9 ? "0" + (index + 1) : index + 1}.</div>
+            <div className="">{q.category ? q.category : "Null"}</div>
+          </div>
+          <div className="col-8 col-md-5 text-truncate">
+            {q.prompt ? q.prompt : "There is no valid question."}
+          </div>
+          <div className="col-6 col-md-3">
+            {q.type
+              ? q.type === "mc"
+                ? q.detailes.isTrueFalse === true
+                  ? "True/False"
+                  : "Multiple Choice"
+                : q.type === "essay"
+                ? "Essay"
+                : q.type === "coding"
+                ? "Coding"
+                : "Not-valid type"
+              : "There is no Type"}
+          </div>
+          <div className="col-6 col-md-2 d-flex justify-content-end gap-2">
+            <div className={`btn view-button ${darkMode ? "text-light" : ""}`}>
+              <i class="fa-regular fa-eye"></i>
+            </div>
+            <div
+              className={`btn delete-button ${darkMode ? "text-light" : ""}`}
+            >
+              <i className="fa-solid fa-trash" />
+            </div>
+          </div>
+        </div>
+        <div className="position-relative my-1">
+          {" "}
+          <hr className="" />
+        </div>
+      </>
+    ));
+  }
+  ////
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);
   }
@@ -39,7 +85,12 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
 
   ///////////////////////
   useEffect(() => {
-    console.log("Category from `ViewQuestions`: ", category);
+    console.log(
+      "Category from `ViewQuestions`: ",
+      category,
+      " and questions are: ",
+      questions
+    );
   }, [category]);
   ///////////////
   return (
@@ -91,46 +142,11 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
             </select>
           </div>
         </div>
-        <div className="position-relative mt-3 mb-5">
+        <div className="position-relative mt-4">
           {" "}
           <hr className="" />
         </div>
-        <div>
-          <div className="row d-flex align-items-center">
-            <div className="col-4 col-md-2 d-flex gap-4">
-              <div className="">1.</div>
-              <div className="">HTML</div>
-            </div>
-            <div className="col-8 col-md-5 text-truncate">
-              This is the Question that we want to render. it should be toooooo
-              long. This is the Question that we want to render. it should be
-              toooooo long.
-            </div>
-            <div className="col-6 col-md-3">
-              {questionType === "mc"
-                ? 1
-                  ? "True/False"
-                  : "Multiple Choice"
-                : ""}
-            </div>
-            <div className="col-6 col-md-2 d-flex justify-content-end gap-2">
-              <div
-                className={`btn view-button ${darkMode ? "text-light" : ""}`}
-              >
-                <i class="fa-regular fa-eye"></i>
-              </div>
-              <div
-                className={`btn delete-button ${darkMode ? "text-light" : ""}`}
-              >
-                <i className="fa-solid fa-trash" />
-              </div>
-            </div>
-          </div>
-          <div className="position-relative my-1">
-            {" "}
-            <hr className="" />
-          </div>
-        </div>
+        <div>{renderQuestions()}</div>
       </div>
     </>
   );

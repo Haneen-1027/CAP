@@ -1,8 +1,14 @@
-import React, { Suspense } from "react";
-import { Outlet } from "react-router";
-import { SubNavbar } from "../../../componentsLoader/ComponentsLoader";
+import React, { Suspense, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import {
+  SubNavbar,
+  ViewQuestions,
+} from "../../../componentsLoader/ComponentsLoader";
 
 export default function QuestionsBank({ userDetailes, darkMode }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const questionsBankSubNav = [
     {
       id: 1,
@@ -15,6 +21,12 @@ export default function QuestionsBank({ userDetailes, darkMode }) {
       path: "/admin/questions_bank/add_question",
     },
   ];
+  //
+  useEffect(() => {
+    if (location.pathname === "/admin/questions_bank") {
+      navigate("/admin/questions_bank/preview");
+    }
+  }, [navigate, location.pathname]);
   return (
     <>
       <div className="d-flex justify-content-center w-100 align-items-center">

@@ -447,7 +447,10 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <ContDashboard userDetailes={userDetailes} darkMode={darkMode} />
+                <ContDashboard
+                  userDetailes={userDetailes}
+                  darkMode={darkMode}
+                />
               </Suspense>
             }
           />
@@ -499,11 +502,13 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <UserAssessmentResults user={userDetailes} darkMode={darkMode} />
+                <UserAssessmentResults
+                  user={userDetailes}
+                  darkMode={darkMode}
+                />
               </Suspense>
             }
           />
-
         </Route>
       </Routes>
     </main>
