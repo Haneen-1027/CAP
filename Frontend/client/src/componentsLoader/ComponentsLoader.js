@@ -109,6 +109,14 @@ export const UsersMain = lazy(() =>
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
+//Create Assessment
+export const CreateAssessment = lazy(() =>
+  import("../components/CompanyComponents/Assessment/CreateAssessment.jsx")
+);
+//View Assessment
+export const CompAssessment = lazy(() =>
+  import("../components/CompanyComponents/Assessment/ViewAssessment/CompAssessment.jsx")
+);
 ///////////////////////////////////////////////////////////
 //// Contributer Page Components:
 export const ContDashboard = lazy(() =>

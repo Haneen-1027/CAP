@@ -29,10 +29,10 @@ function Header({ darkMode, userDetailes }) {
   ];
   //
   const compNavBarValues = [
-    { id: 1, text: "Home", path: "/home" },
-    { id: 2, text: "About", path: "/about" },
-    { id: 3, text: "Features", path: "/features" },
-    { id: 4, text: "Contact", path: "/contact" },
+    { id: 1, text: "Home", path: "/company/home" },
+    { id: 2, text: "Assessment", path: "/company/assessment" },
+    { id: 3, text: "Features", path: "/company/features" },
+    { id: 4, text: "Contact", path: "/company/contact" },
     { id: 0, text: "|", path: null },
   ];
 

@@ -23,6 +23,7 @@ import {
   QuestionAssessment,
   UserAssessmentResults,
   PreviewQuestion,
+  CompAssessment,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -587,7 +588,46 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-
+          {/*Company Add Assessment */}
+          <Route
+            path="/company/addAssessment"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <CompDashboard
+                  user={userDetailes}
+                  darkMode={darkMode}
+                />
+              </Suspense>
+            }
+          />
+          {/*Company view Assessment*/}
+          <Route
+            path="/company/assessment"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <CompAssessment
+                  user={userDetailes}
+                  darkMode={darkMode}
+                />
+              </Suspense>
+            }
+          />
         </Route>
       </Routes>
     </main>
