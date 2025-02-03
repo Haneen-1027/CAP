@@ -581,14 +581,11 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <CompDashboard
-                  user={userDetailes}
-                  darkMode={darkMode}
-                />
+                <CompDashboard user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
-          {/*Company Add Assessment */}
+          {/*Company Add Assessment*/}
           <Route
             path="/company/addAssessment"
             element={
@@ -601,10 +598,7 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <CompDashboard
-                  user={userDetailes}
-                  darkMode={darkMode}
-                />
+                <CompDashboard user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
@@ -621,10 +615,7 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <CompAssessment
-                  user={userDetailes}
-                  darkMode={darkMode}
-                />
+                <CompAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
