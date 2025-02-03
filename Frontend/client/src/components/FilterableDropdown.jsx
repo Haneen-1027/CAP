@@ -6,6 +6,7 @@ export default function FilterableDropdown({
   items,
   handleFunction,
   name,
+  selectedValue,
 }) {
   const [filterText, setFilterText] = useState("");
 
@@ -20,6 +21,7 @@ export default function FilterableDropdown({
   /////////////////
   useEffect(() => {
     //console.log("DropDown Select menue: ", items);
+    console.log("SelectedValue =  ", selectedValue);
   }, []);
   ////////////////
   return (
@@ -29,6 +31,7 @@ export default function FilterableDropdown({
         style={{ width: "100%" }}
         onChange={(e) => handleEvent(e)}
         name={name}
+        value={selectedValue ? selectedValue : 0}
       >
         <option value={0}>{filterType}</option>
         {items

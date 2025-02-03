@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 export default function PreviewQuestion({ darkMode }) {
-  const [question, setQuestion] = useState({
-    questionType: "essay",
-    questionCategory: "HTML",
-    questionMark: 2,
-    questionPrompt: "asfasgagagasgasgsag",
-    questionDetails: {},
-  });
+  const location = useLocation();
+  const { question } = location.state || {};
+  ////
+  useEffect(() => {
+    console.log(
+      "State from previewQuestion: ",
+      question,
+      " and state is: ",
+      location.state
+    );
+  }, []);
+  ////
   return (
     <>
       <div className="mx-3 mt-4">
@@ -16,8 +21,18 @@ export default function PreviewQuestion({ darkMode }) {
         <div className="position-relative p-4 d-flex flex-column">
           <div className="general d-flex flex-column flex-md-row align-items-center justify-content-between">
             <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
-              <div>{question ? question.questionType : "Type"}</div>
-              <div>{question ? question.questionCategory : "Category"}</div>
+              <div className="">
+                {question
+                  ? question.type === "mc"
+                    ? "Multiple Choice"
+                    : question.type === "essay"
+                    ? "Essay"
+                    : question.type === "coding"
+                    ? "Code-Based"
+                    : "Non-valid Type"
+                  : "No Data"}
+              </div>
+              <div className="">{question ? question.category : "No Data"}</div>
             </div>
             <div className="form-group d-flex justify-content-evenly align-items-center">
               <label htmlFor="mark">Mark:</label>
@@ -27,7 +42,7 @@ export default function PreviewQuestion({ darkMode }) {
                 id="mark"
                 name="questionMark"
                 placeholder="Question Mark"
-                value={question ? question.questionMark : 2}
+                value={question ? question.mark : 2}
                 disabled
               />
             </div>
@@ -46,9 +61,7 @@ export default function PreviewQuestion({ darkMode }) {
                 id="prompt"
                 name="questionPrompt"
                 placeholder="Question ..."
-                value={
-                  question ? question.questionPrompt : "Question Prompt ..."
-                }
+                value={question ? question.prompt : "Question Prompt ..."}
                 disabled
               />
             </div>
@@ -65,6 +78,7 @@ export default function PreviewQuestion({ darkMode }) {
           <div className="mid-aligment d-flex justify-content-center w-50 my-4">
             <Link
               to={`/admin/questions_bank/update_question/${1234}`}
+              state={{ data: question }}
               className="btn btn-primary"
             >
               Update Question

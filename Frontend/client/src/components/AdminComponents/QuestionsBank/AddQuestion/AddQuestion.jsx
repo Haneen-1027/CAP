@@ -1,41 +1,44 @@
 import React, { useEffect, useState } from "react";
 import {
+  BackBtn,
   Coding,
   FilterableDropdown,
   MultipleChoice,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function AddQuestion({ userDetailes, darkMode }) {
+  const location = useLocation();
+  const { data } = location.state || {};
   const { id } = useParams();
   const [questionId, setQuestionId] = useState("");
   const [question, setQuestion] = useState({
-    questionType: "",
-    questionCategory: "",
-    questionMark: 2,
-    questionPrompt: "",
-    questionDetails: {},
+    type: "",
+    category: "",
+    mark: 2,
+    prompt: "",
+    detailes: {},
   });
-  const [questionDetails, setQuestionDetails] = useState({});
+  const [detailes, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
 
-  //const [questionType, setQuestionType] = useState("");
-  //const [questionPrompt, setQuestionPrompt] = useState("");
-  //const [questionCategory, setQuestionCategory] = useState("");
-  //const [questionMark, setQuestionMark] = useState(2);
+  //const [type, settype] = useState("");
+  //const [prompt, setprompt] = useState("");
+  //const [category, setcategory] = useState("");
+  //const [mark, setmark] = useState(2);
   const questionTypes = [
     { name: "Multible Choice", value: "mc" },
     { name: "Essay Question", value: "essay" },
     { name: "Coding Question", value: "coding" },
   ];
   const categories = [
-    { name: "HTML", value: "html" },
-    { name: "CSS", value: "css" },
-    { name: "JavaScript", value: "js" },
-    { name: "jQuery", value: "j-query" },
-    { name: "Bootstrap", value: "bootstrap" },
-    { name: "Angular", value: "angular" },
-    { name: "React", value: "react" },
+    { name: "HTML", value: "HTML" },
+    { name: "CSS", value: "CSS" },
+    { name: "JavaScript", value: "JavaScript" },
+    { name: "jQuery", value: "jQuery" },
+    { name: "Bootstrap", value: "Bootstrap" },
+    { name: "Angular", value: "Angular" },
+    { name: "React", value: "React" },
   ];
 
   //
@@ -50,7 +53,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   const addQuestion = (details) => {
     setQuestion((prevQuestion) => ({
       ...prevQuestion,
-      ["questionDetails"]: questionDetails,
+      ["detailes"]: detailes,
     }));
   };
 
@@ -59,8 +62,10 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     if (id) {
       setIsEditing(true);
       setQuestionId(id);
+      setQuestion(data);
       console.log("This is an update for existing Question: ", id);
     }
+    console.log("State Data: ", data, " and locateion: ", location.state);
   }, []);
   useEffect(() => {
     console.log("Question: ", question);
@@ -69,6 +74,14 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   ////////////////////
   return (
     <>
+      {isEditing ? (
+        <div className="mx-3 mt-4">
+          {" "}
+          <BackBtn />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="position-relative p-4 d-flex flex-column">
         <div className="general d-flex flex-column flex-md-row align-items-center justify-content-between">
           <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
@@ -77,14 +90,16 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               filterType={"Select Question Type:"}
               items={questionTypes}
               handleFunction={handleGeneralChange}
-              name={"questionType"}
+              name={"type"}
+              selectedValue={data ? data.type : null}
             />
             <FilterableDropdown
               darkMode={darkMode}
               filterType={"Select Question Category:"}
               items={categories}
               handleFunction={handleGeneralChange}
-              name={"questionCategory"}
+              name={"category"}
+              selectedValue={data ? data.category : null}
             />
           </div>
           <div className="form-group d-flex justify-content-evenly align-items-center">
@@ -93,9 +108,10 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               type="number"
               className="form-control w-75"
               id="mark"
-              name="questionMark"
+              name="mark"
               placeholder="Question Mark"
               onChange={(e) => handleGeneralChange(e)}
+              value={data ? data.mark : question.mark}
             />
           </div>
         </div>
@@ -111,22 +127,46 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             <textarea
               className="form-control mt-2 mb-4"
               id="prompt"
-              name="questionPrompt"
+              name="prompt"
               placeholder="Question ..."
               onChange={(e) => handleGeneralChange(e)}
+              value={data ? data.prompt : question.prompt}
             />
           </div>
-          {question["questionType"] === "mc" ? (
+          {question["type"] === "mc" ? (
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
+              detailes={
+                isEditing
+                  ? { ...question.detailes }
+                  : {
+                      isTrueFalse: false,
+                      correctAnswer: "",
+                      wrongOptions: [],
+                    }
+              }
             />
-          ) : question["questionType"] === "essay" ? (
+          ) : question["type"] === "essay" ? (
             <div></div>
-          ) : question["questionType"] === "coding" ? (
+          ) : question["type"] === "coding" ? (
             <Coding
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
+              isEditing={isEditing}
+              detailes={
+                isEditing
+                  ? question.detailes
+                  : {
+                      inputsCount: 0,
+                      testCases: [
+                        {
+                          expectedOutput: "",
+                          inputs: [],
+                        },
+                      ],
+                    }
+              }
             />
           ) : (
             <div></div>

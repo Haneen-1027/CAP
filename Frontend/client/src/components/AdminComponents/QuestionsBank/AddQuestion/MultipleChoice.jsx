@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 
-export default function MultipleChoice({ darkMode, setQuestionDetails }) {
-  const [details, setDetails] = useState({
-    isTrueFalse: false,
-    correctAnswer: "",
-    wrongOptions: [],
-  });
-  const [isTrueFalse, setIsTrueFalse] = useState(false);
-  const [wrongOptionsCount, setWrongOptionsCount] = useState(3);
-  const [wrongOptions, setWrongOptions] = useState([]);
+export default function MultipleChoice({
+  darkMode,
+  setQuestionDetails,
+  isEditing,
+  detailes,
+}) {
+  const [details, setDetails] = useState(detailes);
+  const [isTrueFalse, setIsTrueFalse] = useState(detailes.isTrueFalse);
+  const [wrongOptionsCount, setWrongOptionsCount] = useState(
+    detailes.wrongOptions.length >= 3 ? detailes.wrongOptions : 3
+  );
+  const [wrongOptions, setWrongOptions] = useState(
+    detailes?.wrongOptions
+      ? [...detailes.wrongOptions]
+      : Array.from({ length: 3 }, () => "")
+  );
 
-  //
+  // Handle input changes for correct answer
   function handleInputs(e) {
     const { name, value } = e.target;
     setDetails((prevDetails) => ({
@@ -18,81 +25,82 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
       [name]: value,
     }));
   }
-  async function handleWrongOptions(e, i) {
-    const { value } = e.target;
 
+  // Handle changes in wrong options
+  function handleWrongOptions(e, index) {
+    const { value } = e.target;
     setWrongOptions((prevWrongOptions) => {
       const updatedWrongOptions = [...prevWrongOptions];
-      const existingOptionIndex = updatedWrongOptions.findIndex(
-        (option) => option.i === i
-      );
-
-      if (existingOptionIndex !== -1) {
-        updatedWrongOptions[existingOptionIndex] = { i, value };
-      } else {
-        updatedWrongOptions.push({ i, value });
-      }
-
+      updatedWrongOptions[index] = value;
       return updatedWrongOptions;
     });
   }
 
-  //
+  // Render wrong options inputs
   function renderWrongOptions() {
-    let rows = [];
-    for (let i = 0; i < wrongOptionsCount; i++) {
-      let row = (
-        <>
-          <div
-            key={i}
-            className="col-12 col-md-6 col-lg-4 d-flex justify-content-center  align-items-md-center gap-2 mb-4"
-          >
-            <label
-              className="form-check-label m-0"
-              htmlFor="wrongQuestionsCount"
-            >
-              Option {i < 9 ? "0" + (i + 1) : i + 1}:
-            </label>
-            <input
-              className="form-input"
-              type="text"
-              id={`wrongOption${i}`}
-              placeholder={`wrongOption${i + 1}`}
-              name="wrongOptions"
-              onChange={(e) => handleWrongOptions(e, i)}
-            />
-            {}
-          </div>
-        </>
-      );
-      rows.push(row);
-    }
-    return rows;
+    return wrongOptions.map((option, index) => (
+      <div
+        key={index}
+        className="col-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-md-center gap-2 mb-4"
+      >
+        <label className="form-check-label m-0" htmlFor={`wrongOption${index}`}>
+          Option {index < 9 ? "0" + (index + 1) : index + 1}:
+        </label>
+        <input
+          className="form-input"
+          type="text"
+          id={`wrongOption${index}`}
+          placeholder={`Wrong Option ${index + 1}`}
+          value={option}
+          onChange={(e) => handleWrongOptions(e, index)}
+        />
+      </div>
+    ));
   }
-  /////////////////////////////////////////////////////////////d-flex flex-column flex-md-row gap-2 flex-wrap
+  /////////////////////////////////////////////////
+  // Update details when isTrueFalse changes
   useEffect(() => {
-    console.log("isTrueFalse: ", isTrueFalse);
     setDetails((prevDetails) => ({
       ...prevDetails,
-      ["isTrueFalse"]: isTrueFalse,
-      ["correctAnswer"]: isTrueFalse ? "true" : "",
-      ["wrongOptions"]: [],
+      isTrueFalse: isTrueFalse,
+      correctAnswer: isTrueFalse ? "true" : prevDetails.correctAnswer,
+      wrongOptions: isTrueFalse ? [] : wrongOptions,
     }));
   }, [isTrueFalse]);
-  //
+
+  // Update details when wrongOptions changes
   useEffect(() => {
-    console.log("details: ", details);
-    setQuestionDetails(details);
-  }, [details]);
-  //
-  useEffect(() => {
+    console.log("wrongOptions: ", wrongOptions);
     setDetails((prevDetails) => ({
-      ...details,
-      ["wrongOptions"]: wrongOptions,
+      ...prevDetails,
+      wrongOptions: wrongOptions,
     }));
   }, [wrongOptions]);
 
-  //////
+  // Update wrongOptions array when wrongOptionsCount changes
+  useEffect(() => {
+    setWrongOptions((prevWrongOptions) => {
+      if (wrongOptionsCount < prevWrongOptions.length) {
+        return prevWrongOptions.slice(0, wrongOptionsCount);
+      } else if (wrongOptionsCount > prevWrongOptions.length) {
+        return [
+          ...prevWrongOptions,
+          ...Array.from(
+            { length: wrongOptionsCount - prevWrongOptions.length },
+            () => ""
+          ),
+        ];
+      }
+      return prevWrongOptions;
+    });
+  }, [wrongOptionsCount]);
+
+  // Update question details when details change
+  useEffect(() => {
+    console.log("Details of MC: ", details);
+    setQuestionDetails(details);
+  }, [details]);
+
   return (
     <>
       <div className="d-flex justify-content-between justify-content-md-evenly align-items-md-center flex-column flex-md-row">
@@ -100,9 +108,9 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
           <input
             className="form-check-input"
             type="checkbox"
-            defaultValue
             id="flexCheckDefault"
-            onChange={(e) => setIsTrueFalse(!isTrueFalse)}
+            checked={isTrueFalse}
+            onChange={(e) => setIsTrueFalse(e.target.checked)}
           />
           <label className="form-check-label" htmlFor="flexCheckDefault">
             True/False Question
@@ -110,7 +118,7 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
         </div>
         <div className="my-4 m-md-0">
           {isTrueFalse ? (
-            <div className="">
+            <div>
               <select
                 className="p-2"
                 style={{ width: "100%" }}
@@ -130,12 +138,13 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
                 name="correctAnswer"
                 placeholder="Correct Answer"
                 onChange={(e) => handleInputs(e)}
+                value={details.correctAnswer}
               />
             </div>
           )}
         </div>
       </div>
-      {!isTrueFalse ? (
+      {!isTrueFalse && (
         <>
           <div className="d-flex flex-column flex-md-row align-items-md-center my-3">
             <div className="d-flex align-items-md-center gap-2">
@@ -163,8 +172,6 @@ export default function MultipleChoice({ darkMode, setQuestionDetails }) {
           </div>
           <div className="row my-2">{renderWrongOptions()}</div>
         </>
-      ) : (
-        ""
       )}
     </>
   );

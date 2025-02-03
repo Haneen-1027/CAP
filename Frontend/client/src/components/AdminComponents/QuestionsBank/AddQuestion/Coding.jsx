@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-export default function Coding({ darkMode, setQuestionDetails }) {
-  const [inputsCount, setInputsCount] = useState(0);
-  const [testCasesCount, setTestCasesCount] = useState(1);
-  const [testCases, setTestCases] = useState([
-    {
-      expectedOutput: "",
-      inputs: [],
-    },
-  ]);
+export default function Coding({
+  darkMode,
+  setQuestionDetails,
+  isEditing,
+  detailes,
+}) {
+  const [inputsCount, setInputsCount] = useState(
+    detailes.inputsCount >= 0 ? detailes.inputsCount : 0
+  );
+  const [testCasesCount, setTestCasesCount] = useState(
+    detailes.testCases.length
+  );
+  const [testCases, setTestCases] = useState([...detailes.testCases]);
   //
   function handleExpectedOutput(e, index) {
     const { value } = e.target;
@@ -64,6 +68,7 @@ export default function Coding({ darkMode, setQuestionDetails }) {
 
   //
   function renderInputs(index) {
+    console.log("Index: ", index);
     if (inputsCount === 0) {
       return;
     }
@@ -79,6 +84,12 @@ export default function Coding({ darkMode, setQuestionDetails }) {
               id={`input${i}`}
               type="text"
               onChange={(e) => handleInputValue(e, index, i)}
+              value={
+                testCases[index]?.inputs &&
+                testCases[index].inputs[i] !== undefined
+                  ? testCases[index].inputs[i]
+                  : ""
+              }
             />
           </div>
         </>
@@ -151,7 +162,7 @@ export default function Coding({ darkMode, setQuestionDetails }) {
           { length: testCasesCount - prevTestCases.length },
           () => ({
             expectedOutput: "",
-            inputs: [],
+            inputs: Array(inputsCount).fill(""),
           })
         );
         return [...prevTestCases, ...newCases];
@@ -169,6 +180,10 @@ export default function Coding({ darkMode, setQuestionDetails }) {
     );
     setQuestionDetails({ inputsCount: inputsCount, testCases: [...testCases] });
   }, [testCases]);
+  //
+  useEffect(() => {
+    console.log("TTTTYYYYPPPEEE: ", detailes);
+  }, []);
   //////////////////////////////////////////
   return (
     <>

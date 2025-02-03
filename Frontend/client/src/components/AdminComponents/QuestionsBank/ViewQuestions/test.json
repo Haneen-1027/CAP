@@ -28,18 +28,15 @@
       "prompt": "Write a JavaScript function that reverses a string.",
       "category": "JavaScript",
       "detailes": {
+        "inputsCount": 1,
         "testCases": [
           {
-            "case1": {
-              "inputs": ["hello"],
-              "expectedOutput": "olleh"
-            }
+            "inputs": ["hello"],
+            "expectedOutput": "olleh"
           },
           {
-            "case2": {
-              "inputs": ["world"],
-              "expectedOutput": "dlrow"
-            }
+            "inputs": ["world"],
+            "expectedOutput": "dlrow"
           }
         ]
       }
@@ -70,16 +67,12 @@
       "detailes": {
         "testCases": [
           {
-            "case1": {
-              "inputs": ["5"],
-              "expectedOutput": "120"
-            }
+            "inputs": ["5"],
+            "expectedOutput": "120"
           },
           {
-            "case2": {
-              "inputs": ["3"],
-              "expectedOutput": "6"
-            }
+            "inputs": ["3"],
+            "expectedOutput": "6"
           }
         ]
       }

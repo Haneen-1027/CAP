@@ -58,6 +58,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
           <div className="col-6 col-md-2 d-flex justify-content-end gap-2">
             <Link
               to={`/admin/questions_bank/preview/${1234}`}
+              state={{ question: q }}
               className={`btn view-button ${darkMode ? "text-light" : ""}`}
             >
               <i class="fa-regular fa-eye"></i>
