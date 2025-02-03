@@ -111,11 +111,15 @@ export const CompDashboard = lazy(() =>
 );
 //Create Assessment
 export const CreateAssessment = lazy(() =>
-  import("../components/CompanyComponents/Assessment/CreateAssessment.jsx")
+  import("../components/CompanyComponents/Assessment/AddAssessment/CreateAssessment.jsx")
 );
 //View Assessment
 export const CompAssessment = lazy(() =>
   import("../components/CompanyComponents/Assessment/ViewAssessment/CompAssessment.jsx")
+);
+//Update Assessment
+export const UpdateAssessment = lazy(() =>
+  import("../components/CompanyComponents/Assessment/UpdateAssessment/UpdateAssessment.jsx")
 );
 ///////////////////////////////////////////////////////////
 //// Contributer Page Components:

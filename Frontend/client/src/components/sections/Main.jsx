@@ -24,6 +24,8 @@ import {
   UserAssessmentResults,
   PreviewQuestion,
   CompAssessment,
+  CreateAssessment,
+  UpdateAssessment,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -598,7 +600,7 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <CompDashboard user={userDetailes} darkMode={darkMode} />
+                <CreateAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
@@ -616,6 +618,23 @@ function Main({ userDetailes, darkMode }) {
                 }
               >
                 <CompAssessment user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
+          {/*Company Update Assessment*/}
+          <Route
+            path="/company/assessment/:id"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <UpdateAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />

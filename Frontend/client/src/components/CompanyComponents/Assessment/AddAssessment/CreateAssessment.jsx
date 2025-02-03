@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const CreateAssessment = () => {
+export default function CreateAssessment() {
   return (
     <div className="card">
     <div className="card-datatable table-responsive">

@@ -1,26 +1,21 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function CompAssessment() {
-    const navigate = useNavigate();
-
-    const handleAddAssessment = () => {
-        navigate("/add-assessment");
-    };
 
     return (
         <>
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h5 className="text-center mb-0"><strong>Assessment Table</strong></h5>
-                    <button
+                    <Link
+                        to="/company/addAssessment"
                         type="button"
                         className="btn btn-light btn-sm d-flex align-items-center"
-                        onClick={handleAddAssessment}
                     >
                         <i className="fas fa-plus me-2"></i>
                         Add New Assessment
-                    </button>
+                    </Link>
                 </div>
                 <div className="table-responsive text-nowrap">
                     <table className="table">
@@ -43,13 +38,14 @@ export default function CompAssessment() {
                                 <td><span className="bg-label-primary text-primary me-1">Active</span></td>
                                 <td>
                                     <div className="d-flex gap-2 justify-content-center">
-                                        <button
+                                        <Link
+                                            to={`/company/assessment/${1}`}
                                             type="button"
                                             className="btn btn-sm btn-outline-primary"
                                             title="Edit"
                                         >
                                             <i className="fas fa-edit"></i>
-                                        </button>
+                                        </Link>
                                         <button
                                             type="button"
                                             className="btn btn-sm btn-outline-danger"
