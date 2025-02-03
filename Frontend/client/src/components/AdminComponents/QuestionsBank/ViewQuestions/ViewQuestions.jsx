@@ -35,7 +35,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     return questionsList.map((q, index) => (
       <>
         <div key={index} className="row d-flex align-items-center p-2">
-          <div className="col-3ل d-flex gap-4">
+          <div className="col-3 d-flex gap-4">
             <div className="">{index < 9 ? "0" + (index + 1) : index + 1}.</div>
             <div className="">{q.category ? q.category : "Null"}</div>
           </div>
