@@ -35,14 +35,14 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     return questionsList.map((q, index) => (
       <>
         <div key={index} className="row d-flex align-items-center p-2">
-          <div className="col-4 col-md-2 d-flex gap-4">
+          <div className="col-3ل d-flex gap-4">
             <div className="">{index < 9 ? "0" + (index + 1) : index + 1}.</div>
             <div className="">{q.category ? q.category : "Null"}</div>
           </div>
-          <div className="col-8 col-md-5 text-truncate">
+          <div className="col-3 text-truncate">
             {q.prompt ? q.prompt : "There is no valid question."}
           </div>
-          <div className="col-6 col-md-3">
+          <div className="col-4">
             {q.type
               ? q.type === "mc"
                 ? q.detailes.isTrueFalse === true
@@ -55,7 +55,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 : "Not-valid type"
               : "There is no Type"}
           </div>
-          <div className="col-6 col-md-2 d-flex justify-content-end gap-2">
+          <div className="col-2 d-flex justify-content-end gap-2">
             <Link
               to={`/admin/questions_bank/preview/${1234}`}
               state={{ question: q }}

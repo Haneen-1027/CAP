@@ -28,7 +28,7 @@ body {
   font-family: "Nunito Sans", sans-serif !important;
   background-color: var(--veryLightGray-color) !important;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 .z-150 {
   z-index: 150 !important;
