@@ -9,7 +9,7 @@ export default function MultipleChoice({
   const [details, setDetails] = useState(detailes);
   const [isTrueFalse, setIsTrueFalse] = useState(detailes.isTrueFalse);
   const [wrongOptionsCount, setWrongOptionsCount] = useState(
-    detailes.wrongOptions.length >= 3 ? detailes.wrongOptions : 3
+    detailes.wrongOptions.length >= 3 ? detailes.wrongOptions.length : 3
   );
   const [wrongOptions, setWrongOptions] = useState(
     detailes?.wrongOptions

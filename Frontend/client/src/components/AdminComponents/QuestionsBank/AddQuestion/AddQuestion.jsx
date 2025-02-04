@@ -91,6 +91,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               items={questionTypes}
               handleFunction={handleGeneralChange}
               name={"type"}
+              isDisabled={isEditing}
               selectedValue={data ? data.type : null}
             />
             <FilterableDropdown

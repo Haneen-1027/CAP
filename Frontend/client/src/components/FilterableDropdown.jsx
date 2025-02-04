@@ -7,6 +7,7 @@ export default function FilterableDropdown({
   handleFunction,
   name,
   selectedValue,
+  isDisabled,
 }) {
   const [filterText, setFilterText] = useState("");
 
@@ -32,6 +33,7 @@ export default function FilterableDropdown({
         onChange={(e) => handleEvent(e)}
         name={name}
         value={selectedValue ? selectedValue : 0}
+        disabled={isDisabled}
       >
         <option value={0}>{filterType}</option>
         {items
