@@ -589,7 +589,7 @@ function Main({ userDetailes, darkMode }) {
           />
           {/*Company Add Assessment*/}
           <Route
-            path="/company/addAssessment"
+            path="/company/assessment/add"
             element={
               <Suspense
                 fallback={
