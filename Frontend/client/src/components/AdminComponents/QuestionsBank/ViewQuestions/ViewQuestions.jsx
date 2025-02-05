@@ -3,19 +3,18 @@ import {
   FilterableDropdown,
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
-import questions from "./test.json"; // Adjust path based on file location
+import questions from "./test.json"; // Get from API
 import { Link } from "react-router-dom";
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
-    { name: "All Categories", value: "all" },
-    { name: "HTML", value: "html" },
-    { name: "CSS", value: "css" },
-    { name: "JavaScript", value: "js" },
-    { name: "jQuery", value: "j-query" },
-    { name: "Bootstrap", value: "bootstrap" },
-    { name: "Angular", value: "angular" },
-    { name: "React", value: "react" },
+    { name: "HTML", value: "HTML" },
+    { name: "CSS", value: "CSS" },
+    { name: "JavaScript", value: "JavaScript" },
+    { name: "jQuery", value: "jQuery" },
+    { name: "Bootstrap", value: "Bootstrap" },
+    { name: "Angular", value: "Angular" },
+    { name: "React", value: "React" },
   ];
   const questionTypes = [
     { name: "Multible Choice", value: "mc" },

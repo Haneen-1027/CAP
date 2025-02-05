@@ -48,7 +48,9 @@ img {
 i {
   font-style: normal !important;
 }
-
+.w-35 {
+  width: 35% !important;
+}
 /* Scroll */
 ::-webkit-scrollbar {
   width: 0.5rem;
