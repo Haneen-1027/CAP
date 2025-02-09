@@ -49,8 +49,8 @@ export default function Navbar({ values, userDetailes }) {
             } navbar-brand light  text-dark mid-bold`}
             to="/"
           >
-            <span className="primary-button-color">Handball</span>
-            Assistant
+            <span className="primary-button-color">Coding</span>
+            Assessment
           </Link>
         </div>
         <div className="col-12 col-md-8 d-flex justify-content-center justify-content-md-end align-items-center">
