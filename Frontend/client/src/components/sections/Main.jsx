@@ -604,6 +604,23 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
+          {/*Company Update Assessment*/}
+          <Route
+            path="/company/assessment/update/:id"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <CreateAssessment user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
           {/*Company view Assessment*/}
           <Route
             path="/company/assessment"

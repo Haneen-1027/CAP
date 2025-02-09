@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
+import { Link } from "react-router";
 
 export default function UpdateAssessment({ darkMode }) {
+  //
+  /* const [selectedQuestionsTotalMark, setSelectedQuestionsTotalMark] =
+    useState(0);*/
+
+  //
   const assessment = {
     name: "First Test Assessment.",
     duration: "01:30",
@@ -10,7 +16,52 @@ export default function UpdateAssessment({ darkMode }) {
     end_time: "18:00",
     total_mark: 35,
     questions_count: 5,
-    questions_ids: [],
+    questions: [
+      {
+        id: "Id0",
+        type: "mc",
+        mark: 5.0,
+        prompt: "What does HTML stand for?",
+        category: "HTML",
+        detailes: {
+          isTrueFalse: false,
+          correctAnswer: "HyperText Markup Language",
+          wrongOptions: [
+            "Hyper Transfer Markup Language",
+            "HighText Machine Language",
+            "Hyperlink and Text Markup Language",
+          ],
+        },
+      },
+      {
+        id: "Id1",
+        type: "essay",
+        mark: 10.0,
+        prompt: "Explain the importance of CSS in modern web development.",
+        category: "CSS",
+        detailes: {},
+      },
+      {
+        id: "Id2",
+        type: "coding",
+        mark: 15.0,
+        prompt: "Write a JavaScript function that reverses a string.",
+        category: "JavaScript",
+        detailes: {
+          inputsCount: 1,
+          testCases: [
+            {
+              inputs: ["hello"],
+              expectedOutput: "olleh",
+            },
+            {
+              inputs: ["world"],
+              expectedOutput: "dlrow",
+            },
+          ],
+        },
+      },
+    ],
   };
   //Errors variables
   let [apiError, setApiError] = useState(false);
@@ -45,7 +96,7 @@ export default function UpdateAssessment({ darkMode }) {
         <div className={`my-4 card ${darkMode ? "spic-dark-mode" : ""}`}>
           <div className="card-header d-flex align-items-md-center">
             <h5 className="text-center p-2 mb-0">
-              <strong>Assessment Title</strong>
+              <strong>{assessment.name}</strong>
             </h5>
           </div>
           {/** Duration & Time  */}
@@ -122,6 +173,91 @@ export default function UpdateAssessment({ darkMode }) {
                 value={assessment.questions_count}
                 disabled
               />
+            </div>
+          </div>
+          {/** Questions List */}
+          <div className="table-responsive text-nowrap">
+            <table
+              className={`table m-0 ${
+                darkMode ? "table-dark " : "table-light"
+              }`}
+            >
+              <thead className={``}>
+                <tr>
+                  <th>#.</th>
+                  <th className="text-start">Category</th>
+                  <th className="text-start" style={{ width: "20rem" }}>
+                    Prompt
+                  </th>
+                  <th className="text-start">Type</th>
+                  <th className="text-start">Mark</th>
+                </tr>
+              </thead>
+              <tbody className="table-border-bottom-0">
+                {assessment.questions.map((question, index) => (
+                  <tr key={index}>
+                    <td>{index < 9 ? "0" + (index + 1) : index + 1}.</td>
+                    <td className="text-start">{question.category}</td>
+                    <td
+                      className="text-start text-truncate"
+                      style={{
+                        maxWidth: "20rem",
+                      }}
+                    >
+                      <strong className="text-truncate">
+                        {question.prompt}
+                      </strong>
+                    </td>
+                    <td className="text-start">
+                      {question.type
+                        ? question.type === "mc"
+                          ? question.detailes.isTrueFalse === true
+                            ? "True/False"
+                            : "Multiple Choice"
+                          : question.type === "essay"
+                          ? "Essay"
+                          : question.type === "coding"
+                          ? "Coding"
+                          : "Not-valid type"
+                        : "There is no Type"}
+                    </td>
+                    <td className="text-start">{question.mark}</td>
+                  </tr>
+                ))}
+                <tr className="">
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td className="text-start">
+                    Total Selected:{" "}
+                    <strong className="">
+                      {assessment.questions.reduce(
+                        (total, question) => total + parseFloat(question.mark),
+                        0
+                      )}
+                    </strong>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="card-header p-4 row m-0 ">
+            <div className="d-flex justify-content-center align-items-center">
+              <Link
+                to={`/company/assessment/update/${1234}`}
+                state={{
+                  data: {
+                    ...assessment,
+                    ["questions_ids"]: assessment.questions.map(
+                      (question, index) => question.id
+                    ),
+                  },
+                }}
+                className="btn btn-primary"
+              >
+                Update Assessment
+              </Link>
             </div>
           </div>
         </div>

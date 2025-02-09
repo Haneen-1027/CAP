@@ -6,11 +6,18 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 import questions from "../../../AdminComponents/QuestionsBank/ViewQuestions/test.json"; // Get from API
 import SearchBarContainer from "../../../SearchBar";
+import { Link, useLocation, useParams } from "react-router";
 
 export default function CreateAssessment({ darkMode }) {
   // test feature
   const [slectedTotalMark, setSelectedTotalMark] = useState(0);
 
+  // For Editing
+  const location = useLocation();
+  const { data } = location.state || {};
+  const { id } = useParams();
+  const [isEditing, setIsEditing] = useState(false);
+  ///
   const [questionsListCount, setQuestionsListCount] = useState(133); // Calculated after get questions from API
   // Get from API
   const categories = [
@@ -45,16 +52,20 @@ export default function CreateAssessment({ darkMode }) {
   const [questionType, setQuestionType] = useState(0);
   const [category, setCategory] = useState(0);
   // Assessment Attributes
-  const [assessment, setAssessment] = useState({
-    name: "",
-    duration: "",
-    time: "",
-    start_time: "",
-    end_time: "",
-    total_mark: 0,
-    questions_count: 0,
-    questions_ids: [],
-  });
+  const [assessment, setAssessment] = useState(
+    data
+      ? data
+      : {
+          name: "",
+          duration: "",
+          time: "",
+          start_time: "",
+          end_time: "",
+          total_mark: 0,
+          questions_count: 0,
+          questions_ids: [],
+        }
+  );
   const [questionsCount, setQuestionsCount] = useState(0);
   //Errors variables
   let [apiError, setApiError] = useState(false);
@@ -278,6 +289,18 @@ export default function CreateAssessment({ darkMode }) {
     console.log("Search Value: ", searchValue);
     handleSearching();
   }, [searchValue]);
+
+  useEffect(() => {
+    if (id) {
+      setAssessment(data);
+      setIsEditing(true);
+      setSelectedTotalMark((prevMarks) =>
+        data.questions.reduce((total, question) => total + question.mark, 0)
+      );
+      console.log("This is an update for existing Assessment: ", id);
+    }
+    console.log("State Data: ", data, " and locateion: ", location.state);
+  }, []);
   //////////////////////
   return (
     <>
@@ -300,6 +323,7 @@ export default function CreateAssessment({ darkMode }) {
                 name="name"
                 placeholder="Assessment Name"
                 onChange={(e) => handleAssessmentAttributes(e)}
+                value={assessment.name}
               />
             </div>
             <div className="form-group my-3 m-lg-0 col-12 col-lg-2 d-flex flex-column">
