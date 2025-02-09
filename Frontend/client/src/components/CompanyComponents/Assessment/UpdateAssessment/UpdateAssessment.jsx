@@ -1,7 +1,131 @@
-import React from 'react'
+import React, { useState } from "react";
+import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
 
-export default function UpdateAssessment() {
+export default function UpdateAssessment({ darkMode }) {
+  const assessment = {
+    name: "First Test Assessment.",
+    duration: "01:30",
+    time: "2025-04-02",
+    start_time: "16:00",
+    end_time: "18:00",
+    total_mark: 35,
+    questions_count: 5,
+    questions_ids: [],
+  };
+  //Errors variables
+  let [apiError, setApiError] = useState(false);
+  let apiErrorMessage = (
+    <div className="w-100 h-100 d-flex flex-column align-items-center">
+      <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
+        Error!!!
+      </div>
+      <div className="my-4 mid-bold">
+        Theres a proplem! Please wait for us to solve the proplem.
+      </div>
+    </div>
+  );
+  let loadingMessage = (
+    <div className="d-flex justify-content-center align-items-center my-4">
+      <div className="spinner-border text-primary" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+    </div>
+  );
+  //////////////////////
+  /** Functions */
+  //////////////////////
+  /** Effects */
+  //////////////////////
   return (
-    <div>UpdateAssessment</div>
-  )
+    <>
+      <BackBtn />
+      {apiError ? (
+        apiErrorMessage
+      ) : (
+        <div className={`my-4 card ${darkMode ? "spic-dark-mode" : ""}`}>
+          <div className="card-header d-flex align-items-md-center">
+            <h5 className="text-center p-2 mb-0">
+              <strong>Assessment Title</strong>
+            </h5>
+          </div>
+          {/** Duration & Time  */}
+          <div className="card-header p-4 row m-0 gap-1 d-flex justify-content-between align-items-md-center">
+            <div className="form-group  m-lg-0 col-12 col-lg-3 d-flex flex-column">
+              <label htmlFor="duration">Duration:</label>
+              <input
+                type="text"
+                placeholder="hh:mm"
+                pattern="^([0-9]{1,2}):([0-5][0-9])$"
+                className="form-control"
+                id="duration"
+                name="duration"
+                value={assessment.duration}
+                disabled
+              />
+            </div>
+            <div className="p-0 form-group col-12 col-lg-8 row m-0  d-flex justify-content-center justify-content-lg-end">
+              <div className="my-2 m-md-0 col-12 col-md-4">
+                <label htmlFor="time">Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  id="time"
+                  name="time"
+                  value={assessment.time}
+                  disabled
+                />
+              </div>
+              <div className="mb-2 m-md-0 col-12 col-md-4">
+                <label htmlFor="start_time">Start:</label>
+                <input
+                  type="time"
+                  className="form-control"
+                  id="start_time"
+                  name="start_time"
+                  value={assessment.start_time}
+                  disabled
+                />
+              </div>
+              <div className="col-12 col-md-4">
+                <label htmlFor="end_time">End:</label>
+                <input
+                  type="time"
+                  className="form-control"
+                  id="end_time"
+                  name="end_time"
+                  value={assessment.end_time}
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+          {/** Total Mark & Questions Count */}
+          <div className="card-header p-4 row m-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div className="mb-2 m-md-0 form-group col-12 col-md-6 d-flex flex-column ">
+              <label htmlFor="total_mark">Total Mark:</label>
+              <input
+                type="number"
+                className="form-control"
+                id="total_mark"
+                name="total_mark"
+                value={assessment.total_mark}
+                disabled
+              />
+            </div>
+            <div className="form-group col-12 col-md-6 d-flex flex-column ">
+              <label htmlFor="questions_count">Questions Count:</label>
+              <input
+                type="number"
+                className="form-control"
+                id="questions_count"
+                name="questions_count"
+                value={assessment.questions_count}
+                disabled
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

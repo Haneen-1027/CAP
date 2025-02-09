@@ -1,6 +1,6 @@
 /************* NavBar **************/
 header {
-  height: 65px;
+  height: 4rem;
   position: sticky !important;
   top: 0 !important;
   z-index: 9999 !important;
@@ -70,6 +70,9 @@ th {
   }
 }
 @media (max-width: 742px) {
+  header {
+    height: 6rem;
+  }
   .general-nav.navbar .navbar-brand {
     width: 100% !important;
   }

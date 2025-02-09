@@ -48,6 +48,7 @@ export default function CreateAssessment({ darkMode }) {
   const [assessment, setAssessment] = useState({
     name: "",
     duration: "",
+    time: "",
     start_time: "",
     end_time: "",
     total_mark: 0,

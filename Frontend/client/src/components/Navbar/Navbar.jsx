@@ -10,7 +10,7 @@ export default function Navbar({ values, userDetailes }) {
   let [clickOnProfile, setClickOnProfile] = useState(false);
   let [navBarOpenHandle, setNavBarOpenHandle] = useState(false);
 
-  const roles = ["Admin", "Company", "Contributer"];
+  const roles = ["Admin", "Coach"];
 
   function handaleProfileClick() {
     if (clickOnProfile) {
@@ -41,19 +41,19 @@ export default function Navbar({ values, userDetailes }) {
       }g general-nav navbar navbar-expand-lg w-100`}
       id="nav"
     >
-      <div className="d-flex nav-xsmall-screens align-items-center justify-content-center  justify-content-md-between mx-4 w-100">
-        <div className="">
+      <div className="row flex-column flex-md-row gap-2 gap-md-0 nav-xsmall-screens align-items-center justify-content-center  justify-content-md-between m-0 mx-md-4 w-100">
+        <div className="col-12 col-md-4">
           <Link
             className={`${
               darkMode ? " spic-dark-mode" : ""
             } navbar-brand light  text-dark mid-bold`}
             to="/"
           >
-            <span className="primary-button-color">Coding</span>
-            Assessment
+            <span className="primary-button-color">Handball</span>
+            Assistant
           </Link>
         </div>
-        <div className="d-flex align-items-center">
+        <div className="col-12 col-md-8 d-flex justify-content-center justify-content-md-end align-items-center">
           <div className="respo-nav">
             <button
               onClick={() => setNavBarOpenHandle(true)}
