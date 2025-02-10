@@ -9,6 +9,7 @@ export default function UpdateAssessment({ darkMode }) {
 
   //
   const assessment = {
+    createdBy: "user111",
     name: "First Test Assessment.",
     duration: "01:30",
     time: "2025-04-02",

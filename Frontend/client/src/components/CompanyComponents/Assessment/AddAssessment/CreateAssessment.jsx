@@ -213,6 +213,7 @@ export default function CreateAssessment({ darkMode }) {
               onChange={(e) => selectQuestion(e, questionId, question.mark)}
               checked={isChecked}
               disabled={isDisabled}
+              title="Add this question to assessment"
             />
             <label className="ms-2 form-check-label" htmlFor="questionID">
               Select
