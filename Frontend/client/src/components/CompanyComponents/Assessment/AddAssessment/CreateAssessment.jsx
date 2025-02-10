@@ -171,12 +171,17 @@ export default function CreateAssessment({ darkMode }) {
   // For rendring questions lists
   function renderQuestions() {
     return visibleList.map((question, index) => {
-      const questionId = `Id${index}`;
-      const isChecked = assessment.questions_ids.includes(questionId);
+      const questionId = `Id${index + question.prompt}`;
+      const isChecked = assessment.questions_ids.some(
+        (q) => q.id === questionId
+      );
+      const remainingTotalMark =
+        assessment.total_mark -
+        assessment.questions_ids.reduce((total, q) => total + q.mark, 0);
       const isDisabled =
         !isChecked &&
         (assessment.questions_ids.length >= assessment.questions_count ||
-          slectedTotalMark + question.mark > assessment.total_mark);
+          remainingTotalMark === 0);
 
       return (
         <tr key={index}>
@@ -203,13 +208,30 @@ export default function CreateAssessment({ darkMode }) {
                 : "Not-valid type"
               : "There is no Type"}
           </td>
-          <td className="text-start">{question.mark}</td>
+          <td className="text-start">
+            <input
+              className="form-input"
+              type="number"
+              id="mark"
+              name="mark"
+              title="Question Mark"
+              disabled={!isChecked}
+              onChange={(e) => selectQuestion(e, questionId)}
+              value={
+                isChecked
+                  ? assessment.questions_ids.find((q) => q.id === questionId)
+                      ?.mark || 0
+                  : ""
+              }
+            />
+          </td>
           <td className="text-start">
             <input
               className="form-check-input"
               type="checkbox"
               defaultValue
               id="questionID"
+              name="questionID"
               onChange={(e) => selectQuestion(e, questionId, question.mark)}
               checked={isChecked}
               disabled={isDisabled}
@@ -243,30 +265,68 @@ export default function CreateAssessment({ darkMode }) {
     }
   }
   // Handle the selecting of new question
-  function selectQuestion(e, id, mark) {
+  function selectQuestion(e, id, mark = 0) {
+    const { name, value } = e.target;
     const selectedQuestions = [...assessment.questions_ids];
 
-    if (e.target.checked) {
-      selectedQuestions.push(id);
-      setSelectedTotalMark((prevTotalCount) => prevTotalCount + mark);
-    } else {
-      // Remove question if unchecked
-      const updatedQuestions = selectedQuestions.filter(
-        (question_id) => question_id !== id
-      );
+    if (name === "questionID") {
+      if (e.target.checked) {
+        // Add the question with an initial mark of 0
+        selectedQuestions.push({ id: id, mark: 0 });
+        setAssessment((prevAssessment) => ({
+          ...prevAssessment,
+          questions_ids: selectedQuestions,
+        }));
+      } else {
+        // Remove the question if unchecked
+        const questionToRemove = selectedQuestions.find(
+          (question) => question.id === id
+        );
+        if (questionToRemove) {
+          setSelectedTotalMark(
+            (prevTotalCount) => prevTotalCount - questionToRemove.mark
+          );
+        }
+        const updatedQuestions = selectedQuestions.filter(
+          (question) => question.id !== id
+        );
+        setAssessment((prevAssessment) => ({
+          ...prevAssessment,
+          questions_ids: updatedQuestions,
+        }));
+      }
+    } else if (name === "mark") {
+      // Calculate the remaining total mark excluding the current question's mark
+      const remainingTotalMark =
+        assessment.total_mark -
+        selectedQuestions.reduce((total, q) => {
+          if (q.id !== id) {
+            return total + q.mark;
+          }
+          return total;
+        }, 0);
+
+      // Ensure the new mark does not exceed the remaining total mark
+      const newMark = Math.min(parseInt(value, 10), remainingTotalMark);
+
+      // Update the mark of the specific question
+      const updatedQuestions = selectedQuestions.map((question) => {
+        if (question.id === id) {
+          // Subtract the old mark and add the new mark to the total
+          setSelectedTotalMark(
+            (prevTotalCount) => prevTotalCount - question.mark + newMark
+          );
+          return { ...question, mark: newMark };
+        }
+        return question;
+      });
+
       setAssessment((prevAssessment) => ({
         ...prevAssessment,
-        questions_ids: updatedQuestions, // Update state
+        questions_ids: updatedQuestions,
       }));
-      return;
     }
-
-    setAssessment((prevAssessment) => ({
-      ...prevAssessment,
-      questions_ids: selectedQuestions, // Update state
-    }));
   }
-
   // Pagination Functions
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);

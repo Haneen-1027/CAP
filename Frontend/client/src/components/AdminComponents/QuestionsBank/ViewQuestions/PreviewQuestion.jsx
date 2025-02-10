@@ -34,18 +34,6 @@ export default function PreviewQuestion({ darkMode }) {
               </div>
               <div className="">{question ? question.category : "No Data"}</div>
             </div>
-            <div className="form-group d-flex justify-content-evenly align-items-center">
-              <label htmlFor="mark">Mark:</label>
-              <input
-                type="number"
-                className="form-control w-75"
-                id="mark"
-                name="questionMark"
-                placeholder="Question Mark"
-                value={question ? question.mark : 2}
-                disabled
-              />
-            </div>
           </div>
           <div className="w-50 position-relative my-3">
             {" "}

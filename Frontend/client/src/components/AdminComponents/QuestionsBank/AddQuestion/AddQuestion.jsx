@@ -15,7 +15,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   const [question, setQuestion] = useState({
     type: "",
     category: "",
-    mark: 2,
     prompt: "",
     detailes: {},
   });
@@ -25,7 +24,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   //const [type, settype] = useState("");
   //const [prompt, setprompt] = useState("");
   //const [category, setcategory] = useState("");
-  //const [mark, setmark] = useState(2);
   const questionTypes = [
     { name: "Multible Choice", value: "mc" },
     { name: "Essay Question", value: "essay" },
@@ -101,18 +99,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               handleFunction={handleGeneralChange}
               name={"category"}
               selectedValue={data ? data.category : null}
-            />
-          </div>
-          <div className="form-group d-flex justify-content-evenly align-items-center">
-            <label htmlFor="mark">Mark:</label>
-            <input
-              type="number"
-              className="form-control w-75"
-              id="mark"
-              name="mark"
-              placeholder="Question Mark"
-              onChange={(e) => handleGeneralChange(e)}
-              value={data ? data.mark : question.mark}
             />
           </div>
         </div>
