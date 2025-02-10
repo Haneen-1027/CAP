@@ -33,15 +33,20 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     const questionsList = questions.questions;
     return questionsList.map((q, index) => (
       <>
-        <div key={index} className="row d-flex align-items-center p-2">
-          <div className="col-3 d-flex gap-4">
-            <div className="">{index < 9 ? "0" + (index + 1) : index + 1}.</div>
-            <div className="">{q.category ? q.category : "Null"}</div>
-          </div>
-          <div className="col-3 text-truncate">
+        <tr key={index}>
+          <td className="text-start">
+            {index < 9 ? "0" + (index + 1) : index + 1}.
+          </td>
+          <td className="">{q.category ? q.category : "Null"}</td>
+          <td
+            className="text-start text-truncate"
+            style={{
+              maxWidth: "15rem",
+            }}
+          >
             {q.prompt ? q.prompt : "There is no valid question."}
-          </div>
-          <div className="col-4">
+          </td>
+          <td className="text-start">
             {q.type
               ? q.type === "mc"
                 ? q.detailes.isTrueFalse === true
@@ -53,8 +58,8 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 ? "Coding"
                 : "Not-valid type"
               : "There is no Type"}
-          </div>
-          <div className="col-2 d-flex justify-content-end gap-2">
+          </td>
+          <td className="gap-2">
             <Link
               to={`/admin/questions_bank/preview/${1234}`}
               state={{ question: q }}
@@ -67,12 +72,8 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
             >
               <i className="fa-solid fa-trash" />
             </div>
-          </div>
-        </div>
-        <div className="position-relative my-1">
-          {" "}
-          <hr className="" />
-        </div>
+          </td>
+        </tr>
       </>
     ));
   }
@@ -99,9 +100,18 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   ///////////////
   return (
     <>
-      <div className="mx-3 mt-4">
-        <div className="row gap-4 gap-lg-0 my-1">
-          <div className="col-12 col-lg-4 d-flex flex-column flex-lg-row gap-2">
+      <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
+        <div
+          className={`p-3 card-header d-flex align-items-center ${
+            darkMode ? " spic-dark-mode" : ""
+          }`}
+        >
+          <h5 className="text-center mb-0">
+            <strong>Questions:</strong>
+          </h5>
+        </div>
+        <div className="p-4 card-header row m-0">
+          <div className="col-12 col-lg-4 d-flex flex-column flex-lg-row gap-1 ">
             <div className="category">
               <FilterableDropdown
                 darkMode={darkMode}
@@ -119,7 +129,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
               />
             </div>
           </div>
-          <div className="col-12 col-lg-5">
+          <div className="my-4 m-lg-0 col-12 col-lg-5 d-flex justify-content-center">
             <PaginationNav
               darkMode={darkMode}
               counts={questionsCount}
@@ -128,7 +138,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
               countPerPage={countPerPage}
             />
           </div>
-          <div className="count-per-page col-12 col-lg-3 d-flex flex-column flex-lg-row gap-2">
+          <div className="count-per-page col-12 col-lg-3 d-flex flex-column flex-lg-row">
             <label className="" style={{ fontSize: "0.95rem" }}>
               Questions per Page:
             </label>
@@ -146,11 +156,28 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
             </select>
           </div>
         </div>
-        <div className="position-relative mt-4">
-          {" "}
-          <hr className="" />
+
+        <div
+          className={`table-responsive text-nowrap ${
+            darkMode ? "spic-dark-mode" : ""
+          }`}
+        >
+          <table
+            className={`table ${darkMode ? "table-dark " : "table-light"}`}
+          >
+            {" "}
+            <thead>
+              <tr>
+                <th className="text-start">#</th>
+                <th className="text-start">Category</th>
+                <th className="text-start">Prompt</th>
+                <th className="text-start">Type</th>
+                <th className="">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="table-border-bottom-0">{renderQuestions()}</tbody>
+          </table>
         </div>
-        <div>{renderQuestions()}</div>
       </div>
     </>
   );
