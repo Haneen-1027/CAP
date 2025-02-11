@@ -19,48 +19,54 @@ export default function UpdateAssessment({ darkMode }) {
     questions_count: 5,
     questions: [
       {
-        id: "Id0",
-        type: "mc",
+        question: {
+          id: "Id0What does HTML stand for?",
+          type: "mc",
+          prompt: "What does HTML stand for?",
+          category: "HTML",
+          detailes: {
+            isTrueFalse: false,
+            correctAnswer: "HyperText Markup Language",
+            wrongOptions: [
+              "Hyper Transfer Markup Language",
+              "HighText Machine Language",
+              "Hyperlink and Text Markup Language",
+            ],
+          },
+        },
         mark: 5.0,
-        prompt: "What does HTML stand for?",
-        category: "HTML",
-        detailes: {
-          isTrueFalse: false,
-          correctAnswer: "HyperText Markup Language",
-          wrongOptions: [
-            "Hyper Transfer Markup Language",
-            "HighText Machine Language",
-            "Hyperlink and Text Markup Language",
-          ],
-        },
       },
       {
-        id: "Id1",
-        type: "essay",
+        question: {
+          id: "Id1Explain the importance of CSS in modern web development.",
+          type: "essay",
+          prompt: "Explain the importance of CSS in modern web development.",
+          category: "CSS",
+          detailes: {},
+        },
         mark: 10.0,
-        prompt: "Explain the importance of CSS in modern web development.",
-        category: "CSS",
-        detailes: {},
       },
       {
-        id: "Id2",
-        type: "coding",
-        mark: 15.0,
-        prompt: "Write a JavaScript function that reverses a string.",
-        category: "JavaScript",
-        detailes: {
-          inputsCount: 1,
-          testCases: [
-            {
-              inputs: ["hello"],
-              expectedOutput: "olleh",
-            },
-            {
-              inputs: ["world"],
-              expectedOutput: "dlrow",
-            },
-          ],
+        question: {
+          id: "Id2Write a JavaScript function that reverses a string.",
+          type: "coding",
+          prompt: "Write a JavaScript function that reverses a string.",
+          category: "JavaScript",
+          detailes: {
+            inputsCount: 1,
+            testCases: [
+              {
+                inputs: ["hello"],
+                expectedOutput: "olleh",
+              },
+              {
+                inputs: ["world"],
+                expectedOutput: "dlrow",
+              },
+            ],
+          },
         },
+        mark: 15.0,
       },
     ],
   };
@@ -195,10 +201,10 @@ export default function UpdateAssessment({ darkMode }) {
                 </tr>
               </thead>
               <tbody className="table-border-bottom-0">
-                {assessment.questions.map((question, index) => (
+                {assessment.questions.map((q, index) => (
                   <tr key={index}>
                     <td>{index < 9 ? "0" + (index + 1) : index + 1}.</td>
-                    <td className="text-start">{question.category}</td>
+                    <td className="text-start">{q.question.category}</td>
                     <td
                       className="text-start text-truncate"
                       style={{
@@ -206,23 +212,23 @@ export default function UpdateAssessment({ darkMode }) {
                       }}
                     >
                       <strong className="text-truncate">
-                        {question.prompt}
+                        {q.question.prompt}
                       </strong>
                     </td>
                     <td className="text-start">
-                      {question.type
-                        ? question.type === "mc"
-                          ? question.detailes.isTrueFalse === true
+                      {q.question.type
+                        ? q.question.type === "mc"
+                          ? q.question.detailes.isTrueFalse === true
                             ? "True/False"
                             : "Multiple Choice"
-                          : question.type === "essay"
+                          : q.question.type === "essay"
                           ? "Essay"
-                          : question.type === "coding"
+                          : q.question.type === "coding"
                           ? "Coding"
                           : "Not-valid type"
                         : "There is no Type"}
                     </td>
-                    <td className="text-start">{question.mark}</td>
+                    <td className="text-start">{q.mark}</td>
                   </tr>
                 ))}
                 <tr className="">
@@ -250,9 +256,10 @@ export default function UpdateAssessment({ darkMode }) {
                 state={{
                   data: {
                     ...assessment,
-                    ["questions_ids"]: assessment.questions.map(
-                      (question, index) => question.id
-                    ),
+                    ["questions_ids"]: assessment.questions.map((q, index) => ({
+                      id: q.question.id,
+                      mark: q.mark,
+                    })),
                   },
                 }}
                 className="btn btn-primary"

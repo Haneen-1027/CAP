@@ -20,11 +20,14 @@ function SearchBarContainer({ darkMode, handleSearchValue, val, placeHolder }) {
             >
               <i className="fas fa-search" />
             </span>
-            <div className="w-100" id="search-bar">
+            <div
+              className={`w-100 ${darkMode ? "dark-input " : ""}`}
+              id="search-bar"
+            >
               <input
                 onChange={(e) => handleSearchValue(e.target.value)}
                 className={`${
-                  darkMode ? "spic-dark-mode" : ""
+                  darkMode ? "spic-dark-mode " : ""
                 } form-control border-0`}
                 id="floatingInputGroup1"
                 type="search"
