@@ -9,7 +9,11 @@ function DarkModeBtnContainer({ darkMode, toggleDarkMode }) {
         className={`btn ${darkMode ? " spic-dark-mode" : ""} p-0`}
         id="mode-btn"
       >
-        <i className={`mx-2 fa-regular ${darkMode ? "fa-sun" : "fa-moon"}`}></i>
+        <i
+          className={`mx-2 ${
+            darkMode ? "fa-solid fa-sun" : "fa-regular fa-moon"
+          }`}
+        ></i>
       </button>
     </div>
   );

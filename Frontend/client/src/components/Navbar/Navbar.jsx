@@ -10,7 +10,7 @@ export default function Navbar({ values, userDetailes }) {
   let [clickOnProfile, setClickOnProfile] = useState(false);
   let [navBarOpenHandle, setNavBarOpenHandle] = useState(false);
 
-  const roles = ["Admin", "Coach"];
+  const roles = ["Admin", "Company", "Contributor"];
 
   function handaleProfileClick() {
     if (clickOnProfile) {
