@@ -246,7 +246,7 @@ export default function UpdateAssessment({ darkMode }) {
           <div className="card-header p-4 row m-0 ">
             <div className="d-flex justify-content-center align-items-center">
               <Link
-                to={`/company/assessment/update/${1234}`}
+                to={`/assessment/update/${1234}`}
                 state={{
                   data: {
                     ...assessment,

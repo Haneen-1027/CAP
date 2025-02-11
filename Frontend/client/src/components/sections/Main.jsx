@@ -26,6 +26,7 @@ import {
   CompAssessment,
   CreateAssessment,
   UpdateAssessment,
+  AssessmentOutlet,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -587,9 +588,27 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-          {/*Company Add Assessment*/}
+        </Route>
+        {/* Assessments Page */}
+        <Route
+          path="/assessment"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <AssessmentOutlet user={userDetailes} darkMode={darkMode} />
+            </Suspense>
+          }
+        >
+          {/* Add Assessment*/}
           <Route
-            path="/company/assessment/add"
+            path="/assessment/add"
             element={
               <Suspense
                 fallback={
@@ -604,9 +623,9 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-          {/*Company Update Assessment*/}
+          {/* Update Assessment*/}
           <Route
-            path="/company/assessment/update/:id"
+            path="/assessment/update/:id"
             element={
               <Suspense
                 fallback={
@@ -621,9 +640,9 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-          {/*Company view Assessment*/}
+          {/* view Assessment*/}
           <Route
-            path="/company/assessment"
+            path="/assessment/view"
             element={
               <Suspense
                 fallback={
@@ -638,9 +657,9 @@ function Main({ userDetailes, darkMode }) {
               </Suspense>
             }
           />
-          {/*Company Update Assessment*/}
+          {/* Update Assessment*/}
           <Route
-            path="/company/assessment/:id"
+            path="/assessment/:id"
             element={
               <Suspense
                 fallback={

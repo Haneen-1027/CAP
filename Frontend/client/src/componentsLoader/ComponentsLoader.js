@@ -109,17 +109,29 @@ export const UsersMain = lazy(() =>
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
+///////////////////////////////////////////////////////////
+//// Assessments Components:
+// Outlet
+export const AssessmentOutlet = lazy(() =>
+  import("../components/CompanyComponents/Assessment/AssessmentOutlet.jsx")
+);
 //Create Assessment
 export const CreateAssessment = lazy(() =>
-  import("../components/CompanyComponents/Assessment/AddAssessment/CreateAssessment.jsx")
+  import(
+    "../components/CompanyComponents/Assessment/AddAssessment/CreateAssessment.jsx"
+  )
 );
 //View Assessment
 export const CompAssessment = lazy(() =>
-  import("../components/CompanyComponents/Assessment/ViewAssessment/CompAssessment.jsx")
+  import(
+    "../components/CompanyComponents/Assessment/ViewAssessment/CompAssessment.jsx"
+  )
 );
 //Update Assessment
 export const UpdateAssessment = lazy(() =>
-  import("../components/CompanyComponents/Assessment/UpdateAssessment/UpdateAssessment.jsx")
+  import(
+    "../components/CompanyComponents/Assessment/UpdateAssessment/UpdateAssessment.jsx"
+  )
 );
 ///////////////////////////////////////////////////////////
 //// Contributer Page Components:

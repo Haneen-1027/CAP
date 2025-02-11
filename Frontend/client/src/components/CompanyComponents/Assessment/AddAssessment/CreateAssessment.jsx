@@ -192,6 +192,7 @@ export default function CreateAssessment({ darkMode }) {
             style={{
               maxWidth: "20rem",
             }}
+            title={question.prompt}
           >
             <strong className="text-truncate">{question.prompt}</strong>
           </td>

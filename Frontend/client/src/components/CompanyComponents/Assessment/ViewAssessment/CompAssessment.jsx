@@ -57,7 +57,7 @@ export default function CompAssessment({ user, darkMode }) {
             <strong>Assessments:</strong>
           </h5>
           <Link
-            to="/company/assessment/add"
+            to="/assessment/add"
             type="button"
             className={`btn btn-light btn-sm d-flex align-items-center ${
               darkMode ? " spic-dark-mode" : ""
@@ -144,7 +144,7 @@ export default function CompAssessment({ user, darkMode }) {
                 <td>
                   <div className="d-flex gap-2 justify-content-center">
                     <Link
-                      to={`/company/assessment/${1}`}
+                      to={`/assessment/${1}`}
                       className="btn btn-sm btn-outline-primary"
                       title="Edit"
                     >
