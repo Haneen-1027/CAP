@@ -401,7 +401,7 @@ export default function CreateAssessment({ darkMode }) {
                 onChange={(e) => handleAssessmentAttributes(e)}
               />
             </div>
-            <div className="p-0 form-group col-12 col-lg-6 d-flex justify-content-center justify-content-lg-end">
+            <div className="p-0 form-group col-12 col-lg-6 d-flex flex-column flex-md-row justify-content-center justify-content-lg-end">
               <div>
                 <label htmlFor="time">Date:</label>
                 <input
@@ -459,7 +459,7 @@ export default function CreateAssessment({ darkMode }) {
                 />
               </div>
             </div>
-            <div className="col-12 col-md-6 row">
+            <div className="col-12 col-md-6 row d-flex align-items-center">
               <div className="form-group col-6 d-flex flex-column ">
                 <label htmlFor="total_mark">Total Mark:</label>
                 <input
