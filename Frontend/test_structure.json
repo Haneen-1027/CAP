@@ -1,0 +1,23 @@
+{
+  "assessment_atempt": {
+    "contributor_id": "",
+    "assessment_id": "",
+    "Answers": [{ "question_id": "", "contributor_answer": "" }],
+    "submitted": true,
+    "submitted_date": ""
+  },
+  "assessment_evaluation": {
+    "assessment_atempt_id": "",
+    "evaluated_by": "",
+    "questions": [
+      {
+        "question_id": "",
+        "mark": "",
+        "contributor_answer": "",
+        "mark_gained": ""
+      }
+    ],
+    "total_mark": "",
+    "contributor_total_mark": ""
+  }
+}
