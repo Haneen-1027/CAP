@@ -129,7 +129,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
                   ? { ...question.detailes }
                   : {
                       isTrueFalse: false,
-                      correctAnswer: "",
+                      correctAnswer: [],
                       wrongOptions: [],
                     }
               }

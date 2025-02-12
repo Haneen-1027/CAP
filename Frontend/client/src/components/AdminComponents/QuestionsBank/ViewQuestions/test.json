@@ -6,7 +6,7 @@
       "category": "HTML",
       "detailes": {
         "isTrueFalse": false,
-        "correctAnswer": "HyperText Markup Language",
+        "correctAnswer": ["HyperText Markup Language"],
         "wrongOptions": [
           "Hyper Transfer Markup Language",
           "HighText Machine Language",
@@ -44,7 +44,7 @@
       "category": "CSS",
       "detailes": {
         "isTrueFalse": false,
-        "correctAnswer": "background-color",
+        "correctAnswer": ["background-color"],
         "wrongOptions": ["color", "bg-color", "background"]
       }
     },
@@ -77,7 +77,7 @@
       "category": "Bootstrap",
       "detailes": {
         "isTrueFalse": true,
-        "correctAnswer": "false",
+        "correctAnswer": ["false"],
         "wrongOptions": []
       }
     },
@@ -87,7 +87,7 @@
       "category": "Bootstrap",
       "detailes": {
         "isTrueFalse": false,
-        "correctAnswer": "container",
+        "correctAnswer": ["container"],
         "wrongOptions": ["grid", "box", "layout"]
       }
     }

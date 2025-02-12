@@ -273,7 +273,7 @@ export default function CreateAssessment({ darkMode }) {
     if (name === "questionID") {
       if (e.target.checked) {
         // Add the question with an initial mark of 0
-        selectedQuestions.push({ id: id, mark: 0 });
+        selectedQuestions.push({ id: id, mark: 1 });
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
           questions_ids: selectedQuestions,
@@ -297,6 +297,10 @@ export default function CreateAssessment({ darkMode }) {
         }));
       }
     } else if (name === "mark") {
+      let newValue = value;
+      if (value <= 0) {
+        newValue = 1;
+      }
       // Calculate the remaining total mark excluding the current question's mark
       const remainingTotalMark =
         assessment.total_mark -
@@ -308,7 +312,7 @@ export default function CreateAssessment({ darkMode }) {
         }, 0);
 
       // Ensure the new mark does not exceed the remaining total mark
-      const newMark = Math.min(parseInt(value, 10), remainingTotalMark);
+      const newMark = Math.min(parseInt(newValue, 10), remainingTotalMark);
 
       // Update the mark of the specific question
       const updatedQuestions = selectedQuestions.map((question) => {

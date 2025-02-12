@@ -3,9 +3,10 @@
     "contributor_id": "",
     "assessment_id": "",
     "Answers": [{ "question_id": "", "contributor_answer": "" }],
-    "submitted": true,
+    "submitted": false,
     "submitted_date": ""
   },
+
   "assessment_evaluation": {
     "assessment_atempt_id": "",
     "evaluated_by": "",
