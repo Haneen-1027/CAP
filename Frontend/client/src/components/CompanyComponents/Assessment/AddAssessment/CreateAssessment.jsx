@@ -227,13 +227,36 @@ export default function CreateAssessment({ darkMode }) {
             />
           </td>
           <td className="text-start">
+            {question.type === "mc" ? (
+              <input
+                className="form-input"
+                type="number"
+                id="options_count"
+                name="options_count"
+                title="Number of Options for Multiple Choice question."
+                disabled={!isChecked}
+                onChange={(e) =>
+                  selectQuestion(e, questionId, question.detailes)
+                }
+                value={
+                  isChecked
+                    ? assessment.questions_ids.find((q) => q.id === questionId)
+                        ?.options_count || 0
+                    : ""
+                }
+              />
+            ) : (
+              "Not Supported"
+            )}
+          </td>
+          <td className="text-start">
             <input
               className="form-check-input"
               type="checkbox"
               defaultValue
               id="questionID"
               name="questionID"
-              onChange={(e) => selectQuestion(e, questionId, question.mark)}
+              onChange={(e) => selectQuestion(e, questionId, question.detailes)}
               checked={isChecked}
               disabled={isDisabled}
               title="Add this question to assessment"
@@ -266,14 +289,19 @@ export default function CreateAssessment({ darkMode }) {
     }
   }
   // Handle the selecting of new question
-  function selectQuestion(e, id, mark = 0) {
+  function selectQuestion(e, id, q) {
     const { name, value } = e.target;
     const selectedQuestions = [...assessment.questions_ids];
 
     if (name === "questionID") {
       if (e.target.checked) {
         // Add the question with an initial mark of 0
-        selectedQuestions.push({ id: id, mark: 1 });
+        selectedQuestions.push({
+          id: id,
+          mark: 1,
+          options_count:
+            q.correctAnswer.length > 3 ? q.correctAnswer.length : 4,
+        });
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
           questions_ids: selectedQuestions,
@@ -326,6 +354,36 @@ export default function CreateAssessment({ darkMode }) {
         return question;
       });
 
+      setAssessment((prevAssessment) => ({
+        ...prevAssessment,
+        questions_ids: updatedQuestions,
+      }));
+    } else if (name === "options_count") {
+      console.log("qqqq:", q);
+      // Determine the correct options count
+      const correctCount = q.correctAnswer.length;
+      const wrongCount = q.wrongOptions.length;
+      const minOptionsCount = correctCount > 3 ? correctCount : 4;
+      const maxOptionsCount = correctCount + wrongCount;
+
+      let newOptionsCount = parseInt(value, 10);
+
+      // Enforce the minimum and maximum limits
+      if (newOptionsCount < minOptionsCount) {
+        newOptionsCount = minOptionsCount;
+      } else if (newOptionsCount > maxOptionsCount) {
+        newOptionsCount = maxOptionsCount;
+      }
+
+      // Update the question's options count
+      const updatedQuestions = selectedQuestions.map((question) => {
+        if (question.id === id) {
+          return { ...question, options_count: newOptionsCount };
+        }
+        return question;
+      });
+
+      // Update state
       setAssessment((prevAssessment) => ({
         ...prevAssessment,
         questions_ids: updatedQuestions,
@@ -538,7 +596,15 @@ export default function CreateAssessment({ darkMode }) {
                     Prompt
                   </th>
                   <th className="text-start">Type</th>
-                  <th className="text-start">Mark</th>
+                  <th title="Question Mark." className="text-start">
+                    Mark
+                  </th>
+                  <th
+                    title="Number of Options for Multiple Choice question."
+                    className="text-start"
+                  >
+                    Options
+                  </th>
                   <th className="text-start">Actions</th>
                 </tr>
               </thead>
