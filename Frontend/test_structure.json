@@ -4,7 +4,8 @@
     "assessment_id": "",
     "Answers": [{ "question_id": "", "contributor_answer": "" }],
     "submitted": false,
-    "submitted_date": ""
+    "started_time": "",
+    "submitted_time": ""
   },
 
   "assessment_evaluation": {

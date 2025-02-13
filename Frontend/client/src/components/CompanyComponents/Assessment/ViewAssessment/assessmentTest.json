@@ -18,7 +18,8 @@
         "detailes": {
           "isTrueFalse": false,
           "correctAnswer": "let",
-          "wrongOptions": ["var", "const", "define"]
+          "wrongOptions": ["var", "const", "define", "final", "constant"],
+          "options_count": 4
         }
       },
       {

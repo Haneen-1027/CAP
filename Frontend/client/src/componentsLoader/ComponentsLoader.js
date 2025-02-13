@@ -142,12 +142,28 @@ export const ContDashboard = lazy(() =>
 export const Assessments = lazy(() =>
   import("../components/ContributerComponents/Assessments/Assessments.jsx")
 );
-// Question related to Assessments
-export const QuestionAssessment = lazy(() =>
+
+// AttemptAssessment
+export const AttemptAssessment = lazy(() =>
   import(
-    "../components/ContributerComponents/Assessments/QuestionAssessment.jsx"
+    "../components/ContributerComponents/Assessments/AttemptAssessment/AttemptAssessment.jsx"
   )
 );
+
+// Assessment Details
+export const AssessmentDetails = lazy(() =>
+  import(
+    "../components/ContributerComponents/Assessments/AttemptAssessment/AssessmentDetails.jsx"
+  )
+);
+
+// Assessment Questions "For Contributor to attempt"
+export const AssessmentQuestions = lazy(() =>
+  import(
+    "../components/ContributerComponents/Assessments/AttemptAssessment/AssessmentQuestions.jsx"
+  )
+);
+
 // User Assessment Results
 export const UserAssessmentResults = lazy(() =>
   import(

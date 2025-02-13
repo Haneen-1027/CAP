@@ -27,6 +27,7 @@ import {
   CreateAssessment,
   UpdateAssessment,
   AssessmentOutlet,
+  AttemptAssessment,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -529,7 +530,7 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <QuestionAssessment user={userDetailes} darkMode={darkMode} />
+                <AttemptAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
