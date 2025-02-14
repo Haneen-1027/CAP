@@ -28,6 +28,7 @@ import {
   UpdateAssessment,
   AssessmentOutlet,
   AttemptAssessment,
+  SubmittedAssessment
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -586,6 +587,23 @@ function Main({ userDetailes, darkMode }) {
                 }
               >
                 <CompDashboard user={userDetailes} darkMode={darkMode} />
+              </Suspense>
+            }
+          />
+          {/* Company Correction Assessment */}
+          <Route
+            path="/company/submitted"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <SubmittedAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />
