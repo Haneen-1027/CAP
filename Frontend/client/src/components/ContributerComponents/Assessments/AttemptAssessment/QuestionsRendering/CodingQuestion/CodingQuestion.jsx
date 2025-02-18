@@ -7,10 +7,11 @@ export default function CodingQuestion({
   addQuestionAnswer,
   question,
 }) {
+  const [code, setCode] = useState("");
+
   //////
   useEffect(() => {
     console.log("Coding Question: ", question);
-    console.log("Editor Component:", Editor);
   }, []);
   //////
   return (
@@ -53,12 +54,14 @@ export default function CodingQuestion({
             </ul>
           </div>
         </div>
-
         <div className="p-2 col-8 border m-0">
+          {" "}
           <Editor
             height="400px"
             language={"python"}
             theme="vs-dark"
+            value={code}
+            onChange={(newValue) => setCode(newValue)}
             options={{
               fontSize: 14,
               minimap: { enabled: false },
