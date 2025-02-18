@@ -100,30 +100,34 @@ export default function CodingQuestion({
           style={{ backgroundColor: darkMode ? "#1E1E1E" : "#FFFF" }}
           className={`py-3 col-8 border row m-0 `}
         >
-          <div className="col-12 col-md-4">
+          <div className="col-12 col-md-4 m-0">
             <FilterableDropdown
+              darkMode={darkMode}
               items={items}
               handleFunction={handleProgrammingLanguage}
               selectedValue={language}
               noExtraOption={true}
             />
           </div>
-          <div className="col-12 my-4 p-0">
-            <Editor
-              height="400px"
-              language="python"
-              theme={darkMode ? "vs-dark" : "vs-light"}
-              value={code}
-              onChange={(newValue) => handleCodeUpdate(newValue)}
-              options={{
-                overviewRulerLanes: 0,
-                fontSize: 14,
-                minimap: { enabled: false },
-                lineNumbers: "on",
-                scrollBeyondLastLine: false,
-                wordWrap: "on",
-              }}
-            />
+          <div className="col-12 my-2">
+            <hr className="m-0 my-2" />
+            <div>
+              <Editor
+                height="400px"
+                language="python"
+                theme={darkMode ? "vs-dark" : "vs-light"}
+                value={code}
+                onChange={(newValue) => handleCodeUpdate(newValue)}
+                options={{
+                  overviewRulerLanes: 0,
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  lineNumbers: "on",
+                  scrollBeyondLastLine: false,
+                  wordWrap: "on",
+                }}
+              />
+            </div>
           </div>
           <div className="col-12 d-flex justify-content-center p-0">
             <button

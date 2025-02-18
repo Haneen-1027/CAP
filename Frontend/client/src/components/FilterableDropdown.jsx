@@ -27,24 +27,22 @@ export default function FilterableDropdown({
   }, []);
   ////////////////
   return (
-    <div className="">
-      <select
-        className="p-2"
-        style={{ width: "100%" }}
-        onChange={(e) => handleEvent(e)}
-        name={name}
-        value={selectedValue ? selectedValue : 0}
-        disabled={isDisabled}
-      >
-        {!noExtraOption ? <option value={0}>{filterType}</option> : ""}
-        {items
-          .filter((item) => item.name.toLowerCase().includes(filterText))
-          .map((item, index) => (
-            <option value={item.value} key={index} className="dropdown-item">
-              {item.name}
-            </option>
-          ))}
-      </select>
-    </div>
+    <select
+      className={`p-2 ${darkMode ? " spic-dark-mode" : ""}`}
+      style={{ width: "100%" }}
+      onChange={(e) => handleEvent(e)}
+      name={name}
+      value={selectedValue ? selectedValue : 0}
+      disabled={isDisabled}
+    >
+      {!noExtraOption ? <option value={0}>{filterType}</option> : ""}
+      {items
+        .filter((item) => item.name.toLowerCase().includes(filterText))
+        .map((item, index) => (
+          <option value={item.value} key={index} className="dropdown-item">
+            {item.name}
+          </option>
+        ))}
+    </select>
   );
 }
