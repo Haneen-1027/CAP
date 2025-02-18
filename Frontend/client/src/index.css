@@ -79,9 +79,7 @@ canvas {
 .maxHeight-inhert {
   max-height: inherit;
 }
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-}
+
 /* Shadow Section */
 .all-light-shadow {
   box-shadow: 0px 15px 5px -15px rgb(0 0 0 / 15%) !important;

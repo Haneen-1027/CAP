@@ -109,6 +109,9 @@ export const UsersMain = lazy(() =>
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
+export const SubmittedAssessment = lazy(() =>
+  import("../components/CompanyComponents/CorrectionAssessment/SubmittedAssessment.jsx")
+);
 ///////////////////////////////////////////////////////////
 //// Assessments Components:
 // Outlet

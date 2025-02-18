@@ -23,7 +23,7 @@ function Header({ darkMode, userDetailes }) {
   ];
   //
   const contNavBarValues = [
-    { id: 1, text: "Home", path: "/contributer/home" },
+    { id: 1, text: "Home", path: "/contributer/home" }, 
     { id: 2, text: "Assessments", path: "/contributer/assessments" },
     { id: 3, text: "Results", path: "/contributer/result" },
     { id: 0, text: "|", path: null },
@@ -32,7 +32,7 @@ function Header({ darkMode, userDetailes }) {
   const compNavBarValues = [
     { id: 1, text: "Home", path: "/company/home" },
     { id: 2, text: "Assessment", path: "/assessment" },
-    { id: 3, text: "Features", path: "/company/features" },
+    { id: 3, text: "Correction", path: "/company/submitted" },
     { id: 4, text: "Contact", path: "/company/contact" },
     { id: 0, text: "|", path: null },
   ];
