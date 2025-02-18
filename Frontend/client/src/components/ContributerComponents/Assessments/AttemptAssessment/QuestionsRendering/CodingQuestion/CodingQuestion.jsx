@@ -65,31 +65,33 @@ export default function CodingQuestion({
             <hr className="m-0" />
             <ul>
               {question.detailes.testCases.map((testCase, index) => {
-                return (
-                  <>
-                    <li key={index} className="my-2">
-                      Inputs:{" "}
-                      <strong>
-                        {testCase.inputs.map(
-                          (input, i) =>
-                            input +
-                            (i === testCase.inputs.length - 1 ? "" : ", ")
-                        )}
-                      </strong>{" "}
-                      - Excpected Output:{" "}
-                      <strong>
-                        {testCase.expectedOutput.map(
-                          (out, i) =>
-                            out +
-                            (i === testCase.expectedOutput.length - 1
-                              ? ""
-                              : ", ")
-                        )}
-                      </strong>
-                      .
-                    </li>
-                  </>
-                );
+                if (index < 2) {
+                  return (
+                    <>
+                      <li key={index} className="my-2">
+                        Inputs:{" "}
+                        <strong>
+                          {testCase.inputs.map(
+                            (input, i) =>
+                              input +
+                              (i === testCase.inputs.length - 1 ? "" : ", ")
+                          )}
+                        </strong>{" "}
+                        - Excpected Output:{" "}
+                        <strong>
+                          {testCase.expectedOutput.map(
+                            (out, i) =>
+                              out +
+                              (i === testCase.expectedOutput.length - 1
+                                ? ""
+                                : ", ")
+                          )}
+                        </strong>
+                        .
+                      </li>
+                    </>
+                  );
+                }
               })}
             </ul>
           </div>
