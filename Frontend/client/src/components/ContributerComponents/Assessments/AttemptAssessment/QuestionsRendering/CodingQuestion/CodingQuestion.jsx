@@ -7,7 +7,7 @@ export default function CodingQuestion({
   addQuestionAnswer,
   question,
 }) {
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState("def solution():\n\n pass");
 
   //////
   useEffect(() => {
@@ -55,14 +55,15 @@ export default function CodingQuestion({
           </div>
         </div>
         <div className="p-2 col-8 border m-0">
-          {" "}
+          <div className="text-primary mid-bold">Python:</div>
           <Editor
             height="400px"
-            language={"python"}
+            language="python"
             theme="vs-dark"
             value={code}
             onChange={(newValue) => setCode(newValue)}
             options={{
+              overviewRulerLanes: 0,
               fontSize: 14,
               minimap: { enabled: false },
               lineNumbers: "on",
