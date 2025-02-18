@@ -164,6 +164,20 @@ export const AssessmentQuestions = lazy(() =>
   )
 );
 
+// MultipleChoice "to render mc questions for contributor to answer"
+export const MultipleChoiceQuestion = lazy(() =>
+  import(
+    "../components/ContributerComponents/Assessments/AttemptAssessment/QuestionsRendering/MultipleChoice.jsx"
+  )
+);
+// Coding "to render coding questions for contributor to answer"
+export const CodingQuestion = lazy(() =>
+  import(
+    "../components/ContributerComponents/Assessments/AttemptAssessment/QuestionsRendering/CodingQuestion/CodingQuestion.jsx"
+  )
+);
+
+/////////
 // User Assessment Results
 export const UserAssessmentResults = lazy(() =>
   import(

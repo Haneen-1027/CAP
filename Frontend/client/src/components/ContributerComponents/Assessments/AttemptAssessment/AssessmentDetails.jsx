@@ -5,6 +5,7 @@ export default function AssessmentDetails({
   assessment,
   isWithinRange,
   setisWithinRange,
+  isStarted,
   setIsStarted,
 }) {
   //
@@ -33,7 +34,8 @@ export default function AssessmentDetails({
     console.log("startDateTime: ", startDateTime);
     console.log("endDateTime: ", endDateTime);
     console.log("now: ", now);
-    setisWithinRange(now >= startDateTime && now <= endDateTime);
+    if (now >= startDateTime && now <= endDateTime) setisWithinRange("yes");
+    else if (now >= endDateTime) setisWithinRange("done");
   }, [currentDateTime]); // Runs only when currentDateTime updates
   return (
     <>
@@ -115,10 +117,21 @@ export default function AssessmentDetails({
             <div className="mt-4 d-flex justify-content-center">
               <button
                 onClick={() => setIsStarted(true)}
-                disabled={!isWithinRange}
+                disabled={
+                  isWithinRange.toLowerCase() === "yet" ||
+                  isWithinRange.toLowerCase() === "done"
+                    ? true
+                    : false
+                }
                 className="btn btn-primary"
               >
-                {!isWithinRange ? "Please Wait" : "Start Assessment"}
+                {isWithinRange.toLowerCase() === "yet"
+                  ? "Please Wait"
+                  : isStarted && isWithinRange.toLowerCase() === "done"
+                  ? "Completed"
+                  : isWithinRange.toLowerCase() === "done"
+                  ? "Expired"
+                  : "Start Assessment"}
               </button>
             </div>
           </div>

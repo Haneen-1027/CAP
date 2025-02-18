@@ -1,10 +1,61 @@
 import React, { useState, useEffect } from "react";
+import {
+  CodingQuestion,
+  MultipleChoiceQuestion,
+} from "../../../../componentsLoader/ComponentsLoader";
 
-export default function AssessmentQuestions({ darkMode, questions }) {
+export default function AssessmentQuestions({
+  user,
+  darkMode,
+  assessment,
+  questions,
+}) {
+  //
+  const [assessmentAttempt, setAssessmentAttempt] = useState({
+    contributor_id: user.id,
+    assessment_id: assessment.id,
+    Answers: [],
+    submitted: false,
+    started_time: "",
+    submitted_time: "",
+  });
+
+  //
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
 
   ///////
+  function handleAttemptAttributes(e) {
+    const { name, value } = e.target;
+    setAssessmentAttempt((prevAttempt) => ({ ...prevAttempt, [name]: value }));
+  }
+  function addQuestionAnswer(option, question_id) {
+    console.log("Adding/updating answer...");
+    let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
+
+    // Find the index of the existing question in the answers array
+    const index = updatedQuestionsAnswers.findIndex(
+      (answer) => answer.question_id === question_id
+    );
+
+    if (index === -1) {
+      // If the question_id does not exist, add a new entry
+      updatedQuestionsAnswers.push({ question_id, contributor_answer: option });
+      setAssessmentAttempt((prevAttempt) => ({
+        ...prevAttempt,
+        ["Answers"]: updatedQuestionsAnswers,
+      }));
+    } else {
+      // If the question_id exists, update its answer
+      updatedQuestionsAnswers[index].contributor_answer = option;
+      setAssessmentAttempt((prevAttempt) => ({
+        ...prevAttempt,
+        ["Answers"]: updatedQuestionsAnswers,
+      }));
+    }
+  }
+
+  //
   const handleNext = () => {
     setSelectedOption(null);
     if (currentQuestionIndex < questions.length - 1) {
@@ -19,10 +70,15 @@ export default function AssessmentQuestions({ darkMode, questions }) {
     }
   };
 
+  //
   const handleSubmitAssessment = () => {
-    console.log("Submitted!");
+    console.log("Submitted! ", assessmentAttempt);
   };
 
+  /////////////
+  useEffect(() => {
+    console.log("Assessment Attempt: ", assessmentAttempt);
+  }, [assessmentAttempt]);
   //////////////
   return (
     <>
@@ -44,11 +100,25 @@ export default function AssessmentQuestions({ darkMode, questions }) {
           </div>
         </div>
         <div
-          className={`px-2 py-4 card-header ${
+          className={`px-5 py-4 card-header ${
             darkMode ? "spic-dark-mode border-light" : ""
           }`}
         >
-          {questions[currentQuestionIndex].type}
+          {questions[currentQuestionIndex].type === "mc" ? (
+            <MultipleChoiceQuestion
+              question={questions[currentQuestionIndex]}
+              darkMode={darkMode}
+              addQuestionAnswer={addQuestionAnswer}
+            />
+          ) : questions[currentQuestionIndex].type === "coding" ? (
+            <CodingQuestion
+              question={questions[currentQuestionIndex]}
+              darkMode={darkMode}
+              addQuestionAnswer={addQuestionAnswer}
+            />
+          ) : (
+            "essay"
+          )}
         </div>
         <div
           className={`p-2 d-flex justify-content-between card-header ${

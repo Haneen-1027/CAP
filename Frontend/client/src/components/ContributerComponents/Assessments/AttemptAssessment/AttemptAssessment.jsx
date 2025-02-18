@@ -8,10 +8,11 @@ import {
 export default function AttemptAssessment({ user, darkMode }) {
   // Get from API by id, or by passing by state
   const assessment = {
+    id: "Ass-512512",
     createdBy: "user112",
     name: "JavaScript Basics Quiz",
     duration: "00:45",
-    time: "2025-02-13",
+    time: "2025-02-14",
     start_time: "10:00",
     end_time: "20:45",
     total_mark: 40,
@@ -56,7 +57,7 @@ export default function AttemptAssessment({ user, darkMode }) {
   };
   // Should be handled in server side
   const [isStarted, setIsStarted] = useState(false);
-  const [isWithinRange, setisWithinRange] = useState(false);
+  const [isWithinRange, setisWithinRange] = useState("yet");
 
   //
 
@@ -72,10 +73,13 @@ export default function AttemptAssessment({ user, darkMode }) {
             isWithinRange={isWithinRange}
             setIsStarted={setIsStarted}
             setisWithinRange={setisWithinRange}
+            isStarted={isStarted}
           />
         ) : (
           <AssessmentQuestions
+            user={user}
             darkMode={darkMode}
+            assessment={assessment}
             questions={assessment.questions}
           />
         )}
