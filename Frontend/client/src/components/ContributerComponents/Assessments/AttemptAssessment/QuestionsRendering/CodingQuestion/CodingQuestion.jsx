@@ -9,16 +9,41 @@ export default function CodingQuestion({
   question,
 }) {
   const [code, setCode] = useState("def solution():\n\n pass");
+  const [isCodeEditting, setIsCodeEditting] = useState(true);
   const [language, setLanguage] = useState("python");
   const items = [
     { name: "Python", value: "python" },
     { name: "JavaScript", value: "javascript" },
-    { name: "Java", value: "java" },
   ];
 
-  function handleProgrammingLanguage(e) {
-    console.log(e.target.value);
+  ///////////
+  //
+  function handleCodeUpdate(newValue) {
+    setIsCodeEditting(true);
+    setCode(newValue);
   }
+  //
+  function handleSaveCode() {
+    addQuestionAnswer(code, question.id);
+    setIsCodeEditting(false);
+  }
+  //
+  function handleProgrammingLanguage(e) {
+    const selectedLanguage = e.target.value;
+    setLanguage(selectedLanguage);
+
+    let code = "";
+    if (selectedLanguage === "python") {
+      code = "def solution():\n    pass";
+    } else if (selectedLanguage === "javascript") {
+      code = "function solution() {\n    return;\n}";
+    } else {
+      code = "Error!!!";
+    }
+
+    setCode(code);
+  }
+
   //////
   useEffect(() => {
     console.log("Coding Question: ", question);
@@ -81,13 +106,13 @@ export default function CodingQuestion({
               noExtraOption={true}
             />
           </div>
-          <div className="col-12 mt-4 p-0">
+          <div className="col-12 my-4 p-0">
             <Editor
               height="400px"
               language="python"
               theme={darkMode ? "vs-dark" : "vs-light"}
               value={code}
-              onChange={(newValue) => setCode(newValue)}
+              onChange={(newValue) => handleCodeUpdate(newValue)}
               options={{
                 overviewRulerLanes: 0,
                 fontSize: 14,
@@ -97,6 +122,15 @@ export default function CodingQuestion({
                 wordWrap: "on",
               }}
             />
+          </div>
+          <div className="col-12 d-flex justify-content-center p-0">
+            <button
+              onClick={() => handleSaveCode()}
+              className="btn btn-primary"
+              disabled={!isCodeEditting}
+            >
+              Run & Save
+            </button>
           </div>
         </div>
       </div>
