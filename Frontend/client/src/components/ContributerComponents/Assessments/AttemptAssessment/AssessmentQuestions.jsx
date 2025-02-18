@@ -22,7 +22,6 @@ export default function AssessmentQuestions({
 
   //
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
 
   ///////
   function handleAttemptAttributes(e) {
@@ -57,14 +56,12 @@ export default function AssessmentQuestions({
 
   //
   const handleNext = () => {
-    setSelectedOption(null);
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
   };
 
   const handlePrevious = () => {
-    setSelectedOption(null);
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
@@ -117,7 +114,17 @@ export default function AssessmentQuestions({
               addQuestionAnswer={addQuestionAnswer}
             />
           ) : (
-            "essay"
+            <textarea
+              className="w-100"
+              rows={4}
+              placeholder="Answer ..."
+              onChange={(e) =>
+                addQuestionAnswer(
+                  e.target.value,
+                  questions[currentQuestionIndex].id
+                )
+              }
+            />
           )}
         </div>
         <div

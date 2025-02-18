@@ -37,7 +37,6 @@ body {
   z-index: 200 !important;
 }
 ul {
-  list-style: none;
 }
 a {
   text-decoration: none;
@@ -319,6 +318,9 @@ canvas {
 
 .table-row:hover {
   background-color: #212529;
+}
+.overflow-xAxis {
+  overflow-x: auto !important;
 }
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Typing */
