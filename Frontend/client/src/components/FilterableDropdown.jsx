@@ -8,6 +8,7 @@ export default function FilterableDropdown({
   name,
   selectedValue,
   isDisabled,
+  noExtraOption,
 }) {
   const [filterText, setFilterText] = useState("");
 
@@ -35,7 +36,7 @@ export default function FilterableDropdown({
         value={selectedValue ? selectedValue : 0}
         disabled={isDisabled}
       >
-        <option value={0}>{filterType}</option>
+        {!noExtraOption ? <option value={0}>{filterType}</option> : ""}
         {items
           .filter((item) => item.name.toLowerCase().includes(filterText))
           .map((item, index) => (
