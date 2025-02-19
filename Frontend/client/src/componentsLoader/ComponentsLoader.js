@@ -110,7 +110,9 @@ export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
 export const SubmittedAssessment = lazy(() =>
-  import("../components/CompanyComponents/CorrectionAssessment/SubmittedAssessment.jsx")
+  import(
+    "../components/CompanyComponents/CorrectionAssessment/SubmittedAssessment.jsx"
+  )
 );
 ///////////////////////////////////////////////////////////
 //// Assessments Components:
@@ -128,6 +130,16 @@ export const CreateAssessment = lazy(() =>
 export const CompAssessment = lazy(() =>
   import(
     "../components/CompanyComponents/Assessment/ViewAssessment/CompAssessment.jsx"
+  )
+);
+export const AssessmentsTableHeaders = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/ViewAssessment/viewAssessmentComponents/AssessmentsTableHeaders.jsx"
+  )
+);
+export const RenderVisibleAssessments = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/ViewAssessment/viewAssessmentComponents/RenderVisibleAssessments.jsx"
   )
 );
 //Update Assessment

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { PaginationNav } from "../../../../componentsLoader/ComponentsLoader";
-import SearchBarContainer from "../../../SearchBar";
+
+import {
+  AssessmentsTableHeaders,
+  RenderVisibleAssessments,
+} from "../../../../componentsLoader/ComponentsLoader";
 import assessments from "./assessmentTest.json";
 
 export default function CompAssessment({ user, darkMode }) {
   //////////
+  const [showSchdAssessments, setShowSchdAssessments] = useState(true);
+  const [visibleList, setVisibleList] = useState([]);
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
@@ -14,12 +19,23 @@ export default function CompAssessment({ user, darkMode }) {
   // Searching
   const [searchValue, setSearchValue] = useState("");
   let [searchResults, setSearchResults] = useState([]);
+
+  const [timeFilteration, setTimeFilteration] = useState({
+    start_date: "2024-01-01",
+    end_date: "2025-12-08",
+  });
   //////////
   // Pagination Functions
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);
   }
   function clearResults() {}
+
+  //
+  function handleDateFilter(e) {
+    const { name, value } = e.target;
+    setTimeFilteration((prevFilter) => ({ ...prevFilter, [name]: value }));
+  }
   /** ====================== Search Section ====================== **/
   function handleSearchValue(value) {
     if (value.trim() === "") {
@@ -42,8 +58,23 @@ export default function CompAssessment({ user, darkMode }) {
   }
   //////////
   useEffect(() => {
-    console.log("assessments: ", assessments);
-  }, []);
+    const currentDate = new Date().toISOString().split("T")[0]; // Get current date in "yyyy-mm-dd" format
+    if (showSchdAssessments) {
+      const visbAssessments = assessments.filter(
+        (asses) => asses.time > currentDate
+      );
+      setVisibleList(visbAssessments);
+    } else {
+      const visbAssessments = assessments.filter(
+        (asses) => asses.time < currentDate
+      );
+      setVisibleList(visbAssessments);
+    }
+  }, [showSchdAssessments]);
+
+  useEffect(() => {
+    console.log("Filteration: ", timeFilteration);
+  }, [timeFilteration]);
   /////////
   return (
     <>
@@ -54,7 +85,9 @@ export default function CompAssessment({ user, darkMode }) {
           }`}
         >
           <h5 className="text-center mb-0">
-            <strong>Assessments:</strong>
+            <strong>
+              {showSchdAssessments ? "Scheduled" : "Completed"} Assessments:
+            </strong>
           </h5>
           <Link
             to="/assessment/add"
@@ -67,103 +100,28 @@ export default function CompAssessment({ user, darkMode }) {
             Add New Assessment
           </Link>
         </div>
-        {/** Pagination */}
-        <div
-          className={`card-header row m-0 d-flex justify-content-between align-items-center ${
-            darkMode ? " spic-dark-mode" : ""
-          }`}
-        >
-          <div className="col-12 col-md-2">
-            <label className="" style={{ fontSize: "0.95rem" }}>
-              Assessments per Page:
-            </label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              value={countPerPage}
-              onChange={handleCountPerPageMenu}
-            >
-              {countPerPageValues.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-12 col-lg-4 d-flex justify-content-md-end">
-            <SearchBarContainer
-              darkMode={darkMode}
-              handleSearchValue={handleSearchValue}
-              val={searchValue}
-              placeHolder={"Search for an Assessment ..."}
-            />
-          </div>
-        </div>
-        <div
-          className={`card-header row m-0 p-3 ${
-            darkMode ? " spic-dark-mode" : ""
-          }`}
-        >
-          <div className=" d-flex justify-content-center align-items-center ">
-            <PaginationNav
-              darkMode={darkMode}
-              counts={assessmentsListCount}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-              countPerPage={countPerPage}
-            />
-          </div>
-        </div>
-        <div
-          className={`table-responsive text-nowrap ${
-            darkMode ? "spic-dark-mode" : ""
-          }`}
-        >
-          <table className="table">
-            <thead className={darkMode ? "spic-dark-mode" : "table-light"}>
-              <tr>
-                <th>#</th>
-                <th>Title</th>
-                {user.role === "Admin" ? <th>Creator</th> : ""}
-                <th>Date</th>
-                <th>Questions Number</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody className="table-border-bottom-0">
-              <tr>
-                <td>1</td>
-                <td>
-                  <strong>Angular Project</strong>
-                </td>
-                {user.role === "Admin" ? <td>Albert Cook</td> : ""}
-                <td>2025-02-06</td>
-                <td>
-                  <span className="bg-label-primary text-primary me-1">15</span>
-                </td>
-                <td>
-                  <div className="d-flex gap-2 justify-content-center">
-                    <Link
-                      to={`/assessment/${1}`}
-                      className="btn btn-sm btn-outline-primary"
-                      title="Edit"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </Link>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      title="Delete"
-                      onClick={() => deleteAssessment(1234)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <AssessmentsTableHeaders
+          darkMode={darkMode}
+          countPerPage={countPerPage}
+          handleCountPerPageMenu={handleCountPerPageMenu}
+          countPerPageValues={countPerPageValues}
+          handleSearchValue={handleSearchValue}
+          searchValue={searchValue}
+          timeFilteration={timeFilteration}
+          handleDateFilter={handleDateFilter}
+          assessmentsListCount={assessmentsListCount}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          showSchdAssessments={showSchdAssessments}
+          setShowSchdAssessments={setShowSchdAssessments}
+        />
+        <RenderVisibleAssessments
+          darkMode={darkMode}
+          assessments={visibleList}
+          role={user.role}
+          deleteAssessment={deleteAssessment}
+          timeFilteration={timeFilteration}
+        />
       </div>
     </>
   );
