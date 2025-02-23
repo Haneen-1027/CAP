@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { addNewQuestion } from "../../../../APIs/ApisHandaler";
 import {
   BackBtn,
   Coding,
@@ -48,11 +49,29 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     }));
   };
 
-  const addQuestion = (details) => {
-    setQuestion((prevQuestion) => ({
-      ...prevQuestion,
+  const addQuestion = async (details) => {
+    // setQuestion((prevQuestion) => ({
+    //   ...prevQuestion,
+    //   ["detailes"]: detailes,
+    // }));
+    const newQuestion = {
+      ...question,
       ["detailes"]: detailes,
-    }));
+    };
+    try{
+      await addNewQuestion(newQuestion).then  (
+        (response)=>{
+          console.log( `The axios response is: ${response}`)
+        }
+      ).catch((e)=>{
+        console.error(e);
+      })
+
+      
+    }catch(e){
+      console.error(e);
+    }
+    
   };
 
   ////////////////////
