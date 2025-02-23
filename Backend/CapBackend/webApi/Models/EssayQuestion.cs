@@ -1,12 +1,9 @@
 namespace webApi.Models;
 
-public class EssayQuestion
-{
-    public int Id { get; set; }
-    public int QuestionId { get; set; }
-    public string Prompt { get; set; }
-    public int WordLimit { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public Question Question { get; set; }
-}
+    public class EssayQuestion
+    {
+        public int Id { get; set; }
+        public int QuestionId { get; set; }
+        public Question Question { get; set; }
+    }
+

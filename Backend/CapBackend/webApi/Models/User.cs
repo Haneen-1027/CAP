@@ -1,4 +1,5 @@
 namespace webApi.Models;
+
 public class User
     {
         public int Id { get; set; }
@@ -10,6 +11,6 @@ public class User
         public int RoleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public bool EmailVerified { get; set; } = false;
+        public bool EmailVerified { get; set; }
         public Role Role { get; set; }
     }
