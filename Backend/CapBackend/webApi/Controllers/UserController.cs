@@ -7,7 +7,7 @@ namespace webApi.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        // Mocked list of users (replace with a database in production)
+        // Mocked list of users 
         private static readonly List<User> Users = new List<User>
         {
             new User { Id = 1, FirstName = "Mohammad", LastName = "Jury", Email = "mohammadjury@example.com", DateOfBirth = new DateTime(1990, 1, 1) },

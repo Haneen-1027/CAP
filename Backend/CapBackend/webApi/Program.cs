@@ -5,10 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using webApi.Controllers;
 using webApi.Models;
+using webApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<CAP_Context>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 { 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
