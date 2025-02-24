@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using webApi.Models;
-
 namespace webApi.Controllers
 {
     [ApiController]
@@ -17,7 +16,7 @@ namespace webApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            
+
             if (request.Username == "admin" && request.Password == "password")
             {
                 var token = _jwtTokenGenerator.GenerateToken(request.Username);

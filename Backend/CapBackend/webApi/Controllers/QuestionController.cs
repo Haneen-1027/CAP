@@ -1,18 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using webApi.Data;
 using webApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json.Serialization;
+using webApi.DTOs;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Cors;
 
 namespace webApi.Controllers
 {
     [ApiController]
     [Route("api/questions")]
+    [EnableCors("AllowOrigin")]
     public class QuestionsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -25,8 +23,8 @@ namespace webApi.Controllers
         [HttpPost("add")]
         public IActionResult AddQuestion([FromBody] AddQuestionRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.Type) || string.IsNullOrEmpty(request.Prompt) ||
-                 string.IsNullOrEmpty(request.Category) || request.Details == null)
+            if (string.IsNullOrEmpty(request.Type) || string.IsNullOrEmpty(request.Prompt) ||
+                 string.IsNullOrEmpty(request.Category)) //|| request.Details == null || request == null)
             {
                 return BadRequest(new { Message = "Invalid request. All fields are required." });
             }
@@ -37,14 +35,15 @@ namespace webApi.Controllers
                 //Mark = request.Mark,
                 Prompt = request.Prompt,
                 Category = request.Category,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             // Handle different question types
             switch (request.Type.ToLower())
             {
                 case "mc":
-                    if (!request.Details.ContainsKey("correctAnswer") || !request.Details.ContainsKey("wrongOptions"))
+                    if (request.Details == null || !request.Details.ContainsKey("correctAnswer") || !request.Details.ContainsKey("wrongOptions"))
                     {
                         return BadRequest(new { Message = "MCQ must have a correct answer and wrong options." });
                     }
@@ -53,7 +52,7 @@ namespace webApi.Controllers
                     {
                         IsTrueFalse = request.Details.ContainsKey("isTrueFalse") && (bool)request.Details["isTrueFalse"],
                         CorrectAnswer = request.Details["correctAnswer"].ToString(),
-                        WrongOptions = ((JsonElement)request.Details["wrongOptions"]).EnumerateArray().Select(x => x.GetString()).ToList()
+                        WrongOptions = ((JsonElement)request.Details["wrongOptions"]).EnumerateArray().Select(x => x.GetString() ?? string.Empty).ToList() 
                     };
                     break;
 
@@ -62,22 +61,29 @@ namespace webApi.Controllers
                     break;
 
                 case "coding":
-                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount"))
+                    if (request.Details == null || !request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount") || !request.Details.ContainsKey("description"))
                     {
-                        return BadRequest(new { Message = "Coding questions must have test cases and inputsCount." });
+                        return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
                     }
 
-                    question.CodingQuestion = new CodingQuestion
+                    var codingQuestion = new CodingQuestion
                     {
+                        
                         InputsCount = int.Parse(request.Details["inputsCount"].ToString()),
+                        Description = request.Details["description"]?.ToString() ?? string.Empty,
                         TestCases = ((JsonElement)request.Details["testCases"]).EnumerateArray()
                             .Select(tc => new TestCase
                             {
-                                Inputs = tc.GetProperty("inputs").EnumerateArray().Select(x => x.GetString()).ToList(),
-                                ExpectedOutput = tc.GetProperty("expectedOutput").GetString()
+                                Inputs = tc.GetProperty("inputs").EnumerateArray().Select(x => x.GetString() ?? string.Empty
+                                ).ToList(),
+                                ExpectedOutput = tc.GetProperty("expectedOutput").GetString() ?? string.Empty
                             }).ToList()
                     };
+
+                    question.CodingQuestion = codingQuestion;
                     break;
+
+
 
                 default:
                     return BadRequest(new { Message = "Invalid question type." });
@@ -92,7 +98,7 @@ namespace webApi.Controllers
         [HttpDelete("delete")]
         public IActionResult DeleteQuestion([FromBody] DeleteQuestionRequest request)
         {
-            if (request == null || request.QuestionId <= 0)
+            if (request.QuestionId <= 0)
             {
                 return BadRequest(new { Message = "Invalid question ID." });
             }
@@ -165,7 +171,6 @@ namespace webApi.Controllers
             });
         }
 
-
         private static object GetDetailsBasedOnType(Question q)
         {
             return q.Type.ToLower() switch
@@ -181,12 +186,14 @@ namespace webApi.Controllers
 
                 "coding" => q.CodingQuestion != null ? new
                 {
+                    description = q.CodingQuestion.Description, // Add this line
                     testCases = q.CodingQuestion.TestCases?.Select(tc => new
                     {
                         inputs = tc.Inputs,
                         expectedOutput = tc.ExpectedOutput
                     }).ToList()
                 } : new { Message = "Coding data missing" },
+
 
                 _ => new { Message = "Invalid question type." }
             };
@@ -195,7 +202,7 @@ namespace webApi.Controllers
         [HttpPost("preview-by-id")]
         public IActionResult PreviewQuestionById([FromBody] QuestionIdRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.QuestionId))
+            if (string.IsNullOrEmpty(request.QuestionId))
             {
                 return BadRequest(new { Message = "Question ID is required." });
             }
@@ -236,7 +243,7 @@ namespace webApi.Controllers
         [HttpPut("update")]
         public IActionResult UpdateQuestion([FromBody] UpdateQuestionRequest request)
         {
-            if (request == null || request.QuestionId <= 0 ||
+            if (request.QuestionId <= 0 ||
                 string.IsNullOrEmpty(request.Type) || string.IsNullOrEmpty(request.Prompt) ||
                  string.IsNullOrEmpty(request.Category) || request.Details == null)
             {
@@ -258,6 +265,7 @@ namespace webApi.Controllers
             //question.Mark = request.Mark;
             question.Prompt = request.Prompt;
             question.Category = request.Category;
+            question.UpdatedAt= DateTime.UtcNow;
 
             // Handle different question types
             switch (request.Type.ToLower())
@@ -286,9 +294,9 @@ namespace webApi.Controllers
                     break;
 
                 case "coding":
-                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount"))
+                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount") || !request.Details.ContainsKey("description"))
                     {
-                        return BadRequest(new { Message = "Coding questions must have test cases and inputsCount." });
+                        return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
                     }
 
                     if (question.CodingQuestion == null)
@@ -297,6 +305,7 @@ namespace webApi.Controllers
                     }
 
                     question.CodingQuestion.InputsCount = int.Parse(request.Details["inputsCount"].ToString());
+                    question.CodingQuestion.Description = request.Details["description"].ToString(); // Add this line
                     question.CodingQuestion.TestCases = ((JsonElement)request.Details["testCases"]).EnumerateArray()
                         .Select(tc => new TestCase
                         {
@@ -314,58 +323,6 @@ namespace webApi.Controllers
 
             return Ok(new { Message = "Question Updated", Id = question.Id });
         }
-
-
-    }
-
-    public class AddQuestionRequest
-    {
-        public string Type { get; set; }
-        //public float Mark { get; set; }
-        public string Prompt { get; set; }
-        public string Category { get; set; }
-        public Dictionary<string, object> Details { get; set; } // Handles MCQ, Coding, and Essay details dynamically
-    }
-
-
-    public class QuestionDetails
-    {
-        public bool? IsTrueFalse { get; set; }
-        public string? CorrectAnswer { get; set; }  // Nullable for essay and coding
-        public List<string>? WrongOptions { get; set; }  // Nullable for essay and coding
-        public List<TestCaseRequest>? TestCases { get; set; }  // Required only for coding
-    }
-
-
-    public class TestCaseRequest
-    {
-        public List<string> Inputs { get; set; }
-        public string ExpectedOutput { get; set; }
-    }
-
-    public class DeleteQuestionRequest
-    {
-        public int QuestionId { get; set; }
-    }
-
-    public class CategoryRequest
-    {
-        public string Category { get; set; }
-        public string Type { get; set; }  // Optional: If specified, filter by this type.
-        public int NumberOfQuestions { get; set; } = 10;  // Default to 10 per page
-        public int PageNumber { get; set; } = 1;  // Default to page 1
-    }
-
-
-
-    // Request model for PreviewQuestionById
-    public class QuestionIdRequest
-    {
-        public string QuestionId { get; set; }
-    }
-
-    public class UpdateQuestionRequest : AddQuestionRequest
-    {
-        public int QuestionId { get; set; }
+        
     }
 }

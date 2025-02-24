@@ -6,6 +6,7 @@ using System.Text;
 using webApi.Controllers;
 using webApi.Models;
 using webApi.Data;
+using Microsoft.AspNetCore.Cors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,18 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowOrigin", builder =>
+    {
+        builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
+
+
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddEndpointsApiExplorer(); // for Swagger
 builder.Services.AddSwaggerGen(); // Swagger support
@@ -54,7 +67,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("CorsPolicy");
+app.UseCors("AllowOrigin");
 app.MapControllers();
 
 app.Run();

@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace webApi.Models;
-
+namespace webApi.Models
+{
     public class Question
     {
         public int Id { get; set; }
@@ -18,7 +18,7 @@ namespace webApi.Models;
         public CodingQuestion? CodingQuestion { get; set; }
         public EssayQuestion? EssayQuestion { get; set; }
         //public List<AssessmentQuestion> AssessmentQuestions { get; set; }
-        public ICollection<Assessment> Assessments { get; set; }
-        public ICollection<AssessmentQuestion> AssessmentQuestion { get; set; }
+        public List<AssessmentQuestion> AssessmentQuestions { get; set; } = new();
+        //public ICollection<AssessmentQuestion> AssessmentQuestion { get; set; }
     }
-
+}

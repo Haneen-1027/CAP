@@ -1,5 +1,7 @@
-namespace webApi.Models;
+﻿using webApi.Models;
 
+namespace webApi.Models
+{
     public class AssessmentQuestion
     {
         public int AssessmentId { get; set; }
@@ -7,6 +9,8 @@ namespace webApi.Models;
 
         public int QuestionId { get; set; }
         public Question Question { get; set; }
+
+        public int Mark { get; set; } // Stores the mark assigned to this question in the assessment
     }
 
-
+}

@@ -1,5 +1,5 @@
-namespace webApi.Models;
-
+﻿namespace webApi.Models
+{
     public class MCQOption
     {
         public int Id { get; set; }
@@ -7,3 +7,4 @@ namespace webApi.Models;
         public string Text { get; set; }
         public bool IsCorrect { get; set; }
     }
+}

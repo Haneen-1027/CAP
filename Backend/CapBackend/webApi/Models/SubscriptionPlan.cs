@@ -1,5 +1,5 @@
-namespace webApi.Models;
-
+﻿namespace webApi.Models
+{
     public class SubscriptionPlan
     {
         public int Id { get; set; }
@@ -11,4 +11,4 @@ namespace webApi.Models;
         public DateTime UpdatedAt { get; set; }
         public ICollection<Organization> Organizations { get; set; }
     }
-
+}

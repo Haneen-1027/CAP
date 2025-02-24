@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace webApi.Models;
-
+namespace webApi.Models
+{
     public class Assessment
     {
         public int Id { get; set; }
@@ -21,10 +21,10 @@ namespace webApi.Models;
         public int TotalMark { get; set; }
 
         public int QuestionsCount { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
 
-        // Navigation property for related questions
-        //public List<AssessmentQuestion> AssessmentQuestions { get; set; }
-        public ICollection<AssessmentQuestion> AssessmentQuestion { get; set; }
-        public ICollection<Question> Questions { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public List<AssessmentQuestion> AssessmentQuestions { get; set; } = new();
     }
-
+}

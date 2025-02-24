@@ -1,7 +1,7 @@
-using System.Net;
+﻿using System.Net;
 
-namespace webApi.Models;
-
+namespace webApi.Models
+{
     public class Organization
     {
         public int Id { get; set; }
@@ -16,4 +16,4 @@ namespace webApi.Models;
         //public ICollection<Assessment> Assessments { get; set; }
         public ICollection<Recruiter> Recruiters { get; set; }
     }
-
+}

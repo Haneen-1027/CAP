@@ -1,5 +1,6 @@
-namespace webApi.Models;
-
+﻿
+namespace webApi.Models
+{
     public class MCQQuestion
     {
         public int Id { get; set; }
@@ -9,3 +10,4 @@ namespace webApi.Models;
         public string? CorrectAnswer { get; set; }
         public List<string>? WrongOptions { get; set; }
     }
+}
