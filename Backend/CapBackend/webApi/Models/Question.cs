@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace webApi.Models
+﻿namespace webApi.Models
 {
     public class Question
     {

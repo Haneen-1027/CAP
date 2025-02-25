@@ -9,7 +9,7 @@ export default function CompDashboard({ user, darkMode }) {
   // Assessment data created by the company
   const assessments = [
     { title: "JavaScript Advanced Assessment", date: "2025-02-15" },
-    { title: "React Basics Assessment", date: "2025-02-15"},
+    { title: "React Basics Assessment", date: "2025-02-15" },
     { title: "HTML & CSS Assessment", date: "2025-02-15" },
     { title: "Python Coding Challenge", date: "2025-02-15" },
     { title: "Data Structures Quiz", date: "2025-02-15" },
@@ -98,23 +98,21 @@ export default function CompDashboard({ user, darkMode }) {
               className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}
             >
               <div className=" d-flex justify-content-between">
-              <h5 className="card-title">Active Assessments</h5>
-              <Link
-                className="btn btn-primary btn-sm"
-                type="button"
-                to="/assessment/view"
-              >
-                Manage Assessments
-              </Link>
+                <h5 className="card-title">Active Assessments</h5>
+                <Link
+                  className="btn btn-primary btn-sm"
+                  type="button"
+                  to="/assessment/view"
+                >
+                  Manage Assessments
+                </Link>
               </div>
-              
+
               <ul className="list-group mt-4">
-              <li class="list-group-item active d-flex justify-content-between align-items-center border border-light">
-                <span>title</span> 
-                <span>
-                  date
-                </span>
-              </li>
+                <li class="list-group-item active d-flex justify-content-between align-items-center border border-light">
+                  <span>title</span>
+                  <span>date</span>
+                </li>
                 {assessments.slice(0, visibleCount).map((assessment, index) => (
                   <li
                     key={index}
@@ -122,11 +120,11 @@ export default function CompDashboard({ user, darkMode }) {
                       }`}
                   >
                     {assessment.title}
-                    
+
                     <span>
                       {assessment.date}
                     </span>
-                  
+
                   </li>
                 ))}
               </ul>
