@@ -5,6 +5,7 @@ using webApi.DTOs;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace webApi.Controllers
 {
@@ -19,8 +20,10 @@ namespace webApi.Controllers
         {
             _context = context;
         }
-
+        
+        [Authorize(Roles = "Admin")]
         [HttpPost("add")]
+        
         public IActionResult AddQuestion([FromBody] AddQuestionRequest request)
         {
             if (string.IsNullOrEmpty(request.Type) || string.IsNullOrEmpty(request.Prompt) ||

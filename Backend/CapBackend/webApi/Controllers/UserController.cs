@@ -2,11 +2,15 @@
 using webApi.Models;
 using Microsoft.EntityFrameworkCore;
 using webApi.Data;
+using webApi.DTOs;
+using webApi.Services;
+using BCrypt.Net;
+
 
 namespace webApi.Controllers
 {
     [ApiController]
-    [Route("api/user")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -39,11 +43,14 @@ namespace webApi.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser([FromBody] User newUser)
         {
-            if (newUser == null)
+            if (newUser == null || string.IsNullOrEmpty(newUser.Password))
             {
-                return BadRequest("User data is required.");
+                return BadRequest("User data and password are required.");
             }
 
+            // Hash the password correctly before storing it
+            newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+            
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
