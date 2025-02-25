@@ -1,73 +1,151 @@
-using Microsoft.AspNetCore.Mvc; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using webApi.Controllers;
-using webApi.Models;
 using webApi.Data;
-using Microsoft.AspNetCore.Cors;
+using webApi.Services;
+using webApi.Models;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load JWT settings
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.SecretKey))
+{
+    throw new InvalidOperationException("JWT SecretKey is missing in configuration.");
+}
+
+// Database Connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 { 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// JWT services.
 
-builder.Services.AddAuthentication(options =>
+
+
+
+
+builder.Services.AddSwaggerGen(options =>
+
+{
+
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+ 
+    // Add security definition and requirement for JWT authentication
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
-        };
+
+        Scheme = "Bearer",
+
+        BearerFormat = "JWT",
+
+        In = ParameterLocation.Header,
+
+        Name = "Authorization",
+
+        Description = "Bearer Authentication with JWT Token",
+
+        Type = SecuritySchemeType.Http
+
     });
 
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    {
+
+        {
+
+            new OpenApiSecurityScheme
+
+            {
+
+                Reference = new OpenApiReference
+
+                {
+
+                    Id = "Bearer",
+
+                    Type = ReferenceType.SecurityScheme
+
+                }
+
+            },
+
+            new List<string>()
+
+        }
+
+    });
+ 
+});
 
 
+
+
+
+
+
+
+
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
+
+// CORS Configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "AllowOrigin", builder =>
+    options.AddPolicy("AllowAll", builder =>
     {
-        builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+        builder.WithOrigins("*") // Replace with actual frontend URL
+               .AllowAnyHeader()
+               .AllowAnyMethod();
     });
 });
 
 
 
-builder.Services.AddScoped<JwtTokenGenerator>();
-builder.Services.AddEndpointsApiExplorer(); // for Swagger
-builder.Services.AddSwaggerGen(); // Swagger support
+// Register Services
+builder.Services.AddScoped<JwtTokenGenerator>(); 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen(); 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
+// Configure Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(); // Enable Swagger middleware
-    app.UseSwaggerUI(); // Enable Swagger UI
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowOrigin");
+app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
