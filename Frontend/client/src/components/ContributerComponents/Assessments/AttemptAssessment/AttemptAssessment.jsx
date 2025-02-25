@@ -12,7 +12,7 @@ export default function AttemptAssessment({ user, darkMode }) {
     createdBy: "user112",
     name: "JavaScript Basics Quiz",
     duration: "00:45",
-    time: "2025-02-18",
+    time: "2025-02-25",
     start_time: "10:00",
     end_time: "20:45",
     total_mark: 40,
