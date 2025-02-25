@@ -7,6 +7,7 @@ using webApi.Controllers;
 using webApi.Models;
 using webApi.Data;
 using Microsoft.AspNetCore.Cors;
+using webApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,9 @@ builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddEndpointsApiExplorer(); // for Swagger
 builder.Services.AddSwaggerGen(); // Swagger support
 builder.Services.AddControllers();
+// new new by haneen
+builder.Services.AddHttpClient<Judge0Service>(); // Register Judge0Service
+
 
 var app = builder.Build();
 
