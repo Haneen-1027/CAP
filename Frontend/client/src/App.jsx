@@ -12,11 +12,8 @@ function App() {
     lastName: "Admin",
     email: "Admin@gmail.com",
     bio: "Software developer with a passion for coding and learning.",
-<<<<<<< HEAD
     role: "Admin",
-=======
-    role: "Contributor",
->>>>>>> 2e7a675256e699e9efbacc1b78f1e4f83fafced6
+
   });
 
   useEffect(() => {

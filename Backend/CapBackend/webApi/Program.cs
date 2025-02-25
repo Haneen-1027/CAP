@@ -131,14 +131,11 @@ builder.Services.AddCors(options =>
 // Register Services
 builder.Services.AddScoped<JwtTokenGenerator>(); 
 builder.Services.AddControllers();
-<<<<<<< HEAD
 // new new by haneen
 builder.Services.AddHttpClient<Judge0Service>(); // Register Judge0Service
 
-=======
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen(); 
->>>>>>> 2e7a675256e699e9efbacc1b78f1e4f83fafced6
 
 var app = builder.Build();
 
