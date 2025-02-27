@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using webApi.Models;
-using Microsoft.EntityFrameworkCore;
-using webApi.Data;
-using webApi.DTOs;
-using webApi.Services;
-using BCrypt.Net;
-
+using webApi.Services.User;
 
 namespace webApi.Controllers
 {
@@ -13,84 +7,54 @@ namespace webApi.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly GetAllUsersService _getAllUsersService;
+        private readonly GetUserByIdService _getUserByIdService;
+        private readonly CreateUserService _createUserService;
+        private readonly UpdateUserService _updateUserService;
+        private readonly DeleteUserService _deleteUserService;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(
+            GetAllUsersService getAllUsersService,
+            GetUserByIdService getUserByIdService,
+            CreateUserService createUserService,
+            UpdateUserService updateUserService,
+            DeleteUserService deleteUserService)
         {
-            _context = context;
+            _getAllUsersService = getAllUsersService;
+            _getUserByIdService = getUserByIdService;
+            _createUserService = createUserService;
+            _updateUserService = updateUserService;
+            _deleteUserService = deleteUserService;
         }
 
-        // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await _context.Users.ToListAsync());
+            return await _getAllUsersService.Handle();
         }
 
-        // GET: api/User/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
+            return await _getUserByIdService.Handle(id);
         }
 
-        // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser([FromBody] User newUser)
+        public async Task<IActionResult> CreateUser([FromBody] webApi.Models.User newUser)
         {
-            if (newUser == null || string.IsNullOrEmpty(newUser.Password))
-            {
-                return BadRequest("User data and password are required.");
-            }
-
-            // Hash the password correctly before storing it
-            newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
-            
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+            return await _createUserService.Handle(newUser);
         }
 
-        // PUT: api/User/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] webApi.Models.User updatedUser)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
-            user.Email = updatedUser.Email;
-            user.DateOfBirth = updatedUser.DateOfBirth;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return await _updateUserService.Handle(id, updatedUser);
         }
 
-        // DELETE: api/User/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return await _deleteUserService.Handle(id);
         }
     }
 }

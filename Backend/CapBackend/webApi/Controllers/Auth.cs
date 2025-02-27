@@ -37,7 +37,7 @@ namespace webApi.Controllers
                 return Unauthorized(new { Message = "Invalid email or password." });
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(user.Email,"Admin");
+            var token = _jwtTokenGenerator.GenerateToken(user.Email, user .Role);
             return Ok(new { Token = token, User = new { user.Id, user.Email, user.FirstName, user.LastName } });
         }
 
