@@ -8,7 +8,7 @@ namespace CapApi.Services.Assessment
 {
     public class UpdateAssessmentService(ApplicationDbContext context) : ControllerBase
     {
-        public async Task<IActionResult> Handle(int id, UpdateAssessmentDto dto)
+        public async Task<IActionResult> Handle(int id, UpdateAssessmentDto? dto)
         {
             var assessment = await context.Assessments
                 .Include(a => a.AssessmentQuestions)
@@ -19,7 +19,7 @@ namespace CapApi.Services.Assessment
                 return NotFound(new { Message = "Assessment not found." });
             }
 
-            if (dto.QuestionsIds == null || !dto.QuestionsIds.Any())
+            if (dto?.QuestionsIds == null || !dto.QuestionsIds.Any())
             {
                 return BadRequest(new { Message = "Invalid request. Ensure all required fields are provided." });
             }

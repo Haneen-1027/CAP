@@ -36,7 +36,7 @@ namespace CapApi.Controllers
 
             foreach (var testCase in codingQuestion.TestCases)
             {
-                var result = await _judge0Service.SubmitCodeAsync(request.SourceCode, request.LanguageId, string.Join("\n", testCase.Inputs));
+                var result = await _judge0Service.SubmitCodeAsync(request.SourceCode, request.LanguageId, string.Join("\n", testCase.Inputs ?? throw new InvalidOperationException()));
 
                 testResults.Add(new TestCaseResult
                 {

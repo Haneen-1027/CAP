@@ -8,9 +8,9 @@ namespace CapApi.Services.Assessment
 {
     public class AddAssessmentService(ApplicationDbContext context) : ControllerBase
     {
-        public async Task<IActionResult> Handle([FromBody] CreateAssessmentDto dto)
+        public async Task<IActionResult> Handle([FromBody] CreateAssessmentDto? dto)
         {
-            if (dto.QuestionsIds == null || dto.QuestionsIds.Count == 0)
+            if (dto?.QuestionsIds == null || dto.QuestionsIds.Count == 0)
             {
                 return BadRequest(new { Message = "Invalid request. Ensure all required fields are provided." });
             }
