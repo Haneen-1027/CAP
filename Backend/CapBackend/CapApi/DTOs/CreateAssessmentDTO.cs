@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace CapApi.DTOs
 {
     public class CreateAssessmentDto

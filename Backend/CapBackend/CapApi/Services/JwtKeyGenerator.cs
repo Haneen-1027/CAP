@@ -9,7 +9,8 @@ namespace CapApi.Services
 {
     public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings)
     {
-        private readonly JwtSettings _jwtSettings = jwtSettings.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
+        private readonly JwtSettings _jwtSettings =
+            jwtSettings.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
 
         public string GenerateToken(string? email, string? role)
         {
@@ -25,7 +26,8 @@ namespace CapApi.Services
                 Expires = DateTime.UtcNow.AddHours(2),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

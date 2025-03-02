@@ -10,8 +10,8 @@ namespace CapApi.Models
         public int AddressId { get; set; }
         public string? ContactEmail { get; set; }
         public int SubscriptionPlanId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public SubscriptionPlan? SubscriptionPlan { get; set; }
         public ICollection<Recruiter>? Recruiters { get; set; }
     }

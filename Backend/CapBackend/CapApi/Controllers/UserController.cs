@@ -28,7 +28,7 @@ namespace CapApi.Controllers
             return await _getAllUsersService.Handle();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUserById")]
         public async Task<IActionResult> GetUserById(int id)
         {
             return await _getUserByIdService.Handle(id);

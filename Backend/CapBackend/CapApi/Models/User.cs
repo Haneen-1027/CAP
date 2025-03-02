@@ -6,6 +6,8 @@ namespace CapApi.Models
     {
         public int Id { get; init; }
         [MaxLength(100)]
+        public string? Username { get; set; }
+        [MaxLength(100)]
         public string? FirstName { get; set; }
         [MaxLength(100)]
         public string? LastName { get; set; }
@@ -16,7 +18,7 @@ namespace CapApi.Models
         [MaxLength(100)]
         public string? Password { get; set; } 
         public DateTime DateOfBirth { get; set; }
-        public DateTime CreatedAt { get; init; }
-        public DateTime UpdatedAt { get; init; }
+        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

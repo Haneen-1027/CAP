@@ -11,5 +11,7 @@ public class McqQuestion
     public bool? IsTrueFalse { get; set; }
     [MaxLength(100)]
     public string? CorrectAnswer { get; set; }
-    public List<string> WrongOptions { get; set; }
+    public DateTime? CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+    public List<string?>? WrongOptions { get; set; }
 }

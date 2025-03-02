@@ -30,7 +30,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSwaggerGen(options =>
 
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Cap Api", Version = "v1" });
 
     // Add security definition and requirement for JWT authentication
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
