@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
 using CapApi.Services;
+using CapApi.DTOs;
 using Microsoft.AspNetCore.Cors;
 
 namespace CapApi.Controllers
@@ -19,74 +20,6 @@ namespace CapApi.Controllers
             _judge0Service = judge0Service;
             _context = context;
         }
-
-        //    [HttpPost("execute/{questionId}")]
-        //    public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionRequest request)
-        //    {
-        //        var codingQuestion = await _context.CodingQuestions
-        //            .Include(q => q.TestCases)
-        //            .FirstOrDefaultAsync(q => q.QuestionId == questionId);
-
-        //        if (codingQuestion == null)
-        //        {
-        //            return NotFound(new { message = "Question not found" });
-        //        }
-
-        //        var testResults = new List<TestCaseResult>();
-
-        //        foreach (var testCase in codingQuestion.TestCases)
-        //        {
-        //            //var result = await _judge0Service.SubmitCodeAsync(request.SourceCode, request.LanguageId, string.Join("\n", testCase.Inputs));
-
-        //            var result = await _judge0Service.SubmitCodeAsync(request.SourceCode, request.LanguageId, string.Join(" ", testCase.Inputs));
-
-
-        //            testResults.Add(new TestCaseResult
-        //            {
-        //                Inputs = testCase.Inputs,
-        //                ExpectedOutput = testCase.ExpectedOutput,
-        //                ActualOutput = result
-        //            });
-        //        }
-
-        //        return Ok(testResults);
-        //    }
-        //
-
-
-        //[HttpPost("execute/{questionId}")]
-        //public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionRequest request)
-        //{
-        //    var codingQuestion = await _context.CodingQuestions
-        //        .Include(q => q.TestCases)
-        //        .FirstOrDefaultAsync(q => q.QuestionId == questionId);
-
-        //    if (codingQuestion == null)
-        //    {
-        //        return NotFound(new { message = "Question not found" });
-        //    }
-
-        //    var testResults = new List<TestCaseResult>();
-
-        //    foreach (var testCase in codingQuestion.TestCases)
-        //    {
-        //        // Prepare the input for the user's code
-        //        var input = string.Join(" ", testCase.Inputs);
-
-        //        // Execute the user's code with the test case input
-        //        var result = await _judge0Service.SubmitCodeAsync(request.SourceCode, request.LanguageId, input);
-
-        //        // Compare the actual output with the expected output
-        //        testResults.Add(new TestCaseResult
-        //        {
-        //            Inputs = testCase.Inputs,
-        //            ExpectedOutput = testCase.ExpectedOutput,
-        //            ActualOutput = result
-        //        });
-        //    }
-
-        //    return Ok(testResults);
-        //}
 
 
         [HttpPost("execute/{questionId}")]
@@ -123,21 +56,6 @@ namespace CapApi.Controllers
 
             return Ok(testResults);
         }
-
-
-
-        //private string WrapUserCode(string userCode, List<string> inputs, int languageId)
-        //{
-        //    // Extract the function name (assumes the user writes a single function)
-        //    string functionName = ExtractFunctionName(userCode);
-
-        //    // Generate the input handling logic dynamically
-        //    string inputHandling = GenerateInputHandling(inputs.Count, functionName);
-
-        //    // Combine the user's code with the input handling logic
-        //    Console.WriteLine($"{userCode}\n{inputHandling}");
-        //    return $"{userCode}\n{inputHandling}";
-        //}
 
         private string WrapUserCode(string userCode, List<string> inputs, int languageId)
         {
@@ -188,16 +106,6 @@ process.stdin.on('end', () => {{
 }});
 ";
         }
-        //private string ExtractFunctionName(string userCode)
-        //{
-        //    // Simple regex to extract the function name (e.g., "def add(a, b):" -> "add")
-        //    var match = System.Text.RegularExpressions.Regex.Match(userCode, @"def\s+(\w+)\s*\(");
-        //    if (match.Success)
-        //    {
-        //        return match.Groups[1].Value;
-        //    }
-        //    throw new ArgumentException("Function definition not found in the user's code.");
-        //}
 
         private string ExtractFunctionName(string userCode)
         {
@@ -235,16 +143,4 @@ if __name__ == '__main__':
 
     }
 
-    public class CodeExecutionRequest
-    {
-        public string? SourceCode { get; set; }
-        public int LanguageId { get; set; }
-    }
-
-    public class TestCaseResult
-    {
-        public List<string>? Inputs { get; set; }
-        public string? ExpectedOutput { get; set; }
-        public string? ActualOutput { get; set; }
-    }
 }
