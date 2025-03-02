@@ -18,26 +18,8 @@ namespace CapApi.Services
             _httpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", apiKey);
         }
 
+        public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
 
-        //public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
-        //{
-        //    var requestBody = new
-        //    {
-        //        source_code = sourceCode,
-        //        language_id = languageId,
-        //        stdin = input
-        //    };
-
-        //    var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-        //    var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true", content);
-
-        //    response.EnsureSuccessStatusCode();
-        //    return await response.Content.ReadAsStringAsync();
-        //}
-
-
-        public async Task<string> SubmitCodeAsync(string? sourceCode, int languageId, string input = "")
         {
             var requestBody = new
             {
@@ -46,15 +28,16 @@ namespace CapApi.Services
                 stdin = input
             };
 
-            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8,
-                "application/json");
-
-            var response = await _httpClient.PostAsync(
-                $"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
+            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
 
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            return result;
+            var resultString = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the response to extract stdout
+            var result = JsonConvert.DeserializeObject<dynamic>(resultString);
+
+            return result.stdout?.ToString().Trim() ?? "Error: " + result.stderr?.ToString();
         }
     }
 }
