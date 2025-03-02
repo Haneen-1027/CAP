@@ -18,8 +18,7 @@ namespace CapApi.Services
             _httpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", apiKey);
         }
 
-        public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
-
+        public async Task<(string Output, string Error)> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
         {
             var requestBody = new
             {
@@ -34,10 +33,23 @@ namespace CapApi.Services
             response.EnsureSuccessStatusCode();
             var resultString = await response.Content.ReadAsStringAsync();
 
-            // Deserialize the response to extract stdout
+            // Deserialize the response
             var result = JsonConvert.DeserializeObject<dynamic>(resultString);
 
-            return result.stdout?.ToString().Trim() ?? "Error: " + result.stderr?.ToString();
+            // Extract stdout and stderr
+            string stdout = result.stdout?.ToString().Trim() ?? "";
+            string stderr = result.stderr?.ToString().Trim() ?? "";
+            string statusDescription = result.status?.description?.ToString().Trim() ?? "";
+
+            // If there is an error, return it
+            if (!string.IsNullOrEmpty(stderr) || (statusDescription != "Accepted" && statusDescription != ""))
+            {
+                string errorMessage = $"Error: {stderr}\nStatus: {statusDescription}";
+                return (Output: "", Error: errorMessage);
+            }
+
+            // If no error, return the output
+            return (Output: stdout, Error: "");
         }
     }
 }

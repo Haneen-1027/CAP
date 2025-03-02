@@ -39,18 +39,18 @@ namespace CapApi.Controllers
             foreach (var testCase in codingQuestion.TestCases)
             {
                 // Wrap the user's function with input/output logic
-                string wrappedCode = WrapUserCode(request.SourceCode, testCase.Inputs, request.LanguageId);
+                string wrappedCode = WrapUserCode(request!.SourceCode, testCase!.Inputs, request.LanguageId);
 
 
                 // Execute the wrapped code
-                var result = await _judge0Service.SubmitCodeAsync(wrappedCode, request.LanguageId, string.Join(" ", testCase.Inputs));
-
-                // Compare the actual output with the expected output
+                //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, request.LanguageId, string.Join(" ", testCase.Inputs));
+                var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, request.LanguageId, string.Join(" ", testCase.Inputs));                // Compare the actual output with the expected output
                 testResults.Add(new TestCaseResult
                 {
                     Inputs = testCase.Inputs,
                     ExpectedOutput = testCase.ExpectedOutput,
-                    ActualOutput = result
+                    ActualOutput = output,
+                    Error = error
                 });
             }
 
