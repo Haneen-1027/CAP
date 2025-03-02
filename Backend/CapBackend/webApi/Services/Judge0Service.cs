@@ -25,6 +25,7 @@ namespace webApi.Services
         }
 
 
+
         //public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
         //{
         //    var requestBody = new
@@ -36,12 +37,12 @@ namespace webApi.Services
 
         //    var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
 
-        //    var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true", content);
+        //    var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
 
         //    response.EnsureSuccessStatusCode();
-        //    return await response.Content.ReadAsStringAsync();
+        //    var result = await response.Content.ReadAsStringAsync();
+        //    return result;
         //}
-
 
 
         public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
@@ -54,12 +55,15 @@ namespace webApi.Services
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
             var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
 
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            return result;
+            var resultString = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the response to extract stdout
+            var result = JsonConvert.DeserializeObject<dynamic>(resultString);
+
+            return result.stdout?.ToString().Trim() ?? "Error: " + result.stderr?.ToString();
         }
 
     }
