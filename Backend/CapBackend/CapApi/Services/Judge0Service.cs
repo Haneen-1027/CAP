@@ -18,27 +18,6 @@ namespace CapApi.Services
             _httpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", apiKey);
         }
 
-
-
-        //public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
-        //{
-        //    var requestBody = new
-        //    {
-        //        source_code = sourceCode,
-        //        language_id = languageId,
-        //        stdin = input
-        //    };
-
-        //    var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-        //    var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
-
-        //    response.EnsureSuccessStatusCode();
-        //    var result = await response.Content.ReadAsStringAsync();
-        //    return result;
-        //}
-
-
         public async Task<string> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
 
         {
