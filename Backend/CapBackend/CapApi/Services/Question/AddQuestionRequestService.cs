@@ -8,10 +8,10 @@ namespace CapApi.Services.Question
 {
     public class AddQuestionRequestService(ApplicationDbContext context) : ControllerBase
     {
-        public Task<IActionResult> Handle(AddQuestionRequest request)
+        public Task<IActionResult> Handle(AddQuestionDto dto)
         {
-            if (string.IsNullOrEmpty(request.Type) || string.IsNullOrEmpty(request.Prompt) ||
-                string.IsNullOrEmpty(request.Category))
+            if (string.IsNullOrEmpty(dto.Type) || string.IsNullOrEmpty(dto.Prompt) ||
+                string.IsNullOrEmpty(dto.Category))
             {
                 return Task.FromResult<IActionResult>(BadRequest(new
                     { Message = "Invalid request. All fields are required." }));
@@ -19,19 +19,19 @@ namespace CapApi.Services.Question
 
             var question = new Models.Question
             {
-                Type = request.Type,
-                Prompt = request.Prompt,
-                Category = request.Category,
+                Type = dto.Type,
+                Prompt = dto.Prompt,
+                Category = dto.Category,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
             // Handle different question types
-            switch (request.Type.ToLower())
+            switch (dto.Type.ToLower())
             {
                 case "mc":
-                    if (request.Details == null || !request.Details.ContainsKey("correctAnswer") ||
-                        !request.Details.TryGetValue("wrongOptions", out var value))
+                    if (dto.Details == null || !dto.Details.ContainsKey("correctAnswer") ||
+                        !dto.Details.TryGetValue("wrongOptions", out var value))
                     {
                         return Task.FromResult<IActionResult>(BadRequest(new
                             { Message = "MCQ must have a correct answer and wrong options." }));
@@ -40,8 +40,8 @@ namespace CapApi.Services.Question
                     question.McqQuestion = new McqQuestion
                     {
                         IsTrueFalse =
-                            request.Details.ContainsKey("isTrueFalse") && (bool)request.Details["isTrueFalse"],
-                        CorrectAnswer = request.Details["correctAnswer"].ToString(),
+                            dto.Details.ContainsKey("isTrueFalse") && (bool)dto.Details["isTrueFalse"],
+                        CorrectAnswer = dto.Details["correctAnswer"].ToString(),
                         WrongOptions = ((JsonElement)value).EnumerateArray().Select(x => x.GetString() ?? string.Empty)
                             .ToList()
                     };
@@ -52,9 +52,9 @@ namespace CapApi.Services.Question
                     break;
 
                 case "coding":
-                    if (request.Details == null || !request.Details.ContainsKey("testCases") ||
-                        !request.Details.ContainsKey("inputsCount") ||
-                        !request.Details.TryGetValue("description", out var detail))
+                    if (dto.Details == null || !dto.Details.ContainsKey("testCases") ||
+                        !dto.Details.ContainsKey("inputsCount") ||
+                        !dto.Details.TryGetValue("description", out var detail))
                     {
                         return Task.FromResult<IActionResult>(BadRequest(new
                             { Message = "Coding questions must have test cases, inputsCount, and description." }));
@@ -62,9 +62,9 @@ namespace CapApi.Services.Question
 
                     var codingQuestion = new CodingQuestion
                     {
-                        InputsCount = int.Parse(request.Details["inputsCount"].ToString() ?? string.Empty),
+                        InputsCount = int.Parse(dto.Details["inputsCount"].ToString() ?? string.Empty),
                         Description = detail.ToString() ?? string.Empty,
-                        TestCases = ((JsonElement)request.Details["testCases"]).EnumerateArray()
+                        TestCases = ((JsonElement)dto.Details["testCases"]).EnumerateArray()
                             .Select(tc => new TestCase
                             {
                                 Inputs = tc.GetProperty("inputs").EnumerateArray().Select(

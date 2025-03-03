@@ -1,6 +1,6 @@
 namespace CapApi.DTOs;
 
-public class AddQuestionRequest
+public class AddQuestionDto
 {
     public string? Type { get; set; }
     public string? Prompt { get; set; }

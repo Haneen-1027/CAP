@@ -19,9 +19,9 @@ namespace CapApi.Controllers
     {
         [Authorize(Roles = "Admin")]
         [HttpPost("add")]
-        public async Task<IActionResult> AddQuestionRequest(AddQuestionRequest request)
+        public async Task<IActionResult> AddQuestionRequest(AddQuestionDto dto)
         {
-            return await addQuestionRequestService.Handle(request);
+            return await addQuestionRequestService.Handle(dto);
         }
         
         [Authorize(Roles = "Admin")]

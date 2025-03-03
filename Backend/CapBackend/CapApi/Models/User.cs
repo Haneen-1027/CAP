@@ -6,7 +6,7 @@ namespace CapApi.Models
     {
         public int Id { get; init; }
         [MaxLength(100)]
-        public string? Username { get; set; }
+        public string? Username { get; init; }
         [MaxLength(100)]
         public string? FirstName { get; set; }
         [MaxLength(100)]
