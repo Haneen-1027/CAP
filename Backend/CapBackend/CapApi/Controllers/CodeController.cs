@@ -10,12 +10,22 @@ namespace CapApi.Controllers
     [ApiController]
     [Route("[controller]")]
     [EnableCors("AllowOrigin")]
-    public class CodeController(Judge0Service judge0Service, ApplicationDbContext context) : ControllerBase
+    public class CodeController : ControllerBase
     {
+        private readonly Judge0Service _judge0Service;
+        private readonly ApplicationDbContext _context;
+
+        public CodeController(Judge0Service judge0Service, ApplicationDbContext context)
+        {
+            _judge0Service = judge0Service;
+            _context = context;
+        }
+
+
         [HttpPost("execute/{questionId}")]
         public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
         {
-            var codingQuestion = await context.CodingQuestions
+            var codingQuestion = await _context.CodingQuestions
                 .Include(q => q.TestCases)
                 .FirstOrDefaultAsync(q => q.QuestionId == questionId);
 
@@ -34,9 +44,7 @@ namespace CapApi.Controllers
 
                 // Execute the wrapped code
                 //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
-                var (output, error) =
-                    await judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
-                        string.Join(" ", testCase.Inputs)); // Compare the actual output with the expected output
+                var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));                // Compare the actual output with the expected output
                 testResults.Add(new TestCaseResultDto
                 {
                     Inputs = testCase.Inputs,
@@ -131,5 +139,8 @@ if __name__ == '__main__':
     print({functionName}({inputVariables}))
 ";
         }
+
+
     }
+
 }
