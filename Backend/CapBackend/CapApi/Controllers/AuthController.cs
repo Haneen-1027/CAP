@@ -11,7 +11,7 @@ namespace CapApi.Controllers
     [ApiController]
     [Route("[controller]")]
     [EnableCors("AllowOrigin")]
-    public class Auth(JwtTokenGenerator jwtTokenGenerator, ApplicationDbContext context)
+    public class AuthController(JwtTokenGenerator jwtTokenGenerator, ApplicationDbContext context)
         : ControllerBase
     {
         [HttpPost("signup")]
@@ -71,9 +71,9 @@ namespace CapApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            if (string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
             {
                 return BadRequest(new { Message = "Email and password are required." });
             }
@@ -81,8 +81,8 @@ namespace CapApi.Controllers
             await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                var user = await context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+                if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 {
                     return Unauthorized(new { Message = "Invalid email or password." });
                 }

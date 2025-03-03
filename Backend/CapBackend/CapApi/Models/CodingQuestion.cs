@@ -11,6 +11,6 @@ namespace CapApi.Models
         [MaxLength(100)]
         public string? Description { get; set; }
         public Question? Question { get; init; }
-        public List<TestCase> TestCases { get; set; } = [];
+        public List<TestCase?> TestCases { get; set; } = [];
     }
 }

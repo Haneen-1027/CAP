@@ -23,7 +23,7 @@ namespace CapApi.Controllers
 
 
         [HttpPost("execute/{questionId}")]
-        public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionRequest request)
+        public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
         {
             var codingQuestion = await _context.CodingQuestions
                 .Include(q => q.TestCases)
@@ -34,18 +34,18 @@ namespace CapApi.Controllers
                 return NotFound(new { message = "Question not found" });
             }
 
-            var testResults = new List<TestCaseResult>();
+            var testResults = new List<TestCaseResultDto>();
 
             foreach (var testCase in codingQuestion.TestCases)
             {
                 // Wrap the user's function with input/output logic
-                string wrappedCode = WrapUserCode(request!.SourceCode, testCase!.Inputs, request.LanguageId);
+                string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId);
 
 
                 // Execute the wrapped code
-                //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, request.LanguageId, string.Join(" ", testCase.Inputs));
-                var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, request.LanguageId, string.Join(" ", testCase.Inputs));                // Compare the actual output with the expected output
-                testResults.Add(new TestCaseResult
+                //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
+                var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));                // Compare the actual output with the expected output
+                testResults.Add(new TestCaseResultDto
                 {
                     Inputs = testCase.Inputs,
                     ExpectedOutput = testCase.ExpectedOutput,

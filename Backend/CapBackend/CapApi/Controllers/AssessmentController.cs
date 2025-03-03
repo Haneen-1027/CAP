@@ -19,7 +19,7 @@ public class AssessmentController(
 {
     //[Authorize(Roles = "Admin")]
     [HttpPost("add")]
-    public async Task<IActionResult> AddAssessment(CreateAssessmentDto? dto)
+    public async Task<IActionResult> AddAssessment(AddAssessmentDto? dto)
     {
         return await addAssessmentService.Handle(dto);
     }

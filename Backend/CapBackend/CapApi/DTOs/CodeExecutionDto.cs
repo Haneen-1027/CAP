@@ -1,6 +1,6 @@
 ﻿namespace CapApi.DTOs
 {
-    public class CodeExecutionRequest
+    public class CodeExecutionDto
     {
         public string? SourceCode { get; set; }
         public int LanguageId { get; set; }

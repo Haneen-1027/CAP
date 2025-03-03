@@ -1,6 +1,6 @@
 ﻿namespace CapApi.DTOs
 {
-    public class TestCaseResult
+    public class TestCaseResultDto
     {
         public List<string>? Inputs { get; set; }
         public string? ExpectedOutput { get; set; }

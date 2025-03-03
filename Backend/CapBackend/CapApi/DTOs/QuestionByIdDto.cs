@@ -1,6 +1,6 @@
 namespace CapApi.DTOs;
 
-public class QuestionIdRequest
+public class QuestionByIdDto
 {
     public string? QuestionId { get; set; }
 }

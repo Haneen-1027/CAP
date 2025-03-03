@@ -1,6 +1,6 @@
 namespace CapApi.DTOs
 {
-    public class CreateAssessmentDto
+    public class AddAssessmentDto
     {
         public string? Name { get; set; }
         public string? Duration { get; set; }

@@ -71,8 +71,8 @@ builder.Services.AddScoped<DeleteUserService>();
 // Register Question services
 builder.Services.AddScoped<AddQuestionRequestService>();
 builder.Services.AddScoped<DeleteQuestionService>();
-builder.Services.AddScoped<PreviewByCategoryService>();
-builder.Services.AddScoped<PreviewByIdService>();
+builder.Services.AddScoped<QuestionByCategoryService>();
+builder.Services.AddScoped<QuestionByIdService>();
 builder.Services.AddScoped<UpdateQuestionService>();
 
 // Register Question services

@@ -4,39 +4,39 @@ using CapApi.DTOs;
 
 namespace CapApi.Services.Question
 {
-    public class PreviewByCategoryService(ApplicationDbContext context) : ControllerBase
+    public class QuestionByCategoryService(ApplicationDbContext context) : ControllerBase
     {
-        public Task<IActionResult> Handle(CategoryRequest request)
+        public Task<IActionResult> Handle(QuestionByCategoryDto dto)
         {
             IQueryable<Models.Question> query = context.Questions;
 
             // Apply category filter if provided
-            if (!string.IsNullOrEmpty(request.Category))
+            if (!string.IsNullOrEmpty(dto.Category))
             {
-                query = query.Where(q => q.Category == request.Category);
+                query = query.Where(q => q.Category == dto.Category);
             }
 
             // Apply type filter if provided
-            if (!string.IsNullOrEmpty(request.Type))
+            if (!string.IsNullOrEmpty(dto.Type))
             {
-                query = query.Where(q => q.Type == request.Type);
+                query = query.Where(q => q.Type == dto.Type);
             }
 
             // Count total questions in category (ignores type filter)
-            var totalCategoryQuestions = string.IsNullOrEmpty(request.Category)
+            var totalCategoryQuestions = string.IsNullOrEmpty(dto.Category)
                 ? context.Questions.Count()
-                : context.Questions.Count(q => q.Category == request.Category);
+                : context.Questions.Count(q => q.Category == dto.Category);
 
             // Count total questions in type (ignores category filter)
-            var totalTypeQuestions = string.IsNullOrEmpty(request.Type)
+            var totalTypeQuestions = string.IsNullOrEmpty(dto.Type)
                 ? context.Questions.Count()
-                : context.Questions.Count(q => q.Type == request.Type);
+                : context.Questions.Count(q => q.Type == dto.Type);
 
             // Apply pagination
             var questions = query
                 .OrderBy(q => q.Id) // Ensure consistent ordering
-                .Skip((request.PageNumber - 1) * request.NumberOfQuestions)
-                .Take(request.NumberOfQuestions)
+                .Skip((dto.PageNumber - 1) * dto.NumberOfQuestions)
+                .Take(dto.NumberOfQuestions)
                 .Select(q => new
                 {
                     type = q.Type,

@@ -41,7 +41,7 @@ namespace CapApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User? updatedUser)
         {
             return await _updateUserService.Handle(id, updatedUser);
         }

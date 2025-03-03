@@ -1,6 +1,6 @@
 namespace CapApi.DTOs;
 
-public class CategoryRequest
+public class QuestionByCategoryDto
 {
     public string? Category { get; set; }
     public string? Type { get; set; }  // Optional: If specified, filter by this type.

@@ -4,25 +4,57 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment
 {
-    public class DeleteAssessmentService(ApplicationDbContext context) : ControllerBase
+    public class DeleteAssessmentService(ApplicationDbContext context, ILogger<DeleteAssessmentService> logger)
     {
+        private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+        private readonly ILogger<DeleteAssessmentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        // Constructor for dependency injection
+
         public async Task<IActionResult> Handle(int id)
         {
-            var assessment = await context.Assessments
-                .Include(a => a.AssessmentQuestions)
-                .FirstOrDefaultAsync(a => a.Id == id);
-
-            if (assessment == null)
+            if (id <= 0)
             {
-                return NotFound(new { Message = "Assessment not found." });
+                _logger.LogWarning("Invalid assessment ID provided: {Id}", id);
+                return new BadRequestObjectResult(new { Message = "Invalid assessment ID. It must be greater than zero." });
             }
 
-            context.AssessmentQuestions.RemoveRange(assessment.AssessmentQuestions);
-            context.Assessments.Remove(assessment);
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Retrieve the assessment with related questions
+                var assessment = await _context.Assessments
+                    .Include(a => a.AssessmentQuestions)
+                    .FirstOrDefaultAsync(a => a.Id == id);
 
-            await context.SaveChangesAsync();
+                if (assessment == null)
+                {
+                    _logger.LogWarning("Assessment with ID {Id} not found.", id);
+                    return new NotFoundObjectResult(new { Message = "Assessment not found." });
+                }
 
-            return Ok(new { Message = "Assessment deleted successfully." });
+                // Remove related questions first
+                if (assessment.AssessmentQuestions.Any())
+                {
+                    _context.AssessmentQuestions.RemoveRange(assessment.AssessmentQuestions);
+                }
+
+                // Remove the assessment
+                _context.Assessments.Remove(assessment);
+
+                // Save changes
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                _logger.LogInformation("Assessment with ID {Id} deleted successfully.", id);
+                return new OkObjectResult(new { Message = "Assessment deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); // Rollback transaction in case of failure
+                _logger.LogError(ex, "An error occurred while deleting assessment with ID {Id}.", id);
+                return new ObjectResult(new { Message = "An internal error occurred while deleting the assessment." }) { StatusCode = 500 };
+            }
         }
     }
 }

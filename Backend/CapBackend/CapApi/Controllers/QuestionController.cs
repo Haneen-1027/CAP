@@ -12,8 +12,8 @@ namespace CapApi.Controllers
     public class QuestionsController(
         AddQuestionRequestService addQuestionRequestService,
         DeleteQuestionService deleteQuestionService,
-        PreviewByCategoryService previewByCategoryService,
-        PreviewByIdService previewByIdService,
+        QuestionByCategoryService questionByCategoryService,
+        QuestionByIdService questionByIdService,
         UpdateQuestionService updateQuestionService)
         : ControllerBase
     {
@@ -34,21 +34,21 @@ namespace CapApi.Controllers
         
         //[Authorize(Roles = "Admin")]
         [HttpPost("preview-by-category")]
-        public async Task<IActionResult> PreviewByCategory(CategoryRequest request)
+        public async Task<IActionResult> PreviewByCategory(QuestionByCategoryDto dto)
         {
-            return await previewByCategoryService.Handle(request);
+            return await questionByCategoryService.Handle(dto);
         }
         
         //[Authorize(Roles = "Admin")]
         [HttpPost("preview-by-id")]
-        public async Task<IActionResult> PreviewById(QuestionIdRequest request)
+        public async Task<IActionResult> PreviewById(QuestionByIdDto? dto)
         {
-            return await previewByIdService.Handle(request);
+            return await questionByIdService.Handle(dto);
         }
         
         //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuestion(int id, UpdateQuestionRequest updatedQuestion)
+        public async Task<IActionResult> UpdateQuestion(int id, UpdateQuestionDto? updatedQuestion)
         {
             return await updateQuestionService.Handle(id, updatedQuestion);
         }
