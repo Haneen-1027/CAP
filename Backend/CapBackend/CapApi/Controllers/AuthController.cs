@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Cors;
 namespace CapApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("auth")]
     [EnableCors("AllowOrigin")]
     public class AuthController(JwtTokenGenerator jwtTokenGenerator, ApplicationDbContext context)
         : ControllerBase
@@ -19,7 +19,7 @@ namespace CapApi.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
@@ -34,9 +34,13 @@ namespace CapApi.Controllers
                     return Conflict(new { Message = "Email is already taken." });
 
                 // Validate password strength
-                if (dto.Password != null && (dto.Password is { Length: < 8 } || !dto.Password.Any(char.IsDigit) || !dto.Password.Any(char.IsLetter)))
+                if (dto.Password != null && (dto.Password is { Length: < 8 } || !dto.Password.Any(char.IsDigit) ||
+                                             !dto.Password.Any(char.IsLetter)))
                 {
-                    return BadRequest(new { Message = "Password must be at least 8 characters long and contain both letters and numbers." });
+                    return BadRequest(new
+                    {
+                        Message = "Password must be at least 8 characters long and contain both letters and numbers."
+                    });
                 }
 
                 // Hash the password
@@ -57,7 +61,7 @@ namespace CapApi.Controllers
 
                 context.Users.Add(newUser);
                 await context.SaveChangesAsync();
-                
+
                 await transaction.CommitAsync();
 
                 return CreatedAtAction(nameof(SignUp), new { id = newUser.Id },
@@ -86,11 +90,11 @@ namespace CapApi.Controllers
                 {
                     return Unauthorized(new { Message = "Invalid email or password." });
                 }
-                
+
                 var token = jwtTokenGenerator.GenerateToken(user.Email, user.Role);
-                
+
                 await transaction.CommitAsync();
-                
+
                 return Ok(new
                 {
                     Token = token,

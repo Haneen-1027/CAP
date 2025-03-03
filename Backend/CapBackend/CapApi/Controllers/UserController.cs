@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CapApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("users")]
     [EnableCors("AllowOrigin")]
     public class UserController(
         GetAllUsersService getAllUsersService,
@@ -16,40 +16,80 @@ namespace CapApi.Controllers
         DeleteUserService deleteUserService)
         : ControllerBase
     {
-        private readonly GetAllUsersService _getAllUsersService = getAllUsersService;
-        private readonly GetUserByIdService _getUserByIdService = getUserByIdService;
-        private readonly CreateUserService _createUserService = createUserService;
-        private readonly UpdateUserService _updateUserService = updateUserService;
-        private readonly DeleteUserService _deleteUserService = deleteUserService;
-
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            return await _getAllUsersService.Handle();
+            try
+            {
+                return await getAllUsersService.Handle();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while retrieving users.", Error = ex.Message });
+            }
         }
 
-        [HttpGet("{id}", Name = "GetUserById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            return await _getUserByIdService.Handle(id);
+            try
+            {
+                return await getUserByIdService.Handle(id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while retrieving the user.", Error = ex.Message });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] User newUser)
         {
-            return await _createUserService.Handle(newUser);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await createUserService.Handle(newUser);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while creating the user.", Error = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User? updatedUser)
         {
-            return await _updateUserService.Handle(id, updatedUser);
+            if (updatedUser == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await updateUserService.Handle(id, updatedUser);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while updating the user.", Error = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            return await _deleteUserService.Handle(id);
+            try
+            {
+                return await deleteUserService.Handle(id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while deleting the user.", Error = ex.Message });
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace CapApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("questions")]
     [EnableCors("AllowOrigin")]
     public class QuestionsController(
         AddQuestionRequestService addQuestionRequestService,
@@ -18,40 +18,87 @@ namespace CapApi.Controllers
         : ControllerBase
     {
         [Authorize(Roles = "Admin")]
-        [HttpPost("add")]
-        public async Task<IActionResult> AddQuestionRequest(AddQuestionDto dto)
+        [HttpPost]
+        public async Task<IActionResult> AddQuestionRequest([FromBody] AddQuestionDto dto)
         {
-            return await addQuestionRequestService.Handle(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await addQuestionRequestService.Handle(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while adding the question.", Error = ex.Message });
+            }
         }
-        
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestionRequest(int id)
-        { 
-            return await deleteQuestionService.Handle(id);
+        {
+            try
+            {
+                return await deleteQuestionService.Handle(id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while deleting the question.", Error = ex.Message });
+            }
         }
 
-        
-        //[Authorize(Roles = "Admin")]
         [HttpPost("preview-by-category")]
-        public async Task<IActionResult> PreviewByCategory(QuestionByCategoryDto dto)
+        public async Task<IActionResult> PreviewByCategory([FromBody] QuestionByCategoryDto dto)
         {
-            return await questionByCategoryService.Handle(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await questionByCategoryService.Handle(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while previewing questions by category.", Error = ex.Message });
+            }
         }
-        
-        //[Authorize(Roles = "Admin")]
+
         [HttpPost("preview-by-id")]
-        public async Task<IActionResult> PreviewById(QuestionByIdDto? dto)
+        public async Task<IActionResult> PreviewById([FromBody] QuestionByIdDto? dto)
         {
-            return await questionByIdService.Handle(dto);
+            if (dto == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await questionByIdService.Handle(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while previewing the question by ID.", Error = ex.Message });
+            }
         }
-        
-        //[Authorize(Roles = "Admin")]
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuestion(int id, UpdateQuestionDto? updatedQuestion)
+        public async Task<IActionResult> UpdateQuestion(int id, [FromBody] UpdateQuestionDto? updatedQuestion)
         {
-            return await updateQuestionService.Handle(id, updatedQuestion);
+            if (updatedQuestion == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                return await updateQuestionService.Handle(id, updatedQuestion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                    new { Message = "An error occurred while updating the question.", Error = ex.Message });
+            }
         }
-        
-     }
+    }
 }
