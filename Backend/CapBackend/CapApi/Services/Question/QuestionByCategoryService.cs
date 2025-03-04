@@ -1,59 +1,61 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
-using CapApi.DTOs;
 
 namespace CapApi.Services.Question
 {
-    public class QuestionByCategoryService(ApplicationDbContext context) : ControllerBase
+    public class QuestionByCategoryService(ApplicationDbContext context)
     {
-        public Task<IActionResult> Handle(QuestionByCategoryDto dto)
+        public async Task<object> Handle(string? category, string? type, int pageNumber, int numberOfQuestions)
         {
-            IQueryable<Models.Question> query = context.Questions;
+            IQueryable<Models.Question> query = context.Questions
+                .Include(q => q.McqQuestion)
+                .Include(q => q.CodingQuestion)
+                    .ThenInclude(cq => cq.TestCases)
+                .Include(q => q.EssayQuestion);
 
-            // Apply category filter if provided
-            if (!string.IsNullOrEmpty(dto.Category))
-            {
-                query = query.Where(q => q.Category == dto.Category);
-            }
+            // Apply filters
+            if (!string.IsNullOrEmpty(category))
+                query = query.Where(q => q.Category == category);
 
-            // Apply type filter if provided
-            if (!string.IsNullOrEmpty(dto.Type))
-            {
-                query = query.Where(q => q.Type == dto.Type);
-            }
+            if (!string.IsNullOrEmpty(type))
+                query = query.Where(q => q.Type == type);
 
-            // Count total questions in category (ignores type filter)
-            var totalCategoryQuestions = string.IsNullOrEmpty(dto.Category)
-                ? context.Questions.Count()
-                : context.Questions.Count(q => q.Category == dto.Category);
+            // fetch counts in a single query
+            var totalCounts = await context.Questions
+                .Where(q => (string.IsNullOrEmpty(category) || q.Category == category) &&
+                            (string.IsNullOrEmpty(type) || q.Type == type))
+                .GroupBy(q => 1)
+                .Select(g => new
+                {
+                    TotalCategoryQuestions = g.Count(q => string.IsNullOrEmpty(category) || q.Category == category),
+                    TotalTypeQuestions = g.Count(q => string.IsNullOrEmpty(type) || q.Type == type)
+                })
+                .FirstOrDefaultAsync() ?? new { TotalCategoryQuestions = 0, TotalTypeQuestions = 0 };
 
-            // Count total questions in type (ignores category filter)
-            var totalTypeQuestions = string.IsNullOrEmpty(dto.Type)
-                ? context.Questions.Count()
-                : context.Questions.Count(q => q.Type == dto.Type);
-
-            // Apply pagination
-            var questions = query
+            // Fetch paginated questions
+            var questions = await query
                 .OrderBy(q => q.Id) // Ensure consistent ordering
-                .Skip((dto.PageNumber - 1) * dto.NumberOfQuestions)
-                .Take(dto.NumberOfQuestions)
+                .Skip((pageNumber - 1) * numberOfQuestions)
+                .Take(numberOfQuestions)
                 .Select(q => new
                 {
-                    type = q.Type,
-                    //mark = q.Mark,
-                    prompt = q.Prompt,
-                    category = q.Category,
-                    details = GetDetailsBasedOnType(q)
+                    q.Id,
+                    q.Type,
+                    q.Prompt,
+                    q.Category,
+                    q.CreatedAt,
+                    q.UpdatedAt,
+                    Details = GetDetailsBasedOnType(q)
                 })
-                .ToList();
+                .ToListAsync();
 
-            return Task.FromResult<IActionResult>(Ok(new
+            return new
             {
-                totalCategoryQuestions,
-                totalTypeQuestions,
+                totalCategoryQuestions = totalCounts.TotalCategoryQuestions,
+                totalTypeQuestions = totalCounts.TotalTypeQuestions,
                 questions,
                 returnMessage = "Done!"
-            }));
+            };
         }
 
         private static object GetDetailsBasedOnType(Models.Question q)
@@ -63,9 +65,9 @@ namespace CapApi.Services.Question
                 "mc" => q.McqQuestion != null
                     ? new
                     {
-                        isTrueFalse = q.McqQuestion.IsTrueFalse,
-                        correctAnswer = q.McqQuestion.CorrectAnswer,
-                        wrongOptions = q.McqQuestion.WrongOptions
+                        q.McqQuestion.IsTrueFalse,
+                        q.McqQuestion.CorrectAnswer,
+                        q.McqQuestion.WrongOptions
                     }
                     : new { Message = "Mcq data missing" },
 
@@ -74,15 +76,15 @@ namespace CapApi.Services.Question
                 "coding" => q.CodingQuestion != null
                     ? new
                     {
-                        description = q.CodingQuestion.Description,
-                        testCases = q.CodingQuestion.TestCases.Select(tc => new
+                        q.CodingQuestion.Description,
+                        q.CodingQuestion.InputsCount,
+                        TestCases = q.CodingQuestion.TestCases.Select(tc => new
                         {
-                            inputs = tc.Inputs,
-                            expectedOutput = tc.ExpectedOutput
+                            tc.Inputs,
+                            tc.ExpectedOutput
                         }).ToList()
                     }
                     : new { Message = "Coding data missing" },
-
 
                 _ => new { Message = "Invalid question type." }
             };

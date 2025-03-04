@@ -1,4 +1,4 @@
-﻿namespace CapApi.DTOs
+﻿namespace CapApi.Dtos.User
 {
     public class LoginDto
     {

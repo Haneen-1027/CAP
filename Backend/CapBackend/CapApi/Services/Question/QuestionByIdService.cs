@@ -1,91 +1,85 @@
 using Microsoft.AspNetCore.Mvc;
-using CapApi.Data;
-using CapApi.DTOs;
 using Microsoft.EntityFrameworkCore;
+using CapApi.Data;
 
 namespace CapApi.Services.Question
 {
     public class QuestionByIdService(ApplicationDbContext context) : ControllerBase
     {
-        public async Task<IActionResult> Handle(QuestionByIdDto? dto)
+        public async Task<IActionResult> Handle(int id)
         {
-            // Validate input DTO
-            if (dto == null || string.IsNullOrEmpty(dto.QuestionId))
+            // Validate Question ID
+            if (id < 1)
             {
-                return BadRequest(new { Message = "Question ID is required." });
+                return BadRequest(new { Message = "Id must be greater than 0." });
             }
-
-            // Validate Question ID format
-            if (!int.TryParse(dto.QuestionId, out var questionId))
-            {
-                return BadRequest(new { Message = "Invalid Question ID format." });
-            }
-
+            
             try
             {
-                // Fetch the question from the database
+                // Fetch question with related data
                 var question = await context.Questions
-                    .Where(q => q.Id == questionId)
+                    .Include(q => q.McqQuestion)
+                    .Include(q => q.CodingQuestion)
+                        .ThenInclude(cq => cq.TestCases)
+                    .Include(q => q.EssayQuestion)
+                    .Where(q => q.Id == id)
                     .Select(q => new
                     {
-                        id = q.Id,
-                        general = new
+                        q.Id,
+                        General = new
                         {
-                            type = q.Type,
-                            prompt = q.Prompt,
-                            category = q.Category,
-                            details = GetDetailsBasedOnType(q) // Get type-specific details
+                            q.Type,
+                            q.Prompt,
+                            q.Category,
+                            Details = GetDetailsBasedOnType(q)
                         }
                     })
                     .FirstOrDefaultAsync();
 
-                // Handle case where question is not found
                 if (question == null)
                 {
                     return NotFound(new { Message = "Question not found." });
                 }
 
-                // Return the question details
                 return Ok(question);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "An error occurred while processing your request." });
+                return StatusCode(500, new { Message = "An error occurred while processing your request.", Error = ex.Message });
             }
         }
 
         private static object GetDetailsBasedOnType(Models.Question q)
         {
-            // Handle null or invalid question type
             if (string.IsNullOrEmpty(q.Type))
             {
                 return new { Message = "Question type is missing." };
             }
 
-            // Return type-specific details based on the question type
             return q.Type.ToLower() switch
             {
                 "mc" => q.McqQuestion != null
                     ? new
                     {
-                        isTrueFalse = q.McqQuestion.IsTrueFalse,
-                        correctAnswer = q.McqQuestion.CorrectAnswer,
-                        wrongOptions = q.McqQuestion.WrongOptions
+                        q.McqQuestion.IsTrueFalse,
+                        q.McqQuestion.CorrectAnswer,
+                        q.McqQuestion.WrongOptions
                     }
                     : new { Message = "MCQ data missing" },
 
                 "essay" => q.EssayQuestion != null
-                    ? new { }
+                    ? new { Message = "Essay details available." }
                     : new { Message = "Essay data missing" },
 
                 "coding" => q.CodingQuestion != null
                     ? new
                     {
-                        description = q.CodingQuestion.Description,
-                        testCases = q.CodingQuestion.TestCases?.Select(tc => new
+                        q.CodingQuestion.Description,
+                        q.CodingQuestion.InputsCount,
+                        TestCases = q.CodingQuestion.TestCases.Select(tc => new
                         {
-                            inputs = tc?.Inputs,
-                            expectedOutput = tc?.ExpectedOutput
+                            tc.Inputs,
+                            tc.ExpectedOutput
                         }).ToList()
                     }
                     : new { Message = "Coding data missing" },

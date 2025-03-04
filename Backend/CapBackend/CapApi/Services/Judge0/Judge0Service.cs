@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace CapApi.Services
+namespace CapApi.Services.Judge0
 {
     public class Judge0Service
     {

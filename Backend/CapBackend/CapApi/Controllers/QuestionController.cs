@@ -1,23 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CapApi.Data;
+using Microsoft.AspNetCore.Mvc;
 using CapApi.DTOs;
+using CapApi.Dtos.Question;
 using CapApi.Services.Question;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Controllers
 {
     [ApiController]
+    //[Authorize(Roles = "Admin")]
     [Route("questions")]
     [EnableCors("AllowOrigin")]
+    
+    
     public class QuestionsController(
         AddQuestionRequestService addQuestionRequestService,
         DeleteQuestionService deleteQuestionService,
         QuestionByCategoryService questionByCategoryService,
         QuestionByIdService questionByIdService,
-        UpdateQuestionService updateQuestionService)
+        UpdateQuestionService updateQuestionService,
+        ApplicationDbContext context)
         : ControllerBase
     {
-        [Authorize(Roles = "Admin")]
+        private readonly ApplicationDbContext _context = context;
+        
+        [HttpGet]
+        public async Task<IActionResult> GetAllQuestions()
+        {
+            var questions = await _context.Questions
+                .Include(q => q.McqQuestion)
+                .Include(q => q.CodingQuestion)
+                .ThenInclude(cq => cq.TestCases)
+                .Include(q => q.EssayQuestion)
+                .ToListAsync();
+
+            var questionDtos = questions.Select(QuestionDto.FromModel).ToList();
+
+            return Ok(questionDtos);
+        }
+    
+
+
+        
         [HttpPost]
         public async Task<IActionResult> AddQuestionRequest([FromBody] AddQuestionDto dto)
         {
@@ -35,7 +61,7 @@ namespace CapApi.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestionRequest(int id)
         {
@@ -50,39 +76,48 @@ namespace CapApi.Controllers
             }
         }
 
-        [HttpPost("preview-by-category")]
-        public async Task<IActionResult> PreviewByCategory([FromBody] QuestionByCategoryDto dto)
+        [HttpGet("filter")]
+        public async Task<IActionResult> PreviewByCategory(
+            [FromQuery] string? category, 
+            [FromQuery] string? type, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 10)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (page < 1 || limit < 1)
+                return BadRequest(new { Message = "Page number and number of questions must be greater than 0." });
 
             try
             {
-                return await questionByCategoryService.Handle(dto);
+                var result = await questionByCategoryService.Handle(category, type, page, limit);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500,
-                    new { Message = "An error occurred while previewing questions by category.", Error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    Message = "An error occurred while previewing questions by category.", 
+                    Error = ex.Message 
+                });
             }
         }
 
-        [HttpPost("preview-by-id")]
-        public async Task<IActionResult> PreviewById([FromBody] QuestionByIdDto? dto)
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> PreviewById(int id)
         {
-            if (dto == null || !ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (id < 1)
+                return BadRequest(new { Message = "Id must be greater than 0." });
 
             try
             {
-                return await questionByIdService.Handle(dto);
+                return await questionByIdService.Handle(id);
             }
             catch (Exception ex)
             {
-                return StatusCode(500,
-                    new { Message = "An error occurred while previewing the question by ID.", Error = ex.Message });
+                return StatusCode(500, new { Message = "An error occurred while previewing the question by ID.", Error = ex.Message });
             }
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateQuestion(int id, [FromBody] UpdateQuestionDto? updatedQuestion)
@@ -101,4 +136,5 @@ namespace CapApi.Controllers
             }
         }
     }
+    
 }

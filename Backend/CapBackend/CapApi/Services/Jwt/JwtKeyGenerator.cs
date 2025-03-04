@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CapApi.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace CapApi.Services
+namespace CapApi.Services.Jwt
 {
     public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings)
     {

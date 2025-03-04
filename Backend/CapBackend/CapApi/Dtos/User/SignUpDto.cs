@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CapApi.DTOs;
+namespace CapApi.Dtos.User;
 
 public class SignUpDto
 {

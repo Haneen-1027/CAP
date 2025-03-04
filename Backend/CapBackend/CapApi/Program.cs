@@ -9,6 +9,8 @@ using Microsoft.OpenApi.Models;
 using CapApi.Services.User;
 using CapApi.Services.Question;
 using CapApi.Services.Assessment;
+using CapApi.Services.Judge0;
+using CapApi.Services.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 

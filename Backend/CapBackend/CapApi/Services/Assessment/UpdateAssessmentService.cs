@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CapApi.Data;
 using CapApi.DTOs;
+using CapApi.Dtos.Assessment;
 using CapApi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ namespace CapApi.Services.Assessment
         {
             if (dto == null)
             {
-                return new BadRequestObjectResult(new { Message = "Invalid request. DTO cannot be null." });
+                return new BadRequestObjectResult(new { Message = "Invalid request. Cannot be null." });
             }
 
             if (string.IsNullOrWhiteSpace(dto.Name) || dto.TotalMark <= 0 || dto.QuestionsCount <= 0)

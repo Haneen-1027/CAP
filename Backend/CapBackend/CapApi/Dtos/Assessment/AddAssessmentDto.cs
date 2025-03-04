@@ -1,4 +1,6 @@
-namespace CapApi.DTOs
+using CapApi.Dtos.Question;
+
+namespace CapApi.DTOs.Assessment
 {
     public class AddAssessmentDto
     {

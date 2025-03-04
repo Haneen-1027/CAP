@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
 using CapApi.DTOs;
+using CapApi.Dtos.User;
 using CapApi.Models;
 using CapApi.Services;
+using CapApi.Services.Jwt;
 using Microsoft.AspNetCore.Cors;
 
 namespace CapApi.Controllers

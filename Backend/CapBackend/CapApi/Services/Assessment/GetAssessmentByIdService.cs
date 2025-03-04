@@ -40,16 +40,16 @@ namespace CapApi.Services.Assessment
                 {
                     assessment.Id,
                     assessment.Name,
-                    Duration = assessment.Duration.ToString(),
+                    Duration = assessment.Duration.ToString(@"hh\:mm\:ss") ?? "00:00:00",
                     Time = assessment.AssessmentDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                    StartTime = assessment.StartTime.ToString("HH:mm:ss"),
-                    EndTime = assessment.EndTime.ToString("HH:mm:ss"),
+                    StartTime = assessment.StartTime.ToString(@"hh\:mm\:ss") ?? "00:00:00",
+                    EndTime = assessment.EndTime.ToString(@"hh\:mm\:ss") ?? "00:00:00",
                     assessment.TotalMark,
                     assessment.QuestionsCount,
                     Questions = assessment.AssessmentQuestions.Select(aq => new
                     {
                         aq.QuestionId,
-                        aq.Question?.Prompt, // Ensure question exists before accessing its properties
+                        aq.Question?.Prompt,
                         aq.Mark
                     })
                 };

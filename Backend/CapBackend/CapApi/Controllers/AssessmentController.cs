@@ -1,4 +1,6 @@
 using CapApi.DTOs;
+using CapApi.Dtos.Assessment;
+using CapApi.DTOs.Assessment;
 using CapApi.Services.Assessment;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using CapApi.Data;
-using CapApi.DTOs;
+using CapApi.Dtos.Question;
 using CapApi.Models;
+using System.Text.Json;
 
 namespace CapApi.Services.Question
 {
@@ -28,33 +28,23 @@ namespace CapApi.Services.Question
 
             try
             {
+                // Ensure Details object is provided if required
+                var details = dto.Details ?? new QuestionDetailsDto();
+
                 // Handle different question types
                 switch (question.Type)
                 {
                     case "mc":
-                        if (dto.Details == null || !dto.Details.ContainsKey("correctAnswer") ||
-                            !dto.Details.TryGetValue("wrongOptions", out var value) ||
-                            string.IsNullOrWhiteSpace(dto.Details["correctAnswer"].ToString()))
+                        if (string.IsNullOrWhiteSpace(details.CorrectAnswer) || details.WrongOptions == null || details.WrongOptions.Count == 0)
                         {
-                            return BadRequest(new { Message = "MCQ must have a correct answer and wrong options." });
-                        }
-
-                        List<string> wrongOptions = ((JsonElement)value).EnumerateArray()
-                            .Select(x => x.GetString()?.Trim() ?? string.Empty)
-                            .Where(x => !string.IsNullOrEmpty(x)) // Ensure non-empty options
-                            .ToList();
-
-                        if (wrongOptions.Count == 0)
-                        {
-                            return BadRequest(new { Message = "MCQ must have at least one wrong option." });
+                            return BadRequest(new { Message = "MCQ must have a correct answer and at least one wrong option." });
                         }
 
                         question.McqQuestion = new McqQuestion
                         {
-                            IsTrueFalse = dto.Details.ContainsKey("isTrueFalse") && 
-                                         bool.TryParse(dto.Details["isTrueFalse"].ToString(), out var isTf) && isTf,
-                            CorrectAnswer = dto.Details["correctAnswer"].ToString()?.Trim(),
-                            WrongOptions = wrongOptions
+                            IsTrueFalse = details.IsTrueFalse ?? false,
+                            CorrectAnswer = details.CorrectAnswer.Trim(),
+                            WrongOptions = details.WrongOptions.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList()
                         };
                         break;
 
@@ -63,38 +53,19 @@ namespace CapApi.Services.Question
                         break;
 
                     case "coding":
-                        if (dto.Details == null || !dto.Details.ContainsKey("testCases") ||
-                            !dto.Details.ContainsKey("inputsCount") ||
-                            !dto.Details.TryGetValue("description", out var detail) ||
-                            string.IsNullOrWhiteSpace(detail.ToString()))
+                        if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
+                            details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
                         {
-                            return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
+                            return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and a description." });
                         }
 
-                        if (!int.TryParse(dto.Details["inputsCount"].ToString(), out var inputsCount) || inputsCount < 1)
-                        {
-                            return BadRequest(new { Message = "InputsCount must be a valid positive integer." });
-                        }
-
-                        var testCases = ((JsonElement)dto.Details["testCases"]).EnumerateArray()
-                            .Select(tc =>
+                        var testCases = details.TestCases
+                            .Where(tc => tc.Inputs != null && tc.Inputs.Count > 0 && !string.IsNullOrWhiteSpace(tc.ExpectedOutput))
+                            .Select(tc => new TestCase
                             {
-                                try
-                                {
-                                    return new TestCase
-                                    {
-                                        Inputs = tc.GetProperty("inputs").EnumerateArray().Select(
-                                            x => x.GetString()?.Trim() ?? string.Empty
-                                        ).ToList(),
-                                        ExpectedOutput = tc.GetProperty("expectedOutput").GetString()?.Trim() ?? string.Empty
-                                    };
-                                }
-                                catch (Exception)
-                                {
-                                    return null; // Handle malformed test case
-                                }
+                                Inputs = tc.Inputs.Select(i => i.Trim()).ToList(),
+                                ExpectedOutput = tc.ExpectedOutput.Trim()
                             })
-                            .Where(tc => tc is { Inputs.Count: > 0 } && !string.IsNullOrEmpty(tc.ExpectedOutput))
                             .ToList();
 
                         if (testCases.Count == 0)
@@ -104,8 +75,8 @@ namespace CapApi.Services.Question
 
                         question.CodingQuestion = new CodingQuestion
                         {
-                            InputsCount = inputsCount,
-                            Description = detail.ToString()?.Trim(),
+                            InputsCount = details.InputsCount.Value,
+                            Description = details.Description.Trim(),
                             TestCases = testCases
                         };
                         break;
@@ -127,7 +98,8 @@ namespace CapApi.Services.Question
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(500, new { Message = "An error occurred while saving the question.", Error = ex.Message });
+                    return StatusCode(500,
+                        new { Message = "An error occurred while saving the question.", Error = ex.Message });
                 }
             }
             catch (Exception ex)

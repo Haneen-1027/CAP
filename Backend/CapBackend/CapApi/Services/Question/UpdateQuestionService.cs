@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using CapApi.Data;
-using CapApi.DTOs;
+using CapApi.Dtos.Question;
 using CapApi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +16,6 @@ namespace CapApi.Services.Question
                 return BadRequest(new { Message = "Invalid request. Question ID and data are required." });
             }
 
-            // Validate required fields in the DTO
             if (string.IsNullOrWhiteSpace(dto.Type) ||
                 string.IsNullOrWhiteSpace(dto.Prompt) ||
                 string.IsNullOrWhiteSpace(dto.Category) ||
@@ -26,152 +24,91 @@ namespace CapApi.Services.Question
                 return BadRequest(new { Message = "Invalid request. All fields are required." });
             }
 
-            // Begin a database transaction
             await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                // Fetch the question with related data
                 var question = await context.Questions
                     .Include(q => q.McqQuestion)
                     .Include(q => q.EssayQuestion)
                     .Include(q => q.CodingQuestion)
-                        .ThenInclude(codingQuestion => codingQuestion.TestCases)
+                        .ThenInclude(cq => cq.TestCases)
                     .FirstOrDefaultAsync(q => q.Id == id);
 
-                // Handle case where question is not found
                 if (question == null)
                 {
                     return NotFound(new { Message = "Question not found." });
                 }
 
-                // Update general properties of the question
-                question.Type = dto.Type;
-                question.Prompt = dto.Prompt;
-                question.Category = dto.Category;
+                question.Type = dto.Type.Trim().ToLower();
+                question.Prompt = dto.Prompt.Trim();
+                question.Category = dto.Category.Trim();
                 question.UpdatedAt = DateTime.UtcNow;
 
-                // Handle different question types
-                switch (dto.Type.ToLower())
+                var details = dto.Details ?? new QuestionDetailsDto();
+
+                switch (question.Type)
                 {
                     case "mc":
-                        // Validate MCQ-specific fields
-                        if (!dto.Details.ContainsKey("correctAnswer") ||
-                            !dto.Details.ContainsKey("wrongOptions"))
+                        if (string.IsNullOrWhiteSpace(details.CorrectAnswer) || details.WrongOptions == null ||
+                            details.WrongOptions.Count == 0)
                         {
-                            return BadRequest(new { Message = "MCQ must have a correct answer and wrong options." });
+                            return BadRequest(new { Message = "MCQ must have a correct answer and at least one wrong option." });
                         }
 
-                        // Initialize MCQ question if null
                         question.McqQuestion ??= new McqQuestion();
-
-                        // Update MCQ properties
-                        question.McqQuestion.IsTrueFalse =
-                            dto.Details.TryGetValue("isTrueFalse", out var isTrueFalse) &&
-                            isTrueFalse is JsonElement elem && elem.GetBoolean();
-
-                        question.McqQuestion.CorrectAnswer = dto.Details["correctAnswer"].ToString();
-                        question.McqQuestion.WrongOptions = ((JsonElement)dto.Details["wrongOptions"])
-                            .EnumerateArray()
-                            .Select(x => x.GetString())
-                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                        question.McqQuestion.IsTrueFalse = details.IsTrueFalse ?? false;
+                        question.McqQuestion.CorrectAnswer = details.CorrectAnswer.Trim();
+                        question.McqQuestion.WrongOptions = details.WrongOptions
+                            .Select(x => x.Trim())
+                            .Where(x => !string.IsNullOrEmpty(x))
                             .ToList();
-
-                        // Validate wrong options
-                        if (question.McqQuestion.WrongOptions.Count < 1)
-                        {
-                            return BadRequest(new { Message = "MCQ must have at least one wrong option." });
-                        }
-
                         break;
 
                     case "essay":
-                        // Initialize Essay question if null
                         question.EssayQuestion ??= new EssayQuestion();
                         break;
 
                     case "coding":
-                        // Validate Coding-specific fields
-                        if (!dto.Details.ContainsKey("testCases") ||
-                            !dto.Details.ContainsKey("inputsCount") ||
-                            !dto.Details.ContainsKey("description"))
+                        if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
+                            details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
                         {
-                            return BadRequest(new
-                            {
-                                Message = "Coding questions must have test cases, inputsCount, and description."
-                            });
+                            return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
                         }
 
-                        // Initialize Coding question if null
-                        question.CodingQuestion ??= new CodingQuestion();
-
-                        // Validate inputsCount
-                        if (!int.TryParse(dto.Details["inputsCount"].ToString(), out var inputsCount) ||
-                            inputsCount < 1)
-                        {
-                            return BadRequest(new { Message = "Invalid inputsCount value." });
-                        }
-
-                        // Update Coding properties
-                        question.CodingQuestion.InputsCount = inputsCount;
-                        question.CodingQuestion.Description = dto.Details["description"].ToString();
-
-                        // Update test cases
-                        question.CodingQuestion.TestCases = ((JsonElement)dto.Details["testCases"])
-                            .EnumerateArray()
-                            .Select(tc =>
+                        var testCases = details.TestCases
+                            .Where(tc => tc.Inputs != null && tc.Inputs.Count > 0 && !string.IsNullOrWhiteSpace(tc.ExpectedOutput))
+                            .Select(tc => new TestCase
                             {
-                                if (!tc.TryGetProperty("inputs", out var inputsElem) ||
-                                    !tc.TryGetProperty("expectedOutput", out var outputElem) ||
-                                    !outputElem.ValueKind.Equals(JsonValueKind.String))
-                                {
-                                    return null;
-                                }
-
-                                return new TestCase
-                                {
-                                    Inputs = inputsElem.EnumerateArray()
-                                        .Select(x => x.GetString())
-                                        .Where(x => !string.IsNullOrWhiteSpace(x))
-                                        .ToList(),
-                                    ExpectedOutput = outputElem.GetString()
-                                };
+                                Inputs = tc.Inputs.Select(i => i.Trim()).ToList(),
+                                ExpectedOutput = tc.ExpectedOutput.Trim()
                             })
-                            .Where(tc => tc != null)
                             .ToList();
 
-                        // Validate test cases
-                        if (question.CodingQuestion.TestCases.Count < 1)
+                        if (testCases.Count == 0)
                         {
-                            return BadRequest(new
-                            {
-                                Message = "Coding questions must have at least one valid test case."
-                            });
+                            return BadRequest(new { Message = "Coding questions must have at least one valid test case." });
                         }
 
+                        question.CodingQuestion ??= new CodingQuestion();
+                        question.CodingQuestion.InputsCount = details.InputsCount.Value;
+                        question.CodingQuestion.Description = details.Description.Trim();
+                        question.CodingQuestion.TestCases = testCases;
                         break;
 
                     default:
                         return BadRequest(new { Message = "Invalid question type." });
                 }
 
-                // Save changes to the database
                 context.Questions.Update(question);
                 await context.SaveChangesAsync();
-
-                // Commit the transaction
                 await transaction.CommitAsync();
 
-                // Return success response
                 return Ok(new { Message = "Question Updated", question.Id });
             }
             catch (Exception ex)
             {
-                // Rollback the transaction in case of an error
                 await transaction.RollbackAsync();
-
-                // Return error response
-                return StatusCode(500,
-                    new { Message = "An error occurred while updating the question.", Error = ex.Message });
+                return StatusCode(500, new { Message = "An error occurred while updating the question.", Error = ex.Message });
             }
         }
     }

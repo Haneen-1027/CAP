@@ -1,5 +1,5 @@
 using CapApi.Data;
-using CapApi.DTOs;
+using CapApi.DTOs.Assessment;
 using CapApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

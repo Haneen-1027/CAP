@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CapApi.DTOs
+namespace CapApi.Dtos.Question
 {
-    public abstract class QuestionMarkDto
+    public class QuestionMarkDto
     
     {
         [Required]

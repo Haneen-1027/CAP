@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
 using CapApi.Services;
 using CapApi.DTOs;
+using CapApi.Dtos.Code;
+using CapApi.Services.Judge0;
 using Microsoft.AspNetCore.Cors;
 
 namespace CapApi.Controllers
@@ -38,13 +40,12 @@ namespace CapApi.Controllers
 
             foreach (var testCase in codingQuestion.TestCases)
             {
-                // Wrap the user's function with input/output logic
                 string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId);
 
-
-                // Execute the wrapped code
                 //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
-                var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));                // Compare the actual output with the expected output
+                var (output, error) =
+                    await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
+                        string.Join(" ", testCase.Inputs)); // Compare the actual output with the expected output
                 testResults.Add(new TestCaseResultDto
                 {
                     Inputs = testCase.Inputs,
@@ -139,8 +140,5 @@ if __name__ == '__main__':
     print({functionName}({inputVariables}))
 ";
         }
-
-
     }
-
 }
