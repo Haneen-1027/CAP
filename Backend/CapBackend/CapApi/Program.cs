@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CapApi.Data;
-using CapApi.Services;
 using CapApi.Models;
 using Microsoft.OpenApi.Models;
 using CapApi.Services.User;

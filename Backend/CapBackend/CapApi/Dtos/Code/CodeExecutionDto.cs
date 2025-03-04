@@ -1,8 +1,7 @@
-﻿namespace CapApi.Dtos.Code
+﻿namespace CapApi.Dtos.Code;
+
+public class CodeExecutionDto
 {
-    public class CodeExecutionDto
-    {
-        public string? SourceCode { get; set; }
-        public int LanguageId { get; set; }
-    }
+    public string? SourceCode { get; set; }
+    public int LanguageId { get; set; }
 }

@@ -1,55 +1,54 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace CapApi.Services.Judge0
+namespace CapApi.Services.Judge0;
+
+public class Judge0Service
 {
-    public class Judge0Service
+    private readonly HttpClient _httpClient;
+    private const string Judge0BaseUrl = "https://judge0-ce.p.rapidapi.com";
+    private const string SubmissionUrl = "/submissions";
+
+
+    public Judge0Service(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
-        private const string Judge0BaseUrl = "https://judge0-ce.p.rapidapi.com";
-        private const string SubmissionUrl = "/submissions";
+        _httpClient = httpClient;
 
+        var apiKey = "52a5ad881bmsh7fd1284be127b85p19917ejsnaeb3458c5d01"; // Use your actual API key
+        _httpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", apiKey);
+    }
 
-        public Judge0Service(HttpClient httpClient)
+    public async Task<(string Output, string Error)> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
+    {
+        var requestBody = new
         {
-            _httpClient = httpClient;
+            source_code = sourceCode,
+            language_id = languageId,
+            stdin = input
+        };
 
-            var apiKey = "52a5ad881bmsh7fd1284be127b85p19917ejsnaeb3458c5d01"; // Use your actual API key
-            _httpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", apiKey);
+        var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
+
+        response.EnsureSuccessStatusCode();
+        var resultString = await response.Content.ReadAsStringAsync();
+
+        // Deserialize the response
+        var result = JsonConvert.DeserializeObject<dynamic>(resultString);
+
+        // Extract stdout and stderr
+        string stdout = result.stdout?.ToString().Trim() ?? "";
+        string stderr = result.stderr?.ToString().Trim() ?? "";
+        string statusDescription = result.status?.description?.ToString().Trim() ?? "";
+
+        // If there is an error, return it
+        if (!string.IsNullOrEmpty(stderr) || (statusDescription != "Accepted" && statusDescription != ""))
+        {
+            string errorMessage = $"Error: {stderr}\nStatus: {statusDescription}";
+            return (Output: "", Error: errorMessage);
         }
 
-        public async Task<(string Output, string Error)> SubmitCodeAsync(string sourceCode, int languageId, string input = "")
-        {
-            var requestBody = new
-            {
-                source_code = sourceCode,
-                language_id = languageId,
-                stdin = input
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{Judge0BaseUrl}{SubmissionUrl}?base64_encoded=false&wait=true&fields=stdout,stderr,status", content);
-
-            response.EnsureSuccessStatusCode();
-            var resultString = await response.Content.ReadAsStringAsync();
-
-            // Deserialize the response
-            var result = JsonConvert.DeserializeObject<dynamic>(resultString);
-
-            // Extract stdout and stderr
-            string stdout = result.stdout?.ToString().Trim() ?? "";
-            string stderr = result.stderr?.ToString().Trim() ?? "";
-            string statusDescription = result.status?.description?.ToString().Trim() ?? "";
-
-            // If there is an error, return it
-            if (!string.IsNullOrEmpty(stderr) || (statusDescription != "Accepted" && statusDescription != ""))
-            {
-                string errorMessage = $"Error: {stderr}\nStatus: {statusDescription}";
-                return (Output: "", Error: errorMessage);
-            }
-
-            // If no error, return the output
-            return (Output: stdout, Error: "");
-        }
+        // If no error, return the output
+        return (Output: stdout, Error: "");
     }
 }
