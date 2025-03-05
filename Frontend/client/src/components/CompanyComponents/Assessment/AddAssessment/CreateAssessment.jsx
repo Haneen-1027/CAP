@@ -292,16 +292,25 @@ export default function CreateAssessment({ darkMode }) {
   function selectQuestion(e, id, q) {
     const { name, value } = e.target;
     const selectedQuestions = [...assessment.questions_ids];
-
+  
     if (name === "questionID") {
       if (e.target.checked) {
         // Add the question with an initial mark of 0
+        let optionsCount = 0; // Default options count for multiple-choice questions
+  
+        // Only calculate options_count for multiple-choice questions
+        if (q.type === "mc") {
+          const correctCount = q.correctAnswer?.length || 0;
+          const wrongCount = q.wrongOptions?.length || 0;
+          optionsCount = correctCount > 3 ? correctCount : 4;
+        }
+  
         selectedQuestions.push({
           id: id,
           mark: 1,
-          options_count:
-            q.correctAnswer.length > 3 ? q.correctAnswer.length : 4,
+          options_count: optionsCount,
         });
+  
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
           questions_ids: selectedQuestions,
@@ -326,22 +335,15 @@ export default function CreateAssessment({ darkMode }) {
       }
     } else if (name === "mark") {
       let newValue = value;
-      if (value <= 0) {
-        newValue = 1;
-      }
-      // Calculate the remaining total mark excluding the current question's mark
+      if (value.trim() === "") newValue = 0;
+  
       const remainingTotalMark =
         assessment.total_mark -
-        selectedQuestions.reduce((total, q) => {
-          if (q.id !== id) {
-            return total + q.mark;
-          }
-          return total;
-        }, 0);
-
+        assessment.questions_ids.reduce((total, q) => total + q.mark, 0);
+  
       // Ensure the new mark does not exceed the remaining total mark
       const newMark = Math.min(parseInt(newValue, 10), remainingTotalMark);
-
+  
       // Update the mark of the specific question
       const updatedQuestions = selectedQuestions.map((question) => {
         if (question.id === id) {
@@ -353,41 +355,44 @@ export default function CreateAssessment({ darkMode }) {
         }
         return question;
       });
-
+  
       setAssessment((prevAssessment) => ({
         ...prevAssessment,
         questions_ids: updatedQuestions,
       }));
     } else if (name === "options_count") {
       console.log("qqqq:", q);
-      // Determine the correct options count
-      const correctCount = q.correctAnswer.length;
-      const wrongCount = q.wrongOptions.length;
-      const minOptionsCount = correctCount > 3 ? correctCount : 4;
-      const maxOptionsCount = correctCount + wrongCount;
-
-      let newOptionsCount = parseInt(value, 10);
-
-      // Enforce the minimum and maximum limits
-      if (newOptionsCount < minOptionsCount) {
-        newOptionsCount = minOptionsCount;
-      } else if (newOptionsCount > maxOptionsCount) {
-        newOptionsCount = maxOptionsCount;
-      }
-
-      // Update the question's options count
-      const updatedQuestions = selectedQuestions.map((question) => {
-        if (question.id === id) {
-          return { ...question, options_count: newOptionsCount };
+  
+      // Only apply options_count logic for multiple-choice questions
+      if (q.type === "mc") {
+        const correctCount = q.correctAnswer?.length || 0; // Default to 0 if undefined
+        const wrongCount = q.wrongOptions?.length || 0; // Default to 0 if undefined
+        const minOptionsCount = correctCount > 3 ? correctCount : 4;
+        const maxOptionsCount = correctCount + wrongCount;
+  
+        let newOptionsCount = parseInt(value, 10);
+  
+        // Enforce the minimum and maximum limits
+        if (newOptionsCount < minOptionsCount) {
+          newOptionsCount = minOptionsCount;
+        } else if (newOptionsCount > maxOptionsCount) {
+          newOptionsCount = maxOptionsCount;
         }
-        return question;
-      });
-
-      // Update state
-      setAssessment((prevAssessment) => ({
-        ...prevAssessment,
-        questions_ids: updatedQuestions,
-      }));
+  
+        // Update the question's options count
+        const updatedQuestions = selectedQuestions.map((question) => {
+          if (question.id === id) {
+            return { ...question, options_count: newOptionsCount };
+          }
+          return question;
+        });
+  
+        // Update state
+        setAssessment((prevAssessment) => ({
+          ...prevAssessment,
+          questions_ids: updatedQuestions,
+        }));
+      }
     }
   }
   // Pagination Functions
