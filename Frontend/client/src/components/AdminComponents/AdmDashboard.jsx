@@ -86,7 +86,7 @@ export default function AdmDashboard({ user, darkMode }) {
               <ul className="list-group mt-4">
                 {assessments.slice(0, visibleCount).map((a, i) => (
                   <li key={i} className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}>
+                    }`}>
                     {a.title} <span>{a.date}</span>
                   </li>
                 ))}
@@ -143,7 +143,7 @@ export default function AdmDashboard({ user, darkMode }) {
               <h5>Users</h5>
               <ul className="list-group mt-3">
                 {users.map((user, i) => (
-                  <li key={i} className="list-group-item d-flex justify-content-between">
+                  <li key={i} className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""}`}>
                     {user.name} <span>{user.role}</span>
                   </li>
                 ))}
