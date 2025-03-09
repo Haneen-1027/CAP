@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace CapApi.Controllers;
 
 [ApiController]
+//[Authorize(Roles = "Admin")]
 [Route("users")]
-[EnableCors("AllowOrigin")]
+[EnableCors("AllowAll")]
 public class UserController(
     GetAllUsersService getAllUsersService,
     GetUserByIdService getUserByIdService,

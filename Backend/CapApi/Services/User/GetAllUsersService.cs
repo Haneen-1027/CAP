@@ -4,9 +4,9 @@ using CapApi.Data;
 
 namespace CapApi.Services.User;
 
-public class GetAllUsersService(ApplicationDbContext context, ILogger<GetAllUsersService> logger)
+public class GetAllUsersService(CapDbContext context, ILogger<GetAllUsersService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     private readonly ILogger<GetAllUsersService>
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment;
 
-public class GetAssessmentByIdService(ApplicationDbContext context, ILogger<GetAssessmentByIdService> logger)
+public class GetAssessmentByIdService(CapDbContext context, ILogger<GetAssessmentByIdService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly ILogger<GetAssessmentByIdService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     // Constructor for dependency injection

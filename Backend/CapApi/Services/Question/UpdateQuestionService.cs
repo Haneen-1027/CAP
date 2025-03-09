@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Question;
 
-public class UpdateQuestionService(ApplicationDbContext context) : ControllerBase
+public class UpdateQuestionService(CapDbContext context) : ControllerBase
 {
     public async Task<IActionResult> Handle(int id, UpdateQuestionDto? dto)
     {

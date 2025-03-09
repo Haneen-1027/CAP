@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace CapApi.Services.User;
 
-public class CreateUserService(ApplicationDbContext context)
+public class CreateUserService(CapDbContext context)
 {
     public async Task<IActionResult> Handle(Models.User? newUser)
     {

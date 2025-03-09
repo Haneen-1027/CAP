@@ -19,10 +19,10 @@ public class QuestionsController(
     QuestionByCategoryService questionByCategoryService,
     QuestionByIdService questionByIdService,
     UpdateQuestionService updateQuestionService,
-    ApplicationDbContext context)
+    CapDbContext context)
     : ControllerBase
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly CapDbContext _context = context;
 
     [HttpGet]
     public async Task<IActionResult> GetAllQuestions()

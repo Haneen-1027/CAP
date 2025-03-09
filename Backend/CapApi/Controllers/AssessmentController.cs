@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Cors;
 namespace CapApi.Controllers;
 
 [ApiController]
+//[Authorize(Roles = "Admin")]
 [Route("assessments")]
-[EnableCors("AllowOrigin")]
+[EnableCors("AllowAll")]
 public class AssessmentController(
     AddAssessmentService addAssessmentService,
     DeleteAssessmentService deleteAssessmentService,

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
 
-namespace CapApi.Services.Question;
+namespace CapApi.Services.Question; 
 
-public class QuestionByCategoryService(ApplicationDbContext context)
+public class QuestionByCategoryService(CapDbContext context)
 {
     public async Task<object> Handle(string? category, string? type, int pageNumber, int numberOfQuestions)
     {

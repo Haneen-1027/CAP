@@ -5,7 +5,7 @@ using CapApi.Models;
 
 namespace CapApi.Services.Question;
 
-public class AddQuestionRequestService(ApplicationDbContext context) : ControllerBase
+public class AddQuestionRequestService(CapDbContext context) : ControllerBase
 {
     public async Task<IActionResult> Handle(AddQuestionDto dto)
     {

@@ -4,9 +4,9 @@ using CapApi.Data;
 
 namespace CapApi.Services.User;
 
-public class DeleteUserService(ApplicationDbContext context)
+public class DeleteUserService(CapDbContext context)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     public async Task<IActionResult> Handle(int id)
     {

@@ -3,9 +3,9 @@ using CapApi.Data;
 
 namespace CapApi.Services.User;
 
-public class UpdateUserService(ApplicationDbContext context, ILogger<UpdateUserService> logger)
+public class UpdateUserService(CapDbContext context, ILogger<UpdateUserService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly ILogger<UpdateUserService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     // Constructor for dependency injection

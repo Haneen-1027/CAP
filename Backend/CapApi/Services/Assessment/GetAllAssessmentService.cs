@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment;
 
-public class GetAllAssessmentService(ApplicationDbContext context, ILogger<GetAllAssessmentService> logger)
+public class GetAllAssessmentService(CapDbContext context, ILogger<GetAllAssessmentService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
 
     private readonly ILogger<GetAllAssessmentService> _logger =
         logger ?? throw new ArgumentNullException(nameof(logger));

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment;
 
-public class AddAssessmentService(ApplicationDbContext context) : ControllerBase
+public class AddAssessmentService(CapDbContext context) : ControllerBase
 {
     public async Task<IActionResult> Handle([FromBody] AddAssessmentDto? dto)
     {

@@ -13,7 +13,6 @@ function App() {
     email: "Admin@gmail.com",
     bio: "Software developer with a passion for coding and learning.",
     role: "Admin",
-
   });
 
   useEffect(() => {
