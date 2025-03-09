@@ -8,14 +8,15 @@ using Microsoft.AspNetCore.Cors;
 namespace CapApi.Controllers;
 
 [ApiController]
+//[Authorize(Roles = "Admin")]
 [Route("[controller]")]
-[EnableCors("AllowOrigin")]
+[EnableCors("AllowAll")]
 public class CodeController : ControllerBase
 {
     private readonly Judge0Service _judge0Service;
-    private readonly ApplicationDbContext _context;
+    private readonly CapDbContext _context;
 
-    public CodeController(Judge0Service judge0Service, ApplicationDbContext context)
+    public CodeController(Judge0Service judge0Service, CapDbContext context)
     {
         _judge0Service = judge0Service;
         _context = context;

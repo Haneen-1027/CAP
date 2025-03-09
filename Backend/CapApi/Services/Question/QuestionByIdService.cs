@@ -4,7 +4,7 @@ using CapApi.Data;
 
 namespace CapApi.Services.Question;
 
-public class QuestionByIdService(ApplicationDbContext context) : ControllerBase
+public class QuestionByIdService(CapDbContext context) : ControllerBase
 {
     public async Task<IActionResult> Handle(int id)
     {

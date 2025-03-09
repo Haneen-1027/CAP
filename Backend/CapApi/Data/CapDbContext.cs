@@ -3,8 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class CapDbContext : DbContext
 {
+    public CapDbContext(DbContextOptions<CapDbContext> options) : base(options)
+    {
+    }
+
     public DbSet<Question> Questions { get; set; }
     public DbSet<McqQuestion> McqQuestions { get; set; }
     public DbSet<CodingQuestion> CodingQuestions { get; set; }
@@ -13,7 +17,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
     public DbSet<TestCase> TestCases { get; set; }
     public DbSet<User> Users { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

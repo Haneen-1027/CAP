@@ -3,10 +3,10 @@ import axios from "axios";
 
 /////////
 
-const BASE_URL = "http://localhost:5104/api"
+const BASE_URL = "https://localhost:7199"
 
 export const addNewQuestion = async (question) =>{
-  return await axios.post(`${BASE_URL}/questions/add`,question, {headers: {
+  return await axios.post(`${BASE_URL}/questions`,question, {headers: {
     "Content-Type": "application/json", // Ensure this header is set
   },});
 };

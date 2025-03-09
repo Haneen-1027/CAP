@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment;
 
-public class DeleteAssessmentService(ApplicationDbContext context, ILogger<DeleteAssessmentService> logger)
+public class DeleteAssessmentService(CapDbContext context, ILogger<DeleteAssessmentService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly ILogger<DeleteAssessmentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     // Constructor for dependency injection

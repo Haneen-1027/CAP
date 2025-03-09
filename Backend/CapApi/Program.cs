@@ -10,6 +10,7 @@ using CapApi.Services.Question;
 using CapApi.Services.Assessment;
 using CapApi.Services.Judge0;
 using CapApi.Services.Jwt;
+using Microsoft.AspNetCore.Cors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,7 @@ if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.SecretKey))
 }
 
 // Database Connection
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<CapDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
@@ -107,9 +108,9 @@ builder.Services.AddAuthentication(options =>
 // CORS Configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", corsPolicyBuilder =>
+    options.AddPolicy("AllowOrigin", corsPolicyBuilder =>
     {
-        corsPolicyBuilder.WithOrigins("*") // Replace with actual frontend URL
+        corsPolicyBuilder.WithOrigins("http://localhost:3000") 
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -137,7 +138,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAll");
+app.UseCors("AllowOrigin");
 app.MapControllers();
 
 app.Run();

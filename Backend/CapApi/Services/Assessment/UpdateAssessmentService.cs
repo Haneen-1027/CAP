@@ -7,10 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CapApi.Services.Assessment;
 
-public class UpdateAssessmentService(ApplicationDbContext context, ILogger<UpdateAssessmentService> logger)
+public class UpdateAssessmentService(CapDbContext context, ILogger<UpdateAssessmentService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-    private readonly ILogger<UpdateAssessmentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+
+    private readonly ILogger<UpdateAssessmentService> _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
 
     // Constructor for dependency injection
 
@@ -23,7 +25,8 @@ public class UpdateAssessmentService(ApplicationDbContext context, ILogger<Updat
 
         if (string.IsNullOrWhiteSpace(dto.Name) || dto.TotalMark <= 0 || dto.QuestionsCount <= 0)
         {
-            return new BadRequestObjectResult(new { Message = "Invalid request. Ensure all required fields are provided and valid." });
+            return new BadRequestObjectResult(new
+                { Message = "Invalid request. Ensure all required fields are provided and valid." });
         }
 
         if (dto.QuestionsIds == null || !dto.QuestionsIds.Any())
@@ -60,7 +63,8 @@ public class UpdateAssessmentService(ApplicationDbContext context, ILogger<Updat
             var invalidIds = providedQuestionIds.Except(existingQuestionIds).ToList();
             if (invalidIds.Any())
             {
-                return new BadRequestObjectResult(new { Message = $"Invalid Question IDs: {string.Join(", ", invalidIds)}" });
+                return new BadRequestObjectResult(new
+                    { Message = $"Invalid Question IDs: {string.Join(", ", invalidIds)}" });
             }
 
             // Parse time-related fields safely

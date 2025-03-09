@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CapApi.Services.Question;
 
-public class DeleteQuestionService(ApplicationDbContext context, ILogger<DeleteQuestionService> logger)
+public class DeleteQuestionService(CapDbContext context, ILogger<DeleteQuestionService> logger)
 {
-    private readonly ApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly ILogger<DeleteQuestionService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<IActionResult> Handle(int id)
