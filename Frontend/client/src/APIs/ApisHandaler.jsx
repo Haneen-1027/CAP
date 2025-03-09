@@ -10,6 +10,18 @@ export const addNewQuestion = async (question) =>{
     "Content-Type": "application/json", // Ensure this header is set
   },});
 };
+
+export const loginUser = async (email, password) =>{
+  return await axios.post(
+    `${BASE_URL}/auth/login`,
+    { email, password },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;
