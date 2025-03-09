@@ -10,7 +10,7 @@ namespace CapApi.Controllers;
 
 [ApiController]
 [Route("auth")]
-[EnableCors("AllowAll")]
+[EnableCors("AllowOrigin")]
 public class AuthController(JwtTokenGenerator jwtTokenGenerator, CapDbContext context)
     : ControllerBase
 {

@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router";
 import { loginUser } from "../../APIs/ApisHandaler";
+import { useNavigate } from "react-router";
 
 export default function Login({ darkMode }) {
 
+  const navigate = useNavigate();
+  
   const login = async (email, password) => {
     try {
       await loginUser(email, password).then((response) => {
@@ -12,10 +15,9 @@ export default function Login({ darkMode }) {
         localStorage.setItem("token", response.data.token); 
         console.log("Login successful!");
   
-        // هون بدي احط navigation
+        navigate("/home");
       }).catch((error) => {
         console.error("Login failed:", error);
-        // Handle errors (e.g., display an error message to the user)
       });
     } catch (e) {
       console.error("An unexpected error occurred:", e);
