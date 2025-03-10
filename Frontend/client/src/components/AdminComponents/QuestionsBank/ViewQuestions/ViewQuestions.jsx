@@ -3,8 +3,9 @@ import {
   FilterableDropdown,
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
-import questions from "./test.json"; // Get from API
+// import questions from "./test.json"; // Get from API
 import { Link } from "react-router-dom";
+import { getAllQuestions } from "../../../../APIs/ApisHandaler";
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
@@ -29,6 +30,17 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   const [questionsCount, setQuestionsCount] = useState(33);
 
   //
+
+  const Questions = async () => {
+    try {
+      const response = await getAllQuestions();
+      console.log("All questions:", response.data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+  // viewAllQuestions();
+
   function renderQuestions() {
     const questionsList = questions.questions;
     return questionsList.map((q, index) => (

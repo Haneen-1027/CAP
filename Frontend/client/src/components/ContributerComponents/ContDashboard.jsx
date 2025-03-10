@@ -74,7 +74,7 @@ export default function ContDashboard({ userDetailes, darkMode }) {
         </div>
 
         {/* Assessment Section */}
-        <div className="col-lg-8">
+        <div className="col-lg-7">
           <div className="card shadow-sm h-100">
             <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
               }`}>
@@ -102,7 +102,7 @@ export default function ContDashboard({ userDetailes, darkMode }) {
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="col-lg-4">
+        <div className="col-lg-5">
           <div className="card shadow-sm h-100">
             <div className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}>
               <h5 className="card-title">Results</h5>

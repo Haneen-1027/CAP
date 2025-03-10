@@ -1,7 +1,44 @@
 import React from "react";
 import { Link } from "react-router";
+import { loginUser } from "../../APIs/ApisHandaler";
+import { useNavigate } from "react-router";
 
 export default function Login({ darkMode }) {
+
+  const navigate = useNavigate();
+  
+  const login = async (email, password) => {
+    try {
+      await loginUser(email, password).then((response) => {
+        console.log(`The axios response is:`, response.data);
+  
+        localStorage.setItem("token", response.data.token); 
+        console.log("Login successful!");
+  
+        navigate("/home");
+      }).catch((error) => {
+        console.error("Login failed:", error);
+      });
+    } catch (e) {
+      console.error("An unexpected error occurred:", e);
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    // Get the email and password from the form inputs
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    if (!email || !password) {
+      console.error("Both fields are required.");
+      return;
+    }
+
+    // Call the login function with the email and password
+    login(email, password);
+  };
+
   return (
     <div className={`custom-form ${darkMode ? "spic-dark-mode" : ""}`}>
       <div className="my-4 w-100 d-flex justify-content-center">
@@ -12,7 +49,7 @@ export default function Login({ darkMode }) {
         <hr className="bold-hr mid-aligment" />
       </div>
       <div className="w-50 my-4 position-relative">
-        <form className="mid-aligment">
+        <form className="mid-aligment" onSubmit={handleSubmit}>
           <div className="form-group my-4">
             <input
               type="email"
