@@ -28,21 +28,29 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   const [countPerPage, setCounPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
   const [questionsCount, setQuestionsCount] = useState(33);
+  const [questionsList, setQuestionsList] = useState([]); //new new
 
   //
 
-  const Questions = async () => {
+  const viewAllQuestions = async () => {
     try {
       const response = await getAllQuestions();
       console.log("All questions:", response.data);
+      setQuestionsList(response.data);
+      setQuestionsCount(response.data.length);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
   };
   // viewAllQuestions();
 
+  // Fetch questions when the component mounts
+  useEffect(() => {
+    viewAllQuestions();
+  }, []);
+
   function renderQuestions() {
-    const questionsList = questions.questions;
+    // const questionsList = questions.questions;
     return questionsList.map((q, index) => (
       <>
         <tr key={index}>
@@ -105,8 +113,6 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     console.log(
       "Category from `ViewQuestions`: ",
       category,
-      " and questions are: ",
-      questions
     );
   }, [category]);
   ///////////////
