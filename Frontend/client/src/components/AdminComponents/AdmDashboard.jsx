@@ -6,7 +6,6 @@ export default function AdmDashboard({ user, darkMode }) {
   const [expanded, setExpanded] = useState(false);
   const [userDetailes, setuserDetailes] = useState({ ...user });
 
-
   // Dummy Data for Dashboard
   const assessments = [
     { title: "Algorithm Challenge", date: "2025-02-20" },
@@ -28,33 +27,28 @@ export default function AdmDashboard({ user, darkMode }) {
 
   return (
     <div className="container my-5">
-<<<<<<< HEAD
-      <div className="row g-4">
+      <div className="row g-4 ">
         {/* Admin Profile */}
         <div className="col-lg-4">
           <div className="card shadow-sm h-100 text-center">
             <div
-              className={`card-body ${darkMode ? "bg-dark text-light" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
             >
               <h5>
                 Welcome,{" "}
                 <strong>
-                  {user.firstName} {user.lastName}
+                  {userDetailes.firstName} {userDetailes.lastName}
                 </strong>
               </h5>
-=======
-      <div className="row g-4 ">
-
-        {/* Admin Profile */}
-        <div className="col-lg-4">
-          <div className="card shadow-sm h-100 text-center">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}>
-              <h5>Welcome, <strong>{userDetailes.firstName} {userDetailes.lastName}</strong></h5>
->>>>>>> b7cdfb73da972fb8d3aebac1f0d9f713b1fc5b5d
               <p className={`${darkMode ? "text-white" : "text-muted"}`}>
                 {userDetailes.bio || "Admin for the coding platform."}
               </p>
-              <Link className="btn btn-primary btn-sm" to={`/profile/${userDetailes.id}`}>
+              <Link
+                className="btn btn-primary btn-sm"
+                to={`/profile/${userDetailes.id}`}
+              >
                 View Profile
               </Link>
             </div>
@@ -64,13 +58,11 @@ export default function AdmDashboard({ user, darkMode }) {
         {/* Overview Metrics */}
         <div className="col-lg-8">
           <div className="card shadow-sm h-100">
-<<<<<<< HEAD
             <div
-              className={`card-body ${darkMode ? "bg-dark text-light" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
             >
-=======
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}>
->>>>>>> b7cdfb73da972fb8d3aebac1f0d9f713b1fc5b5d
               <h5>Platform Overview</h5>
               <div className="row text-center mt-4">
                 <div className="col-md-3">
@@ -97,36 +89,25 @@ export default function AdmDashboard({ user, darkMode }) {
         {/* Active Assessments */}
         <div className="col-lg-7">
           <div className="card shadow-sm h-100">
-<<<<<<< HEAD
             <div
-              className={`card-body ${darkMode ? "bg-dark text-white" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
             >
               <div className="d-flex justify-content-between">
                 <h5>Active Assessments</h5>
-                <Link
-                  className="btn btn-primary btn-sm"
-                  to="/admin/assessments"
-                >
-=======
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}>
-              <div className="d-flex justify-content-between">
-                <h5>Active Assessments</h5>
                 <Link className="btn btn-primary btn-sm" to="/assessment/view">
->>>>>>> b7cdfb73da972fb8d3aebac1f0d9f713b1fc5b5d
                   Manage
                 </Link>
               </div>
               <ul className="list-group mt-4">
                 {assessments.slice(0, visibleCount).map((a, i) => (
-<<<<<<< HEAD
                   <li
                     key={i}
-                    className="list-group-item d-flex justify-content-between"
+                    className={`list-group-item d-flex justify-content-between ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
-=======
-                  <li key={i} className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""
-                    }`}>
->>>>>>> b7cdfb73da972fb8d3aebac1f0d9f713b1fc5b5d
                     {a.title} <span>{a.date}</span>
                   </li>
                 ))}
@@ -139,7 +120,11 @@ export default function AdmDashboard({ user, darkMode }) {
         </div>
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}>
+            <div
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
+            >
               <h5 className="card-title">Question Management</h5>
               <div className="mt-3">
                 {/* Total Questions */}
@@ -153,20 +138,23 @@ export default function AdmDashboard({ user, darkMode }) {
                 </p>
                 <ul className="list-group">
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
                     Coding: <span className="text-primary">20</span>
                   </li>
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
                     Multiple-Choice: <span className="text-primary">15</span>
                   </li>
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
                     Theoretical: <span className="text-primary">15</span>
                   </li>
@@ -179,24 +167,20 @@ export default function AdmDashboard({ user, darkMode }) {
         {/* User Management */}
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
-<<<<<<< HEAD
             <div
-              className={`card-body ${darkMode ? "bg-dark text-light" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
             >
               <h5>Users</h5>
               <ul className="list-group mt-3">
                 {users.map((user, i) => (
                   <li
                     key={i}
-                    className="list-group-item d-flex justify-content-between"
+                    className={`list-group-item d-flex justify-content-between ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
-=======
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}>
-              <h5>Users</h5>
-              <ul className="list-group mt-3">
-                {users.map((user, i) => (
-                  <li key={i} className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""}`}>
->>>>>>> b7cdfb73da972fb8d3aebac1f0d9f713b1fc5b5d
                     {user.name} <span>{user.role}</span>
                   </li>
                 ))}

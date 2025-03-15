@@ -110,10 +110,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
 
   ///////////////////////
   useEffect(() => {
-    console.log(
-      "Category from `ViewQuestions`: ",
-      category,
-    );
+    console.log("Category from `ViewQuestions`: ", category);
   }, [category]);
   ///////////////
   return (
@@ -136,6 +133,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 filterType={"Select Category:"}
                 items={categories}
                 handleFunction={handleCategory}
+                selectedValue={category}
               />
             </div>
             <div className="type">
@@ -144,6 +142,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 filterType={"Select Question Type:"}
                 items={questionTypes}
                 handleFunction={handleType}
+                selectedValue={questionType}
               />
             </div>
           </div>
