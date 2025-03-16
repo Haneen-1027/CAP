@@ -6,7 +6,7 @@ import { useDarkMode } from "./Context/DarkMode";
 
 function App() {
   const { darkMode } = useDarkMode();
-  let userDetailes = useState({
+  let [userDetailes, setUserDetails] = useState({
     id: "1234560",
     firstName: "Mena",
     lastName: "Admin",
@@ -16,7 +16,7 @@ function App() {
   });
 
   useEffect(() => {
-    console.log("App.jsx: ", userDetailes.role);
+    console.log("App.jsx: ", userDetailes);
   }, []);
 
   return (
@@ -34,9 +34,9 @@ function App() {
         }
       >
         {/* Header */}
-        <Header userDetailes={userDetailes[0]} darkMode={darkMode} />
+        <Header userDetailes={userDetailes} darkMode={darkMode} />
         {/* Main */}
-        <Main userDetailes={userDetailes[0]} darkMode={darkMode} />
+        <Main userDetailes={userDetailes} darkMode={darkMode} />
         {/* Footer */}
         <Footer darkMode={darkMode} />
       </Suspense>

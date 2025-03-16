@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Joi from "joi";
 import { addNewQuestion } from "../../../../APIs/ApisHandaler";
 import {
   BackBtn,
@@ -22,9 +23,11 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   const [detailes, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
 
-  //const [type, settype] = useState("");
-  //const [prompt, setprompt] = useState("");
-  //const [category, setcategory] = useState("");
+  //
+  let [errorList, setErrorList] = useState([]);
+  let [apiError, setApiError] = useState(false);
+
+  //
   const questionTypes = [
     { name: "Multible Choice", value: "mc" },
     { name: "Essay Question", value: "essay" },
@@ -41,6 +44,18 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   ];
 
   //
+  /* Validation Function */
+  function validateForm() {
+    const Schema = Joi.object({
+      type: Joi.string().trim().min(2).max(100).required(),
+      category: Joi.string().trim().min(2).max(15).required(),
+      prompt: Joi.string().required(),
+      detailes: Joi.object().required(),
+    });
+    return Schema.validate(question, { abortEarly: false });
+  }
+
+  //
   const handleGeneralChange = (e) => {
     const { name, value } = e.target;
     setQuestion((prevQuestion) => ({
@@ -50,28 +65,31 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   };
 
   const addQuestion = async (details) => {
+    // Call Validation Function
+    let validateResult = validateForm();
+    if (validateResult.error) {
+      setErrorList(validateResult.error.details);
+    } else {
+      const newQuestion = {
+        ...question,
+        ["detailes"]: detailes,
+      };
+      try {
+        await addNewQuestion(newQuestion)
+          .then((response) => {
+            console.log(`The axios response is: ${response}`);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      } catch (e) {
+        console.error(e);
+      }
+    }
     // setQuestion((prevQuestion) => ({
     //   ...prevQuestion,
     //   ["detailes"]: detailes,
     // }));
-    const newQuestion = {
-      ...question,
-      ["detailes"]: detailes,
-    };
-    try{
-      await addNewQuestion(newQuestion).then  (
-        (response)=>{
-          console.log( `The axios response is: ${response}`)
-        }
-      ).catch((e)=>{
-        console.error(e);
-      })
-
-      
-    }catch(e){
-      console.error(e);
-    }
-    
   };
 
   ////////////////////
@@ -109,7 +127,9 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               handleFunction={handleGeneralChange}
               name={"type"}
               isDisabled={isEditing}
-              selectedValue={data ? data.type : null}
+              selectedValue={
+                isEditing ? (data ? data.type : null) : question.type
+              }
             />
             <FilterableDropdown
               darkMode={darkMode}
@@ -117,7 +137,9 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               items={categories}
               handleFunction={handleGeneralChange}
               name={"category"}
-              selectedValue={data ? data.category : null}
+              selectedValue={
+                isEditing ? (data ? data.category : null) : question.category
+              }
             />
           </div>
         </div>
@@ -125,6 +147,12 @@ export default function AddQuestion({ userDetailes, darkMode }) {
           {" "}
           <hr className="bold-hr mid-aligment" />
         </div>
+        {errorList.map((error, index) => (
+          <div key={index} className="alert alert-danger">
+            {" "}
+            {error.message}{" "}
+          </div>
+        ))}
         <div className="details d-flex flex-column flex-start">
           <div className="form-group">
             <label className="h5 mid-bold" htmlFor="prompt">

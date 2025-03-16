@@ -28,14 +28,14 @@ import {
   UpdateAssessment,
   AssessmentOutlet,
   AttemptAssessment,
-  SubmittedAssessment
+  SubmittedAssessment,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
 
 function Main({ userDetailes, darkMode }) {
   useEffect(() => {
-    console.log("Main.jsx: ", userDetailes.role);
+    console.log("Main.jsx: ", userDetailes);
   }, []);
   return (
     <main className="container my-5">
