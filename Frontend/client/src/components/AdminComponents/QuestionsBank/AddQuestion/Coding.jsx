@@ -4,15 +4,15 @@ export default function Coding({
   darkMode,
   setQuestionDetails,
   isEditing,
-  detailes,
+  details,
 }) {
   const [inputsCount, setInputsCount] = useState(
-    detailes.inputsCount >= 0 ? detailes.inputsCount : 0
+    details.inputsCount >= 0 ? details.inputsCount : 0
   );
   const [testCasesCount, setTestCasesCount] = useState(
-    detailes.testCases.length
+    details.testCases.length
   );
-  const [testCases, setTestCases] = useState([...detailes.testCases]);
+  const [testCases, setTestCases] = useState([...details.testCases]);
 
   //
   const [isSticky, setIsSticky] = useState(false);
@@ -177,14 +177,14 @@ export default function Coding({
   }, [testCasesCount]);
   //
   useEffect(() => {
-    console.log("Details from Coding: ", detailes);
+    console.log("Details from Coding: ", details);
     setQuestionDetails({ inputsCount: inputsCount, testCases: [...testCases] });
   }, [testCases]);
   //
   useEffect(() => {
     const handleScroll = () => {
       if (stickyRef.current) {
-        console.log("stickyRef: ", stickyRef);
+        // console.log("stickyRef: ", stickyRef);
         const rect = stickyRef.current.getBoundingClientRect();
         setIsSticky(rect.top === 60);
       }

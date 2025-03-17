@@ -9,7 +9,7 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 import { useLocation, useParams } from "react-router-dom";
 
-export default function AddQuestion({ userDetailes, darkMode }) {
+export default function AddQuestion({ userdetails, darkMode }) {
   const location = useLocation();
   const { data } = location.state || {};
   const { id } = useParams();
@@ -18,9 +18,9 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     type: "",
     category: "",
     prompt: "",
-    detailes: {},
+    details: {},
   });
-  const [detailes, setQuestionDetails] = useState({});
+  const [details, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
 
@@ -48,10 +48,11 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   /* Validation Function */
   function validateForm() {
     const Schema = Joi.object({
+      id: Joi.number(),
       type: Joi.string().trim().min(2).max(100).required(),
       category: Joi.string().trim().min(2).max(15).required(),
       prompt: Joi.string().required(),
-      detailes: Joi.object(),
+      details: Joi.object(),
     });
     return Schema.validate(question, { abortEarly: false });
   }
@@ -73,11 +74,12 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     } else {
       const newQuestion = {
         ...question,
-        ["detailes"]: detailes,
+        ["details"]: details,
       };
       try {
         // Update?
         if (isEditing) {
+          console.log("question before update:", question);
           await updateQuestion(newQuestion)
             .then((response) => {
               console.log(`The axios response is: ${response}`);
@@ -111,6 +113,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     } else {
       setIsLoading(false); // If not editing, no need to wait for data
     }
+    console.log(`state data:`, data)
   }, []);
 
   // Track when the question state is fully set
@@ -180,13 +183,13 @@ export default function AddQuestion({ userDetailes, darkMode }) {
 
           {isLoading ? (
             <div>Loading...</div> // Show a loading indicator while data is being loaded
-          ) : question["type"] === "mc" && question.detailes ? (
+          ) : question["type"] === "mc" && question.details ? (
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
-              detailes={
+              details={
                 isEditing
-                  ? { ...question.detailes }
+                  ? { ...question.details }
                   : {
                       isTrueFalse: false,
                       correctAnswer: [],
@@ -196,14 +199,14 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             />
           ) : question["type"] === "essay" ? (
             <div></div>
-          ) : question["type"] === "coding" && question.detailes ? (
+          ) : question["type"] === "coding" ? (
             <Coding
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
               isEditing={isEditing}
-              detailes={
+              details={
                 isEditing
-                  ? question.detailes
+                  ? data.details
                   : {
                       inputsCount: 0,
                       testCases: [

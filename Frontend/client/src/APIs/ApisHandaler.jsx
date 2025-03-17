@@ -31,7 +31,7 @@ export const addNewQuestion = async (question) => {
 //
 export const updateQuestion = async (question) => {
   return await axios.put(
-    `${BASE_URL}/questions/${question.QuestionId}`,
+    `${BASE_URL}/questions/${question.id}`,
     question,
     {
       headers: {
