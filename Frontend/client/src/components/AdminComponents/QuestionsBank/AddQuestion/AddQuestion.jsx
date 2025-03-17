@@ -113,7 +113,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
     } else {
       setIsLoading(false); // If not editing, no need to wait for data
     }
-    console.log(`state data:`, data)
+    console.log(`state data:`, data);
   }, []);
 
   // Track when the question state is fully set
@@ -187,7 +187,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
-              details={
+              detailes={
                 isEditing
                   ? { ...question.details }
                   : {
