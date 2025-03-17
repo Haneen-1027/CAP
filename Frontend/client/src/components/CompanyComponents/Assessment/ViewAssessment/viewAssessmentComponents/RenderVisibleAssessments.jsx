@@ -7,8 +7,11 @@ export default function RenderVisibleAssessments({
   assessments,
   deleteAssessment,
   timeFilteration,
+  currentDate,
+  isUpComing,
 }) {
   console.log("assess: ", assessments);
+
   function renderAssessments() {
     return assessments.map((assess, index) => {
       if (
@@ -16,13 +19,20 @@ export default function RenderVisibleAssessments({
         assess.time < timeFilteration.end_date
       )
         return (
-          <tr key={index}>
+          <tr
+            key={index}
+            className={`${assess.time === currentDate ? "alert-row" : ""}`}
+          >
             <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
             <td className="">
               <strong>{assess.name}</strong>
             </td>
             {role === "Admin" ? <td>{assess.createdBy}</td> : ""}
-            <td>{assess.time}</td>
+            <td
+              title={`Start${isUpComing ? "" : "ed"} at: ${assess.start_time}`}
+            >
+              {assess.time}
+            </td>
             <td>
               <span className="bg-label-primary text-primary me-1">
                 {assess.questions.length}
