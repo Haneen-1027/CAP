@@ -181,7 +181,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
 
           {isLoading ? (
             <div>Loading...</div> // Show a loading indicator while data is being loaded
-          ) : question["type"] === "mc" ? (
+          ) : question["type"] === "mc" && question.detailes ? (
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
@@ -197,7 +197,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             />
           ) : question["type"] === "essay" ? (
             <div></div>
-          ) : question["type"] === "coding" ? (
+          ) : question["type"] === "coding" && question.detailes ? (
             <Coding
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
