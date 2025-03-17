@@ -22,7 +22,6 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   });
   const [detailes, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   //
   let [errorList, setErrorList] = useState([]);
@@ -100,6 +99,10 @@ export default function AddQuestion({ userDetailes, darkMode }) {
         console.error(e);
       }
     }
+    // setQuestion((prevQuestion) => ({
+    //   ...prevQuestion,
+    //   ["detailes"]: detailes,
+    // }));
   };
 
   ////////////////////
@@ -107,19 +110,14 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     if (id) {
       setIsEditing(true);
       setQuestionId(id);
-      setQuestion(data); // Set the question state with the passed data
+      setQuestion(data);
       console.log("This is an update for existing Question: ", id);
-    } else {
-      setIsLoading(false); // If not editing, no need to wait for data
     }
-  }, [id, data]);
-
-  // Track when the question state is fully set
+    console.log("State Data: ", data, " and locateion: ", location.state);
+  }, []);
   useEffect(() => {
-    if (isEditing && question.type && question.category && question.prompt) {
-      setIsLoading(false); // Data is ready
-    }
-  }, [question, isEditing]);
+    console.log("Question: ", question);
+  }, [question]);
 
   ////////////////////
   return (
@@ -179,15 +177,13 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             />
           </div>
 
-          {isLoading ? (
-            <div>Loading...</div> // Show a loading indicator while data is being loaded
-          ) : question["type"] === "mc" && question.detailes ? (
+          {question["type"] === "mc" ? (
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
               detailes={
                 isEditing
-                  ? { ...question.detailes }
+                  ? { ...data.detailes }
                   : {
                       isTrueFalse: false,
                       correctAnswer: [],
@@ -197,14 +193,14 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             />
           ) : question["type"] === "essay" ? (
             <div></div>
-          ) : question["type"] === "coding" && question.detailes ? (
+          ) : question["type"] === "coding" ? (
             <Coding
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
               isEditing={isEditing}
               detailes={
                 isEditing
-                  ? question.detailes
+                  ? { ...data.detailes }
                   : {
                       inputsCount: 0,
                       testCases: [
