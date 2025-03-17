@@ -68,6 +68,16 @@ export const getQuestionById = async (id) => {
   });
 };
 
+// Assessment APIs:
+
+export const addNewAssessment = async (assessment) => {
+  return await axios.post(`${BASE_URL}/assessments`, assessment, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;
