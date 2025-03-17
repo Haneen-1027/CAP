@@ -177,12 +177,7 @@ export default function Coding({
   }, [testCasesCount]);
   //
   useEffect(() => {
-    console.log(
-      "TestCasesCount: ",
-      testCasesCount,
-      ", and the array is: ",
-      testCases
-    );
+    console.log("Details from Coding: ", detailes);
     setQuestionDetails({ inputsCount: inputsCount, testCases: [...testCases] });
   }, [testCases]);
   //
