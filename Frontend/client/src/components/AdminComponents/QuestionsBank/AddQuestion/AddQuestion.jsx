@@ -140,9 +140,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               handleFunction={handleGeneralChange}
               name={"type"}
               isDisabled={isEditing}
-              selectedValue={
-                isEditing ? (data ? data.type : null) : question.type
-              }
+              selectedValue={question.type}
             />
             <FilterableDropdown
               darkMode={darkMode}
@@ -150,9 +148,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               items={categories}
               handleFunction={handleGeneralChange}
               name={"category"}
-              selectedValue={
-                isEditing ? (data ? data.category : null) : question.category
-              }
+              selectedValue={question.category}
             />
           </div>
         </div>
@@ -177,7 +173,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               name="prompt"
               placeholder="Question ..."
               onChange={(e) => handleGeneralChange(e)}
-              value={data ? data.prompt : question.prompt}
+              value={question.prompt}
             />
           </div>
           {question["type"] === "mc" ? (
