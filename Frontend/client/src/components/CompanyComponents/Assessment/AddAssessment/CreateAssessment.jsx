@@ -292,25 +292,25 @@ export default function CreateAssessment({ darkMode }) {
   function selectQuestion(e, id, q) {
     const { name, value } = e.target;
     const selectedQuestions = [...assessment.questions_ids];
-  
+
     if (name === "questionID") {
       if (e.target.checked) {
         // Add the question with an initial mark of 0
         let optionsCount = 0; // Default options count for multiple-choice questions
-  
+
         // Only calculate options_count for multiple-choice questions
         if (q.type === "mc") {
           const correctCount = q.correctAnswer?.length || 0;
           const wrongCount = q.wrongOptions?.length || 0;
           optionsCount = correctCount > 3 ? correctCount : 4;
         }
-  
+
         selectedQuestions.push({
           id: id,
           mark: 1,
           options_count: optionsCount,
         });
-  
+
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
           questions_ids: selectedQuestions,
@@ -336,14 +336,23 @@ export default function CreateAssessment({ darkMode }) {
     } else if (name === "mark") {
       let newValue = value;
       if (value.trim() === "") newValue = 0;
-  
-      const remainingTotalMark =
-        assessment.total_mark -
-        assessment.questions_ids.reduce((total, q) => total + q.mark, 0);
-  
+
+      // Find the current question being updated
+      const currentQuestion = selectedQuestions.find(
+        (question) => question.id === id
+      );
+
+      // Calculate the sum of marks for all questions EXCEPT the current one
+      const sumOfOtherMarks = assessment.questions_ids.reduce((total, q) => {
+        return q.id === id ? total : total + q.mark;
+      }, 0);
+
+      // Calculate the remaining total mark, accounting for the current question's mark
+      const remainingTotalMark = assessment.total_mark - sumOfOtherMarks;
+
       // Ensure the new mark does not exceed the remaining total mark
       const newMark = Math.min(parseInt(newValue, 10), remainingTotalMark);
-  
+
       // Update the mark of the specific question
       const updatedQuestions = selectedQuestions.map((question) => {
         if (question.id === id) {
@@ -355,30 +364,30 @@ export default function CreateAssessment({ darkMode }) {
         }
         return question;
       });
-  
+
       setAssessment((prevAssessment) => ({
         ...prevAssessment,
         questions_ids: updatedQuestions,
       }));
     } else if (name === "options_count") {
       console.log("qqqq:", q);
-  
+
       // Only apply options_count logic for multiple-choice questions
       if (q.type === "mc") {
         const correctCount = q.correctAnswer?.length || 0; // Default to 0 if undefined
         const wrongCount = q.wrongOptions?.length || 0; // Default to 0 if undefined
         const minOptionsCount = correctCount > 3 ? correctCount : 4;
         const maxOptionsCount = correctCount + wrongCount;
-  
+
         let newOptionsCount = parseInt(value, 10);
-  
+
         // Enforce the minimum and maximum limits
         if (newOptionsCount < minOptionsCount) {
           newOptionsCount = minOptionsCount;
         } else if (newOptionsCount > maxOptionsCount) {
           newOptionsCount = maxOptionsCount;
         }
-  
+
         // Update the question's options count
         const updatedQuestions = selectedQuestions.map((question) => {
           if (question.id === id) {
@@ -386,7 +395,7 @@ export default function CreateAssessment({ darkMode }) {
           }
           return question;
         });
-  
+
         // Update state
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
