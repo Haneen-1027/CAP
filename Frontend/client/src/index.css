@@ -80,20 +80,21 @@ canvas {
 }
 
 /* Ensure these rules have higher specificity */
+.form-input,
+textarea {
+  border-radius: 5px;
+  box-shadow: 0px 15px 5px -15px rgba(0, 0, 0, 0.3) !important;
+}
 .custom-form input:focus,
 .custom-form textarea:focus {
-  border-radius: 5px;
   border-color: var(--Primary_Buttons) !important;
-  box-shadow: 0px 15px 5px -15px rgba(0, 0, 0, 0.8) !important;
-  outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
+  outline: 1px solid var(--Primary_Buttons) !important;
 }
 
 /* If you have other specific input classes, add them as well */
 input.form-input:focus,
 textarea.form-input:focus {
-  border-radius: 5px;
   border-color: var(--Primary_Buttons) !important;
-  box-shadow: 0px 15px 5px -15px rgba(0, 0, 0, 0.8) !important;
   outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
 }
 
@@ -340,7 +341,33 @@ textarea.form-input:focus {
 .overflow-xAxis {
   overflow-x: auto !important;
 }
+
+.alert-row {
+  animation: alert 1.5s ease infinite;
+}
+.alert-row td {
+  color: var(--Headers_Colors) !important;
+}
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
+/* Important */
+@keyframes alert {
+  0% {
+    opacity: 100%;
+  }
+  40% {
+    opacity: 70%;
+  }
+  60% {
+    opacity: 50%;
+  }
+  80% {
+    opacity: 70%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
 /* Typing */
 @keyframes typing {
   0% {

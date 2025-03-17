@@ -75,13 +75,26 @@ export default function AddQuestion({ userDetailes, darkMode }) {
         ["detailes"]: detailes,
       };
       try {
-        await addNewQuestion(newQuestion)
-          .then((response) => {
-            console.log(`The axios response is: ${response}`);
-          })
-          .catch((e) => {
-            console.error(e);
-          });
+        // Update?
+        if (isEditing) {
+          await updateQuestion(newQuestion)
+            .then((response) => {
+              console.log(`The axios response is: ${response}`);
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+        }
+        // Add
+        else {
+          await addNewQuestion(newQuestion)
+            .then((response) => {
+              console.log(`The axios response is: ${response}`);
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+        }
       } catch (e) {
         console.error(e);
       }

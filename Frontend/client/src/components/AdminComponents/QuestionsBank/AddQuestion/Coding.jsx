@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 export default function Coding({
   darkMode,
@@ -13,6 +13,11 @@ export default function Coding({
     detailes.testCases.length
   );
   const [testCases, setTestCases] = useState([...detailes.testCases]);
+
+  //
+  const [isSticky, setIsSticky] = useState(false);
+  const stickyRef = useRef(null);
+
   //
   function handleExpectedOutput(e, index) {
     const { value } = e.target;
@@ -182,14 +187,29 @@ export default function Coding({
   }, [testCases]);
   //
   useEffect(() => {
-    console.log("TTTTYYYYPPPEEE: ", detailes);
+    const handleScroll = () => {
+      if (stickyRef.current) {
+        console.log("stickyRef: ", stickyRef);
+        const rect = stickyRef.current.getBoundingClientRect();
+        setIsSticky(rect.top === 60);
+      }
+    };
+
+    ///
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
   //////////////////////////////////////////
   return (
     <>
       <div className="d-flex flex-column">
         <div
-          className="position-sticky d-flex flex-column flex-md-row justify-content-center align-items-center gap-3  gap-md-0 my-3 "
+          ref={stickyRef}
+          className={`position-sticky d-flex flex-column flex-md-row justify-content-center align-items-center gap-3  gap-md-0 my-3 ${
+            isSticky ? "all-Mid-shadow" : ""
+          }`}
           style={{
             top: "60px",
             zIndex: 1000,

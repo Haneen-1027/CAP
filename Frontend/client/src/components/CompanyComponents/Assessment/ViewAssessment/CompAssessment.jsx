@@ -20,6 +20,11 @@ export default function CompAssessment({ user, darkMode }) {
   const [searchValue, setSearchValue] = useState("");
   let [searchResults, setSearchResults] = useState([]);
 
+  //
+  const [curDate, setCurDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
   const [timeFilteration, setTimeFilteration] = useState({
     start_date: "2024-01-01",
     end_date: "2025-12-08",
@@ -61,7 +66,7 @@ export default function CompAssessment({ user, darkMode }) {
     const currentDate = new Date().toISOString().split("T")[0]; // Get current date in "yyyy-mm-dd" format
     if (showSchdAssessments) {
       const visbAssessments = assessments.filter(
-        (asses) => asses.time > currentDate
+        (asses) => asses.time >= currentDate
       );
       setVisibleList(visbAssessments);
     } else {
@@ -86,7 +91,7 @@ export default function CompAssessment({ user, darkMode }) {
         >
           <h5 className="text-center mb-0">
             <strong>
-              {showSchdAssessments ? "Scheduled" : "Completed"} Assessments:
+              {showSchdAssessments ? "UpComing" : "Completed"} Assessments:
             </strong>
           </h5>
           <Link
@@ -121,6 +126,8 @@ export default function CompAssessment({ user, darkMode }) {
           role={user.role}
           deleteAssessment={deleteAssessment}
           timeFilteration={timeFilteration}
+          currentDate={curDate}
+          isUpComing={showSchdAssessments}
         />
       </div>
     </>
