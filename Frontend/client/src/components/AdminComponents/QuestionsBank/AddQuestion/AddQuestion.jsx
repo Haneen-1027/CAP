@@ -22,7 +22,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
   });
   const [detailes, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // New loading state
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   //
   let [errorList, setErrorList] = useState([]);
@@ -107,16 +107,19 @@ export default function AddQuestion({ userDetailes, darkMode }) {
     if (id) {
       setIsEditing(true);
       setQuestionId(id);
-      setQuestion(data);
-      setIsLoading(false); // Data has been loaded
+      setQuestion(data); // Set the question state with the passed data
       console.log("This is an update for existing Question: ", id);
+    } else {
+      setIsLoading(false); // If not editing, no need to wait for data
     }
-    console.log("State Data: ", data, " and locateion: ", location.state);
   }, [id, data]);
 
+  // Track when the question state is fully set
   useEffect(() => {
-    console.log("Question: ", question);
-  }, [question]);
+    if (isEditing && question.type && question.category && question.prompt) {
+      setIsLoading(false); // Data is ready
+    }
+  }, [question, isEditing]);
 
   ////////////////////
   return (
@@ -176,7 +179,9 @@ export default function AddQuestion({ userDetailes, darkMode }) {
             />
           </div>
 
-          {!isLoading && question["type"] === "mc" ? (
+          {isLoading ? (
+            <div>Loading...</div> // Show a loading indicator while data is being loaded
+          ) : question["type"] === "mc" ? (
             <MultipleChoice
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
@@ -190,9 +195,9 @@ export default function AddQuestion({ userDetailes, darkMode }) {
                     }
               }
             />
-          ) : !isLoading && question["type"] === "essay" ? (
+          ) : question["type"] === "essay" ? (
             <div></div>
-          ) : !isLoading && question["type"] === "coding" ? (
+          ) : question["type"] === "coding" ? (
             <Coding
               darkMode={darkMode}
               setQuestionDetails={setQuestionDetails}
