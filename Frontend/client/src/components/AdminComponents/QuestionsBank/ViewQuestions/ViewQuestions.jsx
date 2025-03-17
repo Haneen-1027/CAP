@@ -5,7 +5,7 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 // import questions from "./test.json"; // Get from API
 import { Link } from "react-router-dom";
-import { getAllQuestions } from "../../../../APIs/ApisHandaler";
+import { getAllQuestions, deleteQuestion } from "../../../../APIs/ApisHandaler";
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
@@ -49,6 +49,19 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     viewAllQuestions();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteQuestion(id); // Call the delete API
+      setQuestionsList((prevQuestions) =>
+        prevQuestions.filter((q) => q.id !== id)
+      ); // Remove the question from the state
+      setQuestionsCount((prevCount) => prevCount - 1); // Update the count
+      console.log("Question deleted successfully");
+    } catch (error) {
+      console.error("Error deleting question:", error);
+    }
+  };
+
   function renderQuestions() {
     // const questionsList = questions.questions;
     return questionsList.map((q, index) => (
@@ -81,7 +94,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
           </td>
           <td className="gap-2">
             <Link
-              to={`/admin/questions_bank/preview/${1234}`}
+              to={`/admin/questions_bank/preview/${q.id}`}
               state={{ question: q }}
               className={`btn view-button ${darkMode ? "text-light" : ""}`}
             >
@@ -89,6 +102,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
             </Link>
             <div
               className={`btn delete-button ${darkMode ? "text-light" : ""}`}
+              onClick={()=>handleDelete(q.id)}
             >
               <i className="fa-solid fa-trash" />
             </div>

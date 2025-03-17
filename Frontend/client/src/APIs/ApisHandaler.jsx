@@ -50,6 +50,24 @@ export const getAllQuestions = async () => {
   });
 };
 
+//
+export const deleteQuestion = async (id) => {
+  return await axios.delete(`${BASE_URL}/questions/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+//
+export const getQuestionById = async (id) => {
+  return await axios.get(`${BASE_URL}/questions/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;
