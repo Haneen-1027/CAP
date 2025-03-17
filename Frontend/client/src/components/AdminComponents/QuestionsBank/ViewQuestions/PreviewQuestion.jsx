@@ -46,17 +46,17 @@ export default function PreviewQuestion({ darkMode }) {
             <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
               <div className="">
                 {question
-                  ? question.general.type === "mc"
+                  ? question.type === "mc"
                     ? "Multiple Choice"
-                    : question.general.type === "essay"
+                    : question.type === "essay"
                     ? "Essay"
-                    : question.general.type === "coding"
+                    : question.type === "coding"
                     ? "Code-Based"
                     : "Non-valid Type"
                   : "No Data"}
               </div>
               <div className="">
-                {question ? question.general.category : "No Data"}
+                {question ? question.category : "No Data"}
               </div>
             </div>
           </div>
@@ -75,19 +75,19 @@ export default function PreviewQuestion({ darkMode }) {
                 name="questionPrompt"
                 placeholder="Question ..."
                 value={
-                  question ? question.general.prompt : "Question Prompt ..."
+                  question ? question.prompt : "Question Prompt ..."
                 }
                 disabled
               />
             </div>
-            {question?.general.type === "mc" ? ( // Use optional chaining
+            {question?.type === "mc" ? ( // Use optional chaining
               <div>Multiple Choice Question Details</div>
-            ) : question?.general.type === "essay" ? (
+            ) : question?.type === "essay" ? (
               <div>Essay Question Details</div>
-            ) : question?.general.type === "coding" ? (
+            ) : question?.type === "coding" ? (
               <div>
                 <h5>Test Cases:</h5>
-                {question.general.details.testCases.map((testCase, index) => (
+                {question.details.testCases.map((testCase, index) => (
                   <div key={index}>
                     <p>
                       <strong>Inputs:</strong> {testCase.inputs.join(", ")}

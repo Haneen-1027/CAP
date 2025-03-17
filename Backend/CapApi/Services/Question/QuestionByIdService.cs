@@ -26,13 +26,10 @@ public class QuestionByIdService(CapDbContext context) : ControllerBase
                 .Select(q => new
                 {
                     q.Id,
-                    General = new
-                    {
-                        q.Type,
-                        q.Prompt,
-                        q.Category,
-                        Details = GetDetailsBasedOnType(q)
-                    }
+                    q.Type,
+                    q.Prompt,
+                    q.Category,
+                    Details = GetDetailsBasedOnType(q)
                 })
                 .FirstOrDefaultAsync();
 
