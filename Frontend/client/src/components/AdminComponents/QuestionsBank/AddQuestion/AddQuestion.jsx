@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Joi from "joi";
-import { addNewQuestion } from "../../../../APIs/ApisHandaler";
+import { addNewQuestion, updateQuestion } from "../../../../APIs/ApisHandaler";
 import {
   BackBtn,
   Coding,
@@ -159,7 +159,7 @@ export default function AddQuestion({ userDetailes, darkMode }) {
               Question:
             </label>
             <textarea
-              className="form-control mt-2 mb-4"
+              className="form-control my-2"
               id="prompt"
               name="prompt"
               placeholder="Question ..."

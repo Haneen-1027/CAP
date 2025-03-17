@@ -79,6 +79,24 @@ canvas {
   max-height: inherit;
 }
 
+/* Ensure these rules have higher specificity */
+.custom-form input:focus,
+.custom-form textarea:focus {
+  border-radius: 5px;
+  border-color: var(--Primary_Buttons) !important;
+  box-shadow: 0px 15px 5px -15px rgba(0, 0, 0, 0.8) !important;
+  outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
+}
+
+/* If you have other specific input classes, add them as well */
+input.form-input:focus,
+textarea.form-input:focus {
+  border-radius: 5px;
+  border-color: var(--Primary_Buttons) !important;
+  box-shadow: 0px 15px 5px -15px rgba(0, 0, 0, 0.8) !important;
+  outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
+}
+
 /* Shadow Section */
 .all-light-shadow {
   box-shadow: 0px 15px 5px -15px rgb(0 0 0 / 15%) !important;

@@ -188,7 +188,15 @@ export default function Coding({
   return (
     <>
       <div className="d-flex flex-column">
-        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3  gap-md-0 my-3">
+        <div
+          className="position-sticky d-flex flex-column flex-md-row justify-content-center align-items-center gap-3  gap-md-0 my-3 "
+          style={{
+            top: "60px",
+            zIndex: 1000,
+            backgroundColor: darkMode ? "#333" : "#fff", // Match your theme
+            padding: "2rem 0", // Add padding for better spacing
+          }}
+        >
           <div className="d-flex justify-content-center flex-column flex-md-row align-items-center gap-2">
             <label
               className="form-label h6 mid-bold m-0"
