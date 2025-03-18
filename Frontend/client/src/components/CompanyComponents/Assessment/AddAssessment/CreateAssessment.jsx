@@ -345,7 +345,6 @@ export default function CreateAssessment({ darkMode }) {
           optionsCount = correctCount > 3 ? correctCount : 4;
           question = { ...question, ["options_count"]: optionsCount };
         }
-        console.log("2, optionsCount: ", optionsCount);
 
         selectedQuestions.push(question);
 
