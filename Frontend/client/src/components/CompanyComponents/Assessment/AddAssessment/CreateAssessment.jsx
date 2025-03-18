@@ -262,7 +262,12 @@ export default function CreateAssessment({ darkMode }) {
                 title="Number of Options for Multiple Choice question."
                 disabled={!isChecked}
                 onChange={(e) =>
-                  selectQuestion(e, questionId, question.detailes)
+                  selectQuestion(
+                    e,
+                    questionId,
+                    question.detailes,
+                    question.type
+                  )
                 }
                 value={
                   isChecked
@@ -282,7 +287,9 @@ export default function CreateAssessment({ darkMode }) {
               defaultValue
               id="questionID"
               name="questionID"
-              onChange={(e) => selectQuestion(e, questionId, question.detailes)}
+              onChange={(e) =>
+                selectQuestion(e, questionId, question.detailes, question.type)
+              }
               checked={isChecked}
               disabled={isDisabled}
               title="Add this question to assessment"
@@ -315,7 +322,7 @@ export default function CreateAssessment({ darkMode }) {
     }
   }
   // Handle the selecting of new question
-  function selectQuestion(e, id, q) {
+  function selectQuestion(e, id, q, q_type) {
     const { name, value } = e.target;
     const selectedQuestions = [...assessment.questions_ids];
 
@@ -323,13 +330,16 @@ export default function CreateAssessment({ darkMode }) {
       if (e.target.checked) {
         // Add the question with an initial mark of 0
         let optionsCount = 0; // Default options count for multiple-choice questions
+        console.log("1, Q: ", q);
 
         // Only calculate options_count for multiple-choice questions
-        if (q.type === "mc") {
+        if (q_type === "mc") {
+          console.log("Tyyype: mc");
           const correctCount = q.correctAnswer?.length || 0;
           const wrongCount = q.wrongOptions?.length || 0;
           optionsCount = correctCount > 3 ? correctCount : 4;
         }
+        console.log("2, optionsCount: ", optionsCount);
 
         selectedQuestions.push({
           id: id,
@@ -397,9 +407,8 @@ export default function CreateAssessment({ darkMode }) {
       }));
     } else if (name === "options_count") {
       console.log("qqqq:", q);
-
       // Only apply options_count logic for multiple-choice questions
-      if (q.type === "mc") {
+      if (q_type === "mc") {
         const correctCount = q.correctAnswer?.length || 0; // Default to 0 if undefined
         const wrongCount = q.wrongOptions?.length || 0; // Default to 0 if undefined
         const minOptionsCount = correctCount > 3 ? correctCount : 4;
@@ -453,6 +462,10 @@ export default function CreateAssessment({ darkMode }) {
     console.log("Search Value: ", searchValue);
     handleSearching();
   }, [searchValue]);
+  useEffect(() => {
+    // Search for a question when the search value changes
+    console.log("Assessment: ", assessment);
+  }, [assessment]);
 
   useEffect(() => {
     if (id) {
