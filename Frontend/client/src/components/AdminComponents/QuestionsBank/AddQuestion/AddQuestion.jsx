@@ -92,6 +92,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
         }
         // Add
         else {
+          console.log("question before update for add:", newQuestion);
           await addNewQuestion(newQuestion)
             .then((response) => {
               console.log(`The axios response is: ${response}`);
@@ -100,6 +101,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
               console.error(e);
             });
         }
+        
       } catch (e) {
         console.error(e);
       }

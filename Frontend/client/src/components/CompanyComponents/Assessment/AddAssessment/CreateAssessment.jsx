@@ -681,7 +681,7 @@ export default function CreateAssessment({ darkMode }) {
           {/** Button to Submit */}
           <div className="card-header row m-0 d-flex align-items-md-center">
             <div className="mid-aligment d-flex justify-content-center w-50">
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="btn btn-primary" onClick={()=>addAssessment()}>
                 {isEditing ? "Update Assessment" : "Add Assessment"}
               </button>
             </div>

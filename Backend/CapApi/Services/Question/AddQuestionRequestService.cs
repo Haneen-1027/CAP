@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CapApi.Data;
 using CapApi.Dtos.Question;
 using CapApi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace CapApi.Services.Question;
 
@@ -34,19 +35,20 @@ public class AddQuestionRequestService(CapDbContext context) : ControllerBase
             switch (question.Type)
             {
                 case "mc":
-                    if (string.IsNullOrWhiteSpace(details.CorrectAnswer) || details.WrongOptions == null ||
-                        details.WrongOptions.Count == 0)
+                    if (details.CorrectAnswer == null || !details.CorrectAnswer.Any() || 
+                        details.WrongOptions == null || details.WrongOptions.Count == 0 || details.IsTrueFalse == false)
                     {
                         return BadRequest(new
-                            { Message = "MCQ must have a correct answer and at least one wrong option." });
+                        {
+                            Message = "MCQ must have at least one correct answer and at least one wrong option."
+                        });
                     }
 
                     question.McqQuestion = new McqQuestion
                     {
                         IsTrueFalse = details.IsTrueFalse ?? false,
-                        CorrectAnswer = details.CorrectAnswer.Trim(),
-                        WrongOptions = details.WrongOptions.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x))
-                            .ToList()
+                        CorrectAnswer = details.CorrectAnswer.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList(),
+                        WrongOptions = details.WrongOptions.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList()
                     };
                     break;
 
@@ -59,7 +61,9 @@ public class AddQuestionRequestService(CapDbContext context) : ControllerBase
                         details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
                     {
                         return BadRequest(new
-                            { Message = "Coding questions must have test cases, inputsCount, and a description." });
+                        {
+                            Message = "Coding questions must have test cases, inputsCount, and a description."
+                        });
                     }
 
                     if (details.TestCases != null)
@@ -86,7 +90,6 @@ public class AddQuestionRequestService(CapDbContext context) : ControllerBase
                             TestCases = testCases
                         };
                     }
-
                     break;
 
                 default:

@@ -82,7 +82,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
           <td className="text-start">
             {q.type
               ? q.type === "mc"
-                ? q.detailes.isTrueFalse === true
+                ? q.detailes?.isTrueFalse === true
                   ? "True/False"
                   : "Multiple Choice"
                 : q.type === "essay"
