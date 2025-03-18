@@ -35,8 +35,8 @@ public class AddQuestionRequestService(CapDbContext context) : ControllerBase
             switch (question.Type)
             {
                 case "mc":
-                    if (details.CorrectAnswer == null || !details.CorrectAnswer.Any() || 
-                        details.WrongOptions == null || details.WrongOptions.Count == 0 || details.IsTrueFalse == false)
+                    if ((details.CorrectAnswer == null || !details.CorrectAnswer.Any() || 
+                        details.WrongOptions == null || details.WrongOptions.Count == 0) && details.IsTrueFalse == false)
                     {
                         return BadRequest(new
                         {
