@@ -60,11 +60,11 @@ export default function CreateAssessment({ darkMode }) {
           name: "",
           duration: "",
           time: "",
-          start_time: "",
-          end_time: "",
-          total_mark: 0,
-          questions_count: 0,
-          questions_ids: [],
+          startTime: "",
+          endTime: "",
+          totalMark: 0,
+          questionsCount: 0,
+          questionsIds: [],
         }
   );
   const [questionsCount, setQuestionsCount] = useState(0);
@@ -198,15 +198,15 @@ export default function CreateAssessment({ darkMode }) {
   function renderQuestions() {
     return visibleList.map((question, index) => {
       const questionId = `Id${index + question.prompt}`;
-      const isChecked = assessment.questions_ids.some(
+      const isChecked = assessment.questionsIds.some(
         (q) => q.id === questionId
       );
       const remainingTotalMark =
-        assessment.total_mark -
-        assessment.questions_ids.reduce((total, q) => total + q.mark, 0);
+        assessment.totalMark -
+        assessment.questionsIds.reduce((total, q) => total + q.mark, 0);
       const isDisabled =
         !isChecked &&
-        (assessment.questions_ids.length >= assessment.questions_count ||
+        (assessment.questionsIds.length >= assessment.questionsCount ||
           remainingTotalMark === 0);
 
       return (
@@ -246,7 +246,7 @@ export default function CreateAssessment({ darkMode }) {
               onChange={(e) => selectQuestion(e, questionId)}
               value={
                 isChecked
-                  ? assessment.questions_ids.find((q) => q.id === questionId)
+                  ? assessment.questionsIds.find((q) => q.id === questionId)
                       ?.mark || 0
                   : ""
               }
@@ -271,7 +271,7 @@ export default function CreateAssessment({ darkMode }) {
                 }
                 value={
                   isChecked
-                    ? assessment.questions_ids.find((q) => q.id === questionId)
+                    ? assessment.questionsIds.find((q) => q.id === questionId)
                         ?.options_count || 0
                     : ""
                 }
@@ -324,7 +324,7 @@ export default function CreateAssessment({ darkMode }) {
   // Handle the selecting of new question
   function selectQuestion(e, id, q, q_type) {
     const { name, value } = e.target;
-    const selectedQuestions = [...assessment.questions_ids];
+    const selectedQuestions = [...assessment.questionsIds];
 
     if (name === "questionID") {
       if (e.target.checked) {
@@ -349,7 +349,7 @@ export default function CreateAssessment({ darkMode }) {
 
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
-          questions_ids: selectedQuestions,
+          questionsIds: selectedQuestions,
         }));
       } else {
         // Remove the question if unchecked
@@ -366,7 +366,7 @@ export default function CreateAssessment({ darkMode }) {
         );
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
-          questions_ids: updatedQuestions,
+          questionsIds: updatedQuestions,
         }));
       }
     } else if (name === "mark") {
@@ -379,12 +379,12 @@ export default function CreateAssessment({ darkMode }) {
       );
 
       // Calculate the sum of marks for all questions EXCEPT the current one
-      const sumOfOtherMarks = assessment.questions_ids.reduce((total, q) => {
+      const sumOfOtherMarks = assessment.questionsIds.reduce((total, q) => {
         return q.id === id ? total : total + q.mark;
       }, 0);
 
       // Calculate the remaining total mark, accounting for the current question's mark
-      const remainingTotalMark = assessment.total_mark - sumOfOtherMarks;
+      const remainingTotalMark = assessment.totalMark - sumOfOtherMarks;
 
       // Ensure the new mark does not exceed the remaining total mark
       const newMark = Math.min(parseInt(newValue, 10), remainingTotalMark);
@@ -403,7 +403,7 @@ export default function CreateAssessment({ darkMode }) {
 
       setAssessment((prevAssessment) => ({
         ...prevAssessment,
-        questions_ids: updatedQuestions,
+        questionsIds: updatedQuestions,
       }));
     } else if (name === "options_count") {
       console.log("qqqq:", q);
@@ -434,7 +434,7 @@ export default function CreateAssessment({ darkMode }) {
         // Update state
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
-          questions_ids: updatedQuestions,
+          questionsIds: updatedQuestions,
         }));
       }
     }
@@ -529,24 +529,24 @@ export default function CreateAssessment({ darkMode }) {
                 />
               </div>
               <div>
-                <label htmlFor="start_time">Start:</label>
+                <label htmlFor="startTime">Start:</label>
                 <input
                   type="time"
                   className="form-control"
-                  id="start_time"
-                  name="start_time"
-                  value={assessment.start_time}
+                  id="startTime"
+                  name="startTime"
+                  value={assessment.startTime}
                   onChange={(e) => handleAssessmentAttributes(e)}
                 />
               </div>
               <div>
-                <label htmlFor="end_time">End:</label>
+                <label htmlFor="endTime">End:</label>
                 <input
                   type="time"
                   className="form-control"
-                  id="end_time"
-                  name="end_time"
-                  value={assessment.end_time}
+                  id="endTime"
+                  name="endTime"
+                  value={assessment.endTime}
                   onChange={(e) => handleAssessmentAttributes(e)}
                 />
               </div>
@@ -576,24 +576,24 @@ export default function CreateAssessment({ darkMode }) {
             </div>
             <div className="col-12 col-md-6 row d-flex align-items-center">
               <div className="form-group col-6 d-flex flex-column ">
-                <label htmlFor="total_mark">Total Mark:</label>
+                <label htmlFor="totalMark">Total Mark:</label>
                 <input
                   type="number"
                   className="form-control"
-                  id="total_mark"
-                  name="total_mark"
-                  value={assessment.total_mark}
+                  id="totalMark"
+                  name="totalMark"
+                  value={assessment.totalMark}
                   onChange={(e) => handleAssessmentAttributes(e)}
                 />
               </div>
               <div className="form-group col-6 d-flex flex-column ">
-                <label htmlFor="questions_count">Questions Count:</label>
+                <label htmlFor="questionsCount">Questions Count:</label>
                 <input
                   type="number"
                   className="form-control"
-                  id="questions_count"
-                  name="questions_count"
-                  value={assessment.questions_count}
+                  id="questionsCount"
+                  name="questionsCount"
+                  value={assessment.questionsCount}
                   onChange={(e) => handleAssessmentAttributes(e)}
                 />
               </div>
@@ -681,7 +681,11 @@ export default function CreateAssessment({ darkMode }) {
           {/** Button to Submit */}
           <div className="card-header row m-0 d-flex align-items-md-center">
             <div className="mid-aligment d-flex justify-content-center w-50">
-              <button type="submit" className="btn btn-primary" onClick={()=>addAssessment()}>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={() => addAssessment()}
+              >
                 {isEditing ? "Update Assessment" : "Add Assessment"}
               </button>
             </div>
