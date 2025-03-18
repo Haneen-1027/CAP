@@ -8,7 +8,7 @@ namespace CapApi.Controllers;
 [ApiController]
 //[Authorize(Roles = "Admin")]
 [Route("users")]
-[EnableCors("AllowAll")]
+[EnableCors("AllowOrigin")]
 public class UserController(
     GetAllUsersService getAllUsersService,
     GetUserByIdService getUserByIdService,

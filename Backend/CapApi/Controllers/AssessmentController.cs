@@ -10,7 +10,8 @@ namespace CapApi.Controllers;
 [ApiController]
 //[Authorize(Roles = "Admin")]
 [Route("assessments")]
-[EnableCors("AllowAll")]
+[EnableCors("AllowOrigin")]
+
 public class AssessmentController(
     AddAssessmentService addAssessmentService,
     DeleteAssessmentService deleteAssessmentService,

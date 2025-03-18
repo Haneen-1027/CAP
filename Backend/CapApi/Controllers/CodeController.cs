@@ -10,7 +10,8 @@ namespace CapApi.Controllers;
 [ApiController]
 //[Authorize(Roles = "Admin")]
 [Route("[controller]")]
-[EnableCors("AllowAll")]
+[EnableCors("AllowOrigin")]
+
 public class CodeController : ControllerBase
 {
     private readonly Judge0Service _judge0Service;

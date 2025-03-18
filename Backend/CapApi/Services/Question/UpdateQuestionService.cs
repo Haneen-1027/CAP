@@ -49,16 +49,21 @@ public class UpdateQuestionService(CapDbContext context) : ControllerBase
             switch (question.Type)
             {
                 case "mc":
-                    if (string.IsNullOrWhiteSpace(details.CorrectAnswer) || details.WrongOptions == null ||
-                        details.WrongOptions.Count == 0)
+                    if (details.CorrectAnswer == null || !details.CorrectAnswer.Any() || 
+                        details.WrongOptions == null || details.WrongOptions.Count == 0)
                     {
                         return BadRequest(new
-                            { Message = "MCQ must have a correct answer and at least one wrong option." });
+                        {
+                            Message = "MCQ must have at least one correct answer and at least one wrong option."
+                        });
                     }
 
                     question.McqQuestion ??= new McqQuestion();
                     question.McqQuestion.IsTrueFalse = details.IsTrueFalse ?? false;
-                    question.McqQuestion.CorrectAnswer = details.CorrectAnswer.Trim();
+                    question.McqQuestion.CorrectAnswer = details.CorrectAnswer
+                        .Select(x => x.Trim())
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .ToList();
                     question.McqQuestion.WrongOptions = details.WrongOptions
                         .Select(x => x.Trim())
                         .Where(x => !string.IsNullOrEmpty(x))
@@ -70,12 +75,14 @@ public class UpdateQuestionService(CapDbContext context) : ControllerBase
                     break;
 
                 case "coding":
-                    //if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
-                    //    details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
-                    //{
-                    //    return BadRequest(new
-                    //        { Message = "Coding questions must have test cases, inputsCount, and description." });
-                    //}
+                    if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
+                        details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
+                    {
+                        return BadRequest(new
+                        {
+                            Message = "Coding questions must have test cases, inputsCount, and description."
+                        });
+                    }
 
                     var testCases = details.TestCases
                         .Where(tc =>
@@ -92,7 +99,9 @@ public class UpdateQuestionService(CapDbContext context) : ControllerBase
                     if (testCases.Count == 0)
                     {
                         return BadRequest(new
-                            { Message = "Coding questions must have at least one valid test case." });
+                        {
+                            Message = "Coding questions must have at least one valid test case."
+                        });
                     }
 
                     question.CodingQuestion ??= new CodingQuestion();
