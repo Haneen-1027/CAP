@@ -328,24 +328,26 @@ export default function CreateAssessment({ darkMode }) {
 
     if (name === "questionID") {
       if (e.target.checked) {
-        // Add the question with an initial mark of 0
-        let optionsCount = 0; // Default options count for multiple-choice questions
+        // Add the question with an initial mark of 1
+        let question = {
+          id: id,
+          mark: 1,
+        };
+
         console.log("1, Q: ", q);
 
         // Only calculate options_count for multiple-choice questions
         if (q_type === "mc") {
           console.log("Tyyype: mc");
+          let optionsCount = 0; // Default options count for multiple-choice questions
           const correctCount = q.correctAnswer?.length || 0;
           const wrongCount = q.wrongOptions?.length || 0;
           optionsCount = correctCount > 3 ? correctCount : 4;
+          question = { ...question, ["options_count"]: optionsCount };
         }
         console.log("2, optionsCount: ", optionsCount);
 
-        selectedQuestions.push({
-          id: id,
-          mark: 1,
-          options_count: optionsCount,
-        });
+        selectedQuestions.push(question);
 
         setAssessment((prevAssessment) => ({
           ...prevAssessment,
