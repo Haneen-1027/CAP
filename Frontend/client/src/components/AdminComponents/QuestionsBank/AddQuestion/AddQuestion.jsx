@@ -66,20 +66,22 @@ export default function AddQuestion({ userdetails, darkMode }) {
     }));
   };
 
-  const addQuestion = async (details) => {
+  const addQuestion = async () => {
     // Call Validation Function
     let validateResult = validateForm();
     if (validateResult.error) {
       setErrorList(validateResult.error.details);
     } else {
+      const newDetails = {...details, ["description"]: "this is static description"};
       const newQuestion = {
         ...question,
-        ["details"]: details,
+        ["details"]: newDetails,
       };
+
       try {
         // Update?
         if (isEditing) {
-          console.log("question before update:", question);
+          console.log("question before update:", newQuestion);
           await updateQuestion(newQuestion)
             .then((response) => {
               console.log(`The axios response is: ${response}`);

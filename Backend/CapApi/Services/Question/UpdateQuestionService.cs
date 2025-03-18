@@ -70,12 +70,12 @@ public class UpdateQuestionService(CapDbContext context) : ControllerBase
                     break;
 
                 case "coding":
-                    if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
-                        details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
-                    {
-                        return BadRequest(new
-                            { Message = "Coding questions must have test cases, inputsCount, and description." });
-                    }
+                    //if (details.TestCases == null || details.TestCases.Count == 0 || details.InputsCount is null ||
+                    //    details.InputsCount < 1 || string.IsNullOrWhiteSpace(details.Description))
+                    //{
+                    //    return BadRequest(new
+                    //        { Message = "Coding questions must have test cases, inputsCount, and description." });
+                    //}
 
                     var testCases = details.TestCases
                         .Where(tc =>
