@@ -7,6 +7,7 @@ import {
 import questions from "../../../AdminComponents/QuestionsBank/ViewQuestions/test.json"; // Get from API
 import SearchBarContainer from "../../../SearchBar";
 import { Link, useLocation, useParams } from "react-router";
+import { addNewAssessment } from "../../../../APIs/ApisHandaler";
 
 export default function CreateAssessment({ darkMode }) {
   // test feature
@@ -91,6 +92,31 @@ export default function CreateAssessment({ darkMode }) {
   /**
    * Functions
    */
+
+  const addAssessment = async () => {
+    // Call Validation Function
+
+    try {
+      // Update?
+      if (isEditing) {
+        console.log("assessment before update:", assessment);
+      }
+      // Add
+      else {
+        console.log("assessment before Adding:", assessment);
+        await addNewAssessment(assessment)
+          .then((response) => {
+            console.log(`The axios response is: ${response}`);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   function clearResults() {
     setVisibleList([...questions.questions]);
   }
@@ -600,7 +626,9 @@ export default function CreateAssessment({ darkMode }) {
           {/** Questions to choose  */}
           <div className="table-responsive text-nowrap">
             <table
-              className={`table ${darkMode ? "table-dark " : "table-light"}`}
+              className={`table ${
+                darkMode ? "table-dark " : "table-light"
+              } m-0`}
             >
               <thead className={``}>
                 <tr>
@@ -636,6 +664,14 @@ export default function CreateAssessment({ darkMode }) {
                 loadingMessage
               )}
             </table>
+          </div>
+          {/** Button to Submit */}
+          <div className="card-header row m-0 d-flex align-items-md-center">
+            <div className="mid-aligment d-flex justify-content-center w-50">
+              <button type="submit" className="btn btn-primary">
+                {isEditing ? "Update Assessment" : "Add Assessment"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
