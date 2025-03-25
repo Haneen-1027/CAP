@@ -17,13 +17,20 @@ public class AddAssessmentService(CapDbContext context) : ControllerBase
         }
 
         // Validate date/time fields
-        if (!TimeSpan.TryParse(dto.Duration, out var duration) ||
-            !DateTime.TryParse(dto.AssessmentDate, out var assessmentDate) ||
-            !TimeSpan.TryParse(dto.StartTime, out var startTime) ||
-            !TimeSpan.TryParse(dto.EndTime, out var endTime))
-        {
-            return BadRequest(new { Message = "Invalid date/time format." });
-        }
+        //if (
+        //    !TimeSpan.TryParse(dto.Duration, out var duration) ||
+        //    !DateTime.TryParse(dto.AssessmentDate, out var assessmentDate) ||
+        //    !TimeSpan.TryParse(dto.StartTime, out var startTime) ||
+        //    !TimeSpan.TryParse(dto.EndTime, out var endTime))
+        //{
+        //    return BadRequest(new { Message = "Invalid date/time format." });
+        //}
+
+        TimeSpan.TryParse(dto.Duration, out var duration);
+        DateTime.TryParse(dto.AssessmentDate, out var assessmentDate);
+        TimeSpan.TryParse(dto.StartTime, out var startTime);
+        TimeSpan.TryParse(dto.EndTime, out var endTime);
+
 
         // Validate start time is before end time
         if (startTime >= endTime)
