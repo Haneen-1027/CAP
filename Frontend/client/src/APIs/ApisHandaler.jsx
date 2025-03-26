@@ -66,8 +66,8 @@ export const getQuestionById = async (id) => {
 
 // Assessment APIs:
 
-//
 export const addNewAssessment = async (assessment) => {
+  // Note to improve: 1. options count. 2. date and time
   return await axios.post(`${BASE_URL}/assessments`, assessment, {
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,6 @@ export const addNewAssessment = async (assessment) => {
   });
 };
 
-//
 export const getAllAssessments = async () => {
   return await axios.get(`${BASE_URL}/assessments`, {
     headers: {
@@ -84,14 +83,6 @@ export const getAllAssessments = async () => {
   });
 };
 
-//
-export const getAssessmentById = async (id) => {
-  return await axios.get(`${BASE_URL}/assessments/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

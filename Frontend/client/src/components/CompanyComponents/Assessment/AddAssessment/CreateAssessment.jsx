@@ -4,23 +4,12 @@ import {
   FilterableDropdown,
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
-import questions from "../../../AdminComponents/QuestionsBank/ViewQuestions/test.json"; // Get from API
 import SearchBarContainer from "../../../SearchBar";
-import { Link, useLocation, useParams } from "react-router";
-import { addNewAssessment } from "../../../../APIs/ApisHandaler";
+import { useLocation, useParams } from "react-router-dom";
+import { addNewAssessment, getAllQuestions } from "../../../../APIs/ApisHandaler";
 
 export default function CreateAssessment({ darkMode }) {
-  // test feature
-  const [slectedTotalMark, setSelectedTotalMark] = useState(0);
-
-  // For Editing
-  const location = useLocation();
-  const { data } = location.state || {};
-  const { id } = useParams();
-  const [isEditing, setIsEditing] = useState(false);
-  ///
-  const [questionsListCount, setQuestionsListCount] = useState(133); // Calculated after get questions from API
-  // Get from API
+  // Static categories and question types
   const categories = [
     { name: "HTML", value: "HTML" },
     { name: "CSS", value: "CSS" },
@@ -30,28 +19,41 @@ export default function CreateAssessment({ darkMode }) {
     { name: "Angular", value: "Angular" },
     { name: "React", value: "React" },
   ];
-  // Get from API
+
   const questionTypes = [
-    { name: "Multible Choice", value: "mc" },
+    { name: "Multiple Choice", value: "mc" },
     { name: "Essay Question", value: "essay" },
     { name: "Coding Question", value: "coding" },
   ];
-  //////////////////////
-  /**
-   * States
-   */
+
+  // State variables
+  const [selectedTotalMark, setSelectedTotalMark] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [questions, setQuestions] = useState([]);
+  const [questionsListCount, setQuestionsListCount] = useState(0);
+  const [visibleList, setVisibleList] = useState([]);
+  const [apiError, setApiError] = useState(false);
+
+  // For Editing
+  const location = useLocation();
+  const { data } = location.state || {};
+  const { id } = useParams();
+  const [isEditing, setIsEditing] = useState(false);
+
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
-  // Visible List (Filtered List)
-  const [visibleList, setVisibleList] = useState([...questions.questions]);
+
   // Searching
   const [searchValue, setSearchValue] = useState("");
-  let [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+
   // Filtiration
   const [questionType, setQuestionType] = useState(0);
   const [category, setCategory] = useState(0);
+  const [noResults, setNoResults] = useState(false);
+
   // Assessment Attributes
   const [assessment, setAssessment] = useState(
     data
@@ -67,42 +69,62 @@ export default function CreateAssessment({ darkMode }) {
           questionsIds: [],
         }
   );
-  const [questionsCount, setQuestionsCount] = useState(0);
-  //Errors variables
-  let [apiError, setApiError] = useState(false);
-  let [noResults, setNoResults] = useState(false);
-  let apiErrorMessage = (
+
+  // Error messages
+  const apiErrorMessage = (
     <div className="w-100 h-100 d-flex flex-column align-items-center">
       <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
         Error!!!
       </div>
       <div className="my-4 mid-bold">
-        Theres a proplem! Please wait for us to solve the proplem.
+        There's a problem! Please wait for us to solve the problem.
       </div>
     </div>
   );
-  let loadingMessage = (
+
+  const loadingMessage = (
     <div className="d-flex justify-content-center align-items-center my-4">
       <div className="spinner-border text-primary" role="status">
         <span className="sr-only">Loading...</span>
       </div>
     </div>
   );
-  //////////////////////
-  /**
-   * Functions
-   */
+
+  // Fetch questions from API on component mount
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setIsLoading(true);
+        setApiError(false);
+        const response = await getAllQuestions();
+        setQuestions(response.data);
+        setVisibleList(response.data);
+        setQuestionsListCount(response.data.length);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+        setApiError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuestions();
+
+    // Set editing state if ID exists
+    if (id) {
+      setAssessment(data);
+      setIsEditing(true);
+      setSelectedTotalMark(
+        data.questions.reduce((total, question) => total + question.mark, 0)
+      );
+    }
+  }, [id, data]);
 
   const addAssessment = async () => {
-    // Call Validation Function
-
     try {
-      // Update?
       if (isEditing) {
         console.log("assessment before update:", assessment);
-      }
-      // Add
-      else {
+      } else {
         console.log("assessment before Adding:", assessment);
         await addNewAssessment(assessment)
           .then((response) => {
@@ -118,9 +140,9 @@ export default function CreateAssessment({ darkMode }) {
   };
 
   function clearResults() {
-    setVisibleList([...questions.questions]);
+    setVisibleList([...questions]);
   }
-  /** ====================== Search Section ====================== **/
+
   function handleSearchValue(value) {
     if (value.trim() === "") {
       clearResults();
@@ -131,14 +153,12 @@ export default function CreateAssessment({ darkMode }) {
   }
 
   function handleSearching() {
-    console.log("Start Searching ...");
     if (searchValue.trim() === "") {
       return;
     }
-    let srchResultsArray = questions.questions.filter((question) =>
+    let srchResultsArray = questions.filter((question) =>
       question.prompt.toLowerCase().includes(searchValue.toLowerCase())
     );
-    console.log("srchResultsArray: ", srchResultsArray);
     if (srchResultsArray.length === 0) {
       setVisibleList([]);
       setNoResults(true);
@@ -147,46 +167,40 @@ export default function CreateAssessment({ darkMode }) {
     }
   }
 
-  /** ====================== Filter Section ====================== **/
   function handleCategory(e) {
     setCategory(e.target.value);
   }
+
   function handleType(e) {
     setQuestionType(e.target.value);
   }
-  // Handle Filitiration
+
   function handleFiltiration(type, category) {
     const typeOptions = questionTypes.map((type) => type.value);
     const categoryOptions = categories.map((category) => category.value);
 
     let filteredQuestions = [];
 
-    // If search results are available, use them as the base for filtering
     if (searchResults.length > 0 && searchValue.trim() !== "") {
       filteredQuestions = [...searchResults];
     } else {
-      // Otherwise, use the full list of questions
-      filteredQuestions = [...questions.questions];
+      filteredQuestions = [...questions];
     }
 
-    // Apply type filter if a valid type is selected
     if (type !== 0 && typeOptions.includes(type)) {
       filteredQuestions = filteredQuestions.filter(
         (question) => question.type.toLowerCase() === type.toLowerCase()
       );
     }
 
-    // Apply category filter if a valid category is selected
     if (category !== 0 && categoryOptions.includes(category)) {
       filteredQuestions = filteredQuestions.filter(
         (question) => question.category.toLowerCase() === category.toLowerCase()
       );
     }
 
-    // Update the visible list
     setVisibleList(filteredQuestions);
 
-    // Handle no results case
     if (filteredQuestions.length === 0) {
       setNoResults(true);
     } else {
@@ -194,12 +208,10 @@ export default function CreateAssessment({ darkMode }) {
     }
   }
 
-  // For rendring questions lists
   function renderQuestions() {
     return visibleList.map((question, index) => {
-      const questionId = `Id${index + question.prompt}`;
       const isChecked = assessment.questionsIds.some(
-        (q) => q.id === questionId
+        (q) => q.id === question.id
       );
       const remainingTotalMark =
         assessment.totalMark -
@@ -215,25 +227,21 @@ export default function CreateAssessment({ darkMode }) {
           <td className="text-start">{question.category}</td>
           <td
             className="text-start text-truncate"
-            style={{
-              maxWidth: "20rem",
-            }}
+            style={{ maxWidth: "20rem" }}
             title={question.prompt}
           >
             <strong className="text-truncate">{question.prompt}</strong>
           </td>
           <td className="text-start">
-            {question.type
-              ? question.type === "mc"
-                ? question.detailes.isTrueFalse === true
-                  ? "True/False"
-                  : "Multiple Choice"
-                : question.type === "essay"
-                ? "Essay"
-                : question.type === "coding"
-                ? "Coding"
-                : "Not-valid type"
-              : "There is no Type"}
+            {question.type === "mc"
+              ? question.detailes?.isTrueFalse === true
+                ? "True/False"
+                : "Multiple Choice"
+              : question.type === "essay"
+              ? "Essay"
+              : question.type === "coding"
+              ? "Coding"
+              : "Not-valid type"}
           </td>
           <td className="text-start">
             <input
@@ -243,10 +251,10 @@ export default function CreateAssessment({ darkMode }) {
               name="mark"
               title="Question Mark"
               disabled={!isChecked}
-              onChange={(e) => selectQuestion(e, questionId)}
+              onChange={(e) => selectQuestion(e, question.id)}
               value={
                 isChecked
-                  ? assessment.questionsIds.find((q) => q.id === questionId)
+                  ? assessment.questionsIds.find((q) => q.id === question.id)
                       ?.mark || 0
                   : ""
               }
@@ -262,16 +270,11 @@ export default function CreateAssessment({ darkMode }) {
                 title="Number of Options for Multiple Choice question."
                 disabled={!isChecked}
                 onChange={(e) =>
-                  selectQuestion(
-                    e,
-                    questionId,
-                    question.detailes,
-                    question.type
-                  )
+                  selectQuestion(e, question.id, question.detailes, question.type)
                 }
                 value={
                   isChecked
-                    ? assessment.questionsIds.find((q) => q.id === questionId)
+                    ? assessment.questionsIds.find((q) => q.id === question.id)
                         ?.options_count || 0
                     : ""
                 }
@@ -284,17 +287,15 @@ export default function CreateAssessment({ darkMode }) {
             <input
               className="form-check-input"
               type="checkbox"
-              defaultValue
-              id="questionID"
-              name="questionID"
+              id={`question-${question.id}`}
               onChange={(e) =>
-                selectQuestion(e, questionId, question.detailes, question.type)
+                selectQuestion(e, question.id, question.detailes, question.type)
               }
               checked={isChecked}
               disabled={isDisabled}
               title="Add this question to assessment"
             />
-            <label className="ms-2 form-check-label" htmlFor="questionID">
+            <label className="ms-2 form-check-label" htmlFor={`question-${question.id}`}>
               Select
             </label>
           </td>
@@ -303,182 +304,115 @@ export default function CreateAssessment({ darkMode }) {
     });
   }
 
-  // Handle the assessment attributes
   function handleAssessmentAttributes(e) {
     const { name, value } = e.target;
-    setAssessment((prevAssessment) => ({ ...prevAssessment, [name]: value }));
-
-    // Ensure "duration" follows HH:MM format
+    
     if (name === "duration") {
       const regex = /^([0-9]{1,2}):([0-5][0-9])$/;
       if (value === "" || regex.test(value)) {
-        setAssessment((prevAssessment) => ({
-          ...prevAssessment,
-          [name]: value,
-        }));
+        setAssessment((prev) => ({ ...prev, [name]: value }));
       }
     } else {
-      setAssessment((prevAssessment) => ({ ...prevAssessment, [name]: value }));
+      setAssessment((prev) => ({ ...prev, [name]: value }));
     }
   }
-  // Handle the selecting of new question
+
   function selectQuestion(e, id, q, q_type) {
     const { name, value } = e.target;
     const selectedQuestions = [...assessment.questionsIds];
 
-    if (name === "questionID") {
+    if (e.target.type === "checkbox") {
       if (e.target.checked) {
-        // Add the question with an initial mark of 1
-        let question = {
-          id: id,
-          mark: 1,
-        };
+        let question = { id: id, mark: 1 };
 
-        console.log("1, Q: ", q);
-
-        // Only calculate options_count for multiple-choice questions
         if (q_type === "mc") {
-          console.log("Tyyype: mc");
-          let optionsCount = 0; // Default options count for multiple-choice questions
-          const correctCount = q.correctAnswer?.length || 0;
-          const wrongCount = q.wrongOptions?.length || 0;
+          let optionsCount = 0;
+          const correctCount = q?.correctAnswer?.length || 0;
+          const wrongCount = q?.wrongOptions?.length || 0;
           optionsCount = correctCount > 3 ? correctCount : 4;
-          question = { ...question, ["options_count"]: optionsCount };
+          question = { ...question, options_count: optionsCount };
         }
 
         selectedQuestions.push(question);
-
-        setAssessment((prevAssessment) => ({
-          ...prevAssessment,
-          questionsIds: selectedQuestions,
-        }));
+        setSelectedTotalMark(prev => prev + question.mark);
+        setAssessment((prev) => ({ ...prev, questionsIds: selectedQuestions }));
       } else {
-        // Remove the question if unchecked
-        const questionToRemove = selectedQuestions.find(
-          (question) => question.id === id
-        );
+        const questionToRemove = selectedQuestions.find(q => q.id === id);
         if (questionToRemove) {
-          setSelectedTotalMark(
-            (prevTotalCount) => prevTotalCount - questionToRemove.mark
-          );
+          setSelectedTotalMark(prev => prev - questionToRemove.mark);
         }
         const updatedQuestions = selectedQuestions.filter(
           (question) => question.id !== id
         );
-        setAssessment((prevAssessment) => ({
-          ...prevAssessment,
-          questionsIds: updatedQuestions,
-        }));
+        setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
       }
     } else if (name === "mark") {
-      let newValue = value;
-      if (value.trim() === "") newValue = 0;
+      const newValue = value.trim() === "" ? 0 : parseInt(value, 10);
+      const currentQuestion = selectedQuestions.find((q) => q.id === id);
+      const sumOfOtherMarks = selectedQuestions.reduce(
+        (total, q) => (q.id === id ? total : total + q.mark),
+        0
+      );
+      const remainingTotalMark = assessment.totalMark - sumOfOtherMarks;
+      const newMark = Math.min(newValue, remainingTotalMark);
 
-      // Find the current question being updated
-      const currentQuestion = selectedQuestions.find(
-        (question) => question.id === id
+      const updatedQuestions = selectedQuestions.map((question) =>
+        question.id === id ? { ...question, mark: newMark } : question
       );
 
-      // Calculate the sum of marks for all questions EXCEPT the current one
-      const sumOfOtherMarks = assessment.questionsIds.reduce((total, q) => {
-        return q.id === id ? total : total + q.mark;
-      }, 0);
+      setSelectedTotalMark(prev => prev - currentQuestion.mark + newMark);
+      setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
+    } else if (name === "options_count" && q_type === "mc") {
+      const correctCount = q?.correctAnswer?.length || 0;
+      const wrongCount = q?.wrongOptions?.length || 0;
+      const minOptionsCount = correctCount > 3 ? correctCount : 4;
+      const maxOptionsCount = correctCount + wrongCount;
+      let newOptionsCount = parseInt(value, 10);
 
-      // Calculate the remaining total mark, accounting for the current question's mark
-      const remainingTotalMark = assessment.totalMark - sumOfOtherMarks;
+      newOptionsCount = Math.max(
+        minOptionsCount,
+        Math.min(newOptionsCount, maxOptionsCount)
+      );
 
-      // Ensure the new mark does not exceed the remaining total mark
-      const newMark = Math.min(parseInt(newValue, 10), remainingTotalMark);
+      const updatedQuestions = selectedQuestions.map((question) =>
+        question.id === id
+          ? { ...question, options_count: newOptionsCount }
+          : question
+      );
 
-      // Update the mark of the specific question
-      const updatedQuestions = selectedQuestions.map((question) => {
-        if (question.id === id) {
-          // Subtract the old mark and add the new mark to the total
-          setSelectedTotalMark(
-            (prevTotalCount) => prevTotalCount - question.mark + newMark
-          );
-          return { ...question, mark: newMark };
-        }
-        return question;
-      });
-
-      setAssessment((prevAssessment) => ({
-        ...prevAssessment,
-        questionsIds: updatedQuestions,
-      }));
-    } else if (name === "options_count") {
-      console.log("qqqq:", q);
-      // Only apply options_count logic for multiple-choice questions
-      if (q_type === "mc") {
-        const correctCount = q.correctAnswer?.length || 0; // Default to 0 if undefined
-        const wrongCount = q.wrongOptions?.length || 0; // Default to 0 if undefined
-        const minOptionsCount = correctCount > 3 ? correctCount : 4;
-        const maxOptionsCount = correctCount + wrongCount;
-
-        let newOptionsCount = parseInt(value, 10);
-
-        // Enforce the minimum and maximum limits
-        if (newOptionsCount < minOptionsCount) {
-          newOptionsCount = minOptionsCount;
-        } else if (newOptionsCount > maxOptionsCount) {
-          newOptionsCount = maxOptionsCount;
-        }
-
-        // Update the question's options count
-        const updatedQuestions = selectedQuestions.map((question) => {
-          if (question.id === id) {
-            return { ...question, options_count: newOptionsCount };
-          }
-          return question;
-        });
-
-        // Update state
-        setAssessment((prevAssessment) => ({
-          ...prevAssessment,
-          questionsIds: updatedQuestions,
-        }));
-      }
+      setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
     }
   }
-  // Pagination Functions
+
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);
   }
 
-  //////////////////////
-  /**
-   * Effects
-   */
   useEffect(() => {
-    console.log("Assessment: ", assessment);
-  }, [assessment]);
-
-  useEffect(() => {
-    // Filter and display questions when the filter option or data changes
     handleFiltiration(questionType, category);
   }, [questionType, category, searchResults]);
 
   useEffect(() => {
-    // Search for a question when the search value changes
-    console.log("Search Value: ", searchValue);
     handleSearching();
   }, [searchValue]);
-  useEffect(() => {
-    // Search for a question when the search value changes
-    console.log("Assessment: ", assessment);
-  }, [assessment]);
 
-  useEffect(() => {
-    if (id) {
-      setAssessment(data);
-      setIsEditing(true);
-      setSelectedTotalMark((prevMarks) =>
-        data.questions.reduce((total, question) => total + question.mark, 0)
-      );
-      console.log("This is an update for existing Assessment: ", id);
-    }
-    console.log("State Data: ", data, " and locateion: ", location.state);
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (apiError) {
+    return (
+      <div className="alert alert-danger">
+        Error loading questions. Please try again later.
+      </div>
+    );
+  }
   //////////////////////
   return (
     <>
