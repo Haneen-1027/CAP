@@ -70,13 +70,22 @@ export const getQuestionById = async (id) => {
 
 // Assessment APIs:
 
-export const addNewAssessment = async (assessment) => {
+export const addNewAssessment = async (assessment) => {  // Note to improve: 1. options count. 2. date and time  
   return await axios.post(`${BASE_URL}/assessments`, assessment, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
+
+export const getAllAssessments = async () => {
+  return await axios.get(`${BASE_URL}/assessments`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
 
 /////////
 const ApisHandale = () => {
