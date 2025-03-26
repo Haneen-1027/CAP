@@ -30,15 +30,11 @@ export const addNewQuestion = async (question) => {
 
 //
 export const updateQuestion = async (question) => {
-  return await axios.put(
-    `${BASE_URL}/questions/${question.id}`,
-    question,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  return await axios.put(`${BASE_URL}/questions/${question.id}`, question, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 //
@@ -70,6 +66,7 @@ export const getQuestionById = async (id) => {
 
 // Assessment APIs:
 
+//
 export const addNewAssessment = async (assessment) => {
   return await axios.post(`${BASE_URL}/assessments`, assessment, {
     headers: {
@@ -78,6 +75,23 @@ export const addNewAssessment = async (assessment) => {
   });
 };
 
+//
+export const getAllAssessments = async () => {
+  return await axios.get(`${BASE_URL}/assessments`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+//
+export const getAssessmentById = async (id) => {
+  return await axios.get(`${BASE_URL}/assessments/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

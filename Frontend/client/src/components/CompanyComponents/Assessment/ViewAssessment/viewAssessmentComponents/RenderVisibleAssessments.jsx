@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import LargeModal from "../../../../LargeModal";
 
 export default function RenderVisibleAssessments({
   darkMode,
@@ -40,6 +41,7 @@ export default function RenderVisibleAssessments({
             </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
+                <LargeModal goal={"fa-user-plus"} />
                 <Link
                   to={`/assessment/${1}`}
                   className="btn btn-sm btn-outline-primary"

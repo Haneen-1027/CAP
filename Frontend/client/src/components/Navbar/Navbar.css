@@ -3,7 +3,7 @@ header {
   height: 4rem;
   position: sticky !important;
   top: 0 !important;
-  z-index: 9999 !important;
+  z-index: 5 !important;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
 }
