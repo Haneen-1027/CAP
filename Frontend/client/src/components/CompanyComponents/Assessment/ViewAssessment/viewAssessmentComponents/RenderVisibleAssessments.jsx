@@ -83,7 +83,7 @@ export default function RenderVisibleAssessments({
             </tr>
           </thead>
           <tbody className="table-border-bottom-0">
-            {assessments.length === 0 ? "Loading ..." : renderAssessments()}
+            { renderAssessments()}
           </tbody>
         </table>
       </div>
