@@ -10,7 +10,7 @@ import { getAllAssessments } from "../../../../APIs/ApisHandaler";
 
 export default function CompAssessment({ user, darkMode }) {
   const [assessments, setAssessments] = useState([]);
-  
+
   //////////
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
   const [visibleList, setVisibleList] = useState([]);
@@ -54,7 +54,6 @@ export default function CompAssessment({ user, darkMode }) {
   //   }
   // };
 
-
   const getAssessments = async () => {
     try {
       const response = await getAllAssessments();
@@ -62,7 +61,7 @@ export default function CompAssessment({ user, darkMode }) {
       if (Array.isArray(response.data)) {
         setAssessments(response.data);
         setAssessmentsListCount(response.data.length);
-        setVisibleList(response.data); 
+        setVisibleList(response.data);
       } else {
         console.error("API did not return an array:", response.data);
         setAssessments([]);
@@ -74,12 +73,11 @@ export default function CompAssessment({ user, darkMode }) {
       setVisibleList([]);
     }
   };
-  
 
   // Helper function to filter assessments
   const filterAssessments = (assessmentsToFilter, showUpcoming) => {
     const currentDate = new Date().toISOString().split("T")[0];
-    const filtered = assessmentsToFilter.filter(asses => 
+    const filtered = assessmentsToFilter.filter((asses) =>
       showUpcoming ? asses.time >= currentDate : asses.time < currentDate
     );
     setVisibleList(filtered);
@@ -95,7 +93,6 @@ export default function CompAssessment({ user, darkMode }) {
     getAssessments();
   }, []);
 
-  
   // Pagination Functions
   function handleCountPerPageMenu(e) {
     setCounPerPage(e.target.value);
@@ -130,7 +127,7 @@ export default function CompAssessment({ user, darkMode }) {
   //////////
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
-    if (Array.isArray(assessments)) {  
+    if (Array.isArray(assessments)) {
       if (showSchdAssessments) {
         const visbAssessments = assessments.filter(
           (asses) => asses.time >= currentDate
@@ -143,7 +140,7 @@ export default function CompAssessment({ user, darkMode }) {
         setVisibleList(visbAssessments);
       }
     }
-  }, [showSchdAssessments, assessments]);  
+  }, [showSchdAssessments, assessments]);
 
   useEffect(() => {
     console.log("Filteration: ", timeFilteration);
@@ -153,7 +150,7 @@ export default function CompAssessment({ user, darkMode }) {
     <>
       <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
         <div
-          className={`card-header d-flex justify-content-between align-items-center ${
+          className={`card-header d-flex flex-column flex-md-row  justify-content-between align-items-center ${
             darkMode ? " spic-dark-mode" : ""
           }`}
         >
@@ -165,7 +162,7 @@ export default function CompAssessment({ user, darkMode }) {
           <Link
             to="/assessment/add"
             type="button"
-            className={`btn btn-light btn-sm d-flex align-items-center ${
+            className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
               darkMode ? " spic-dark-mode" : ""
             }`}
           >
