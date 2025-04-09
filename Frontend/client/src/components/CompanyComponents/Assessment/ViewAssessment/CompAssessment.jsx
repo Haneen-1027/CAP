@@ -6,14 +6,14 @@ import {
   RenderVisibleAssessments,
 } from "../../../../componentsLoader/ComponentsLoader";
 import { getAllAssessments } from "../../../../APIs/ApisHandaler";
-import assessments from "./assessmentTest.json";
+//import assessments from "./assessmentTest.json";
 
 export default function CompAssessment({ user, darkMode }) {
-  //const [assessments, setAssessments] = useState([]);
+  const [assessments, setAssessments] = useState([]);
 
   //////////
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
-  const [visibleList, setVisibleList] = useState(assessments);
+  const [visibleList, setVisibleList] = useState([]);
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
@@ -55,7 +55,6 @@ export default function CompAssessment({ user, darkMode }) {
   // };
 
   const getAssessments = async () => {
-    /*
     try {
       const response = await getAllAssessments();
       console.log("All assessments:", response.data);
@@ -73,7 +72,6 @@ export default function CompAssessment({ user, darkMode }) {
       setAssessments([]);
       setVisibleList([]);
     }
-      */
   };
 
   // Helper function to filter assessments
