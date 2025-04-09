@@ -36,7 +36,7 @@ public class GetAllAssessmentService(CapDbContext context, ILogger<GetAllAssessm
                 a.Id,
                 a.Name,
                 Duration = a.Duration.ToString(@"hh\:mm\:ss") ?? "00:00:00",
-                Time = a.AssessmentDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                Time = a.AssessmentDate.ToString("yyyy-MM-dd"),
                 StartTime = a.StartTime.ToString(@"hh\:mm\:ss") ?? "00:00:00",
                 EndTime = a.EndTime.ToString(@"hh\:mm\:ss") ?? "00:00:00",
                 a.TotalMark,

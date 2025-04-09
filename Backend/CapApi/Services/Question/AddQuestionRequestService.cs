@@ -47,6 +47,7 @@ public class AddQuestionRequestService(CapDbContext context) : ControllerBase
                     question.McqQuestion = new McqQuestion
                     {
                         IsTrueFalse = details.IsTrueFalse ?? false,
+                        OptionsCount = details.OptionsCount,
                         CorrectAnswer = details.CorrectAnswer.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList(),
                         WrongOptions = details.WrongOptions.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList()
                     };

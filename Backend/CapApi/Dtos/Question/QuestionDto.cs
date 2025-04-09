@@ -18,6 +18,7 @@ public record QuestionDto(
                 ? new
                 {
                     question.McqQuestion.IsTrueFalse,
+                    question.McqQuestion.OptionsCount,
                     question.McqQuestion.CorrectAnswer,
                     WrongOptions = question.McqQuestion.WrongOptions ?? []
                 }
