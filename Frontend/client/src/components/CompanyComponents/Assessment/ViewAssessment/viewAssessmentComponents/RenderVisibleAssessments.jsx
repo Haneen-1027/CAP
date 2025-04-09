@@ -41,7 +41,7 @@ export default function RenderVisibleAssessments({
             </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
-                <LargeModal goal={"fa-user-plus"} />
+                <LargeModal goal={"fa-user-plus"} darkMode={darkMode} />
                 <Link
                   to={`/assessment/${1}`}
                   className="btn btn-sm btn-outline-primary"
@@ -82,9 +82,7 @@ export default function RenderVisibleAssessments({
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody className="table-border-bottom-0">
-            { renderAssessments()}
-          </tbody>
+          <tbody className="table-border-bottom-0">{renderAssessments()}</tbody>
         </table>
       </div>
     </>
