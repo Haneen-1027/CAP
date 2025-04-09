@@ -49,7 +49,7 @@ export default function LargeModal({ goal, darkMode }) {
                     Add Email - "name@example.com"
                   </label>
                 </form>
-                <div className="col-12 col-md-1 my-2 m-md-0 d-flex justify-content-md-center">
+                <div className="col-12 col-md-1 my-2 m-md-0 d-flex justify-content-center">
                   <button className="btn btn-primary">Add</button>
                 </div>
               </div>
