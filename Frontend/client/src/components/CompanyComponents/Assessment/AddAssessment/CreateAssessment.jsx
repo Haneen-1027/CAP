@@ -6,7 +6,10 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 import SearchBarContainer from "../../../SearchBar";
 import { useLocation, useParams } from "react-router-dom";
-import { addNewAssessment, getAllQuestions } from "../../../../APIs/ApisHandaler";
+import {
+  addNewAssessment,
+  getAllQuestions,
+} from "../../../../APIs/ApisHandaler";
 
 export default function CreateAssessment({ darkMode }) {
   // Static categories and question types
@@ -270,7 +273,12 @@ export default function CreateAssessment({ darkMode }) {
                 title="Number of Options for Multiple Choice question."
                 disabled={!isChecked}
                 onChange={(e) =>
-                  selectQuestion(e, question.id, question.detailes, question.type)
+                  selectQuestion(
+                    e,
+                    question.id,
+                    question.detailes,
+                    question.type
+                  )
                 }
                 value={
                   isChecked
@@ -295,7 +303,10 @@ export default function CreateAssessment({ darkMode }) {
               disabled={isDisabled}
               title="Add this question to assessment"
             />
-            <label className="ms-2 form-check-label" htmlFor={`question-${question.id}`}>
+            <label
+              className="ms-2 form-check-label"
+              htmlFor={`question-${question.id}`}
+            >
               Select
             </label>
           </td>
@@ -306,7 +317,7 @@ export default function CreateAssessment({ darkMode }) {
 
   function handleAssessmentAttributes(e) {
     const { name, value } = e.target;
-    
+
     if (name === "duration") {
       const regex = /^([0-9]{1,2}):([0-5][0-9])$/;
       if (value === "" || regex.test(value)) {
@@ -334,12 +345,12 @@ export default function CreateAssessment({ darkMode }) {
         }
 
         selectedQuestions.push(question);
-        setSelectedTotalMark(prev => prev + question.mark);
+        setSelectedTotalMark((prev) => prev + question.mark);
         setAssessment((prev) => ({ ...prev, questionsIds: selectedQuestions }));
       } else {
-        const questionToRemove = selectedQuestions.find(q => q.id === id);
+        const questionToRemove = selectedQuestions.find((q) => q.id === id);
         if (questionToRemove) {
-          setSelectedTotalMark(prev => prev - questionToRemove.mark);
+          setSelectedTotalMark((prev) => prev - questionToRemove.mark);
         }
         const updatedQuestions = selectedQuestions.filter(
           (question) => question.id !== id
@@ -360,7 +371,7 @@ export default function CreateAssessment({ darkMode }) {
         question.id === id ? { ...question, mark: newMark } : question
       );
 
-      setSelectedTotalMark(prev => prev - currentQuestion.mark + newMark);
+      setSelectedTotalMark((prev) => prev - currentQuestion.mark + newMark);
       setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
     } else if (name === "options_count" && q_type === "mc") {
       const correctCount = q?.correctAnswer?.length || 0;
@@ -398,7 +409,10 @@ export default function CreateAssessment({ darkMode }) {
 
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
         <div className="spinner-border text-primary" role="status">
           <span className="sr-only">Loading...</span>
         </div>
@@ -602,8 +616,6 @@ export default function CreateAssessment({ darkMode }) {
                 <tbody className="table-border-bottom-0">
                   {renderQuestions()}
                 </tbody>
-              ) : apiError ? (
-                apiErrorMessage
               ) : noResults ? (
                 <div className="my-4 mid-bold d-flex justify-content-center">
                   No results Found.

@@ -6,8 +6,8 @@ export default function LargeModal({ goal }) {
       <button
         type="button"
         class="btn btn-sm btn-primary"
-        data-toggle="modal"
-        data-target=".bd-example-modal-lg"
+        data-bs-toggle="modal"
+        data-bs-target=".bd-example-modal-lg"
       >
         <i className={`fas ${goal ? goal : "fa-user-plus"}`}></i>
       </button>
