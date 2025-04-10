@@ -75,7 +75,7 @@ export default function RenderVisibleAssessments({
           darkMode ? "spic-dark-mode" : ""
         }`}
       >
-        <table className="table">
+        <table className={`table ${darkMode ? "table-dark " : "table-light"}`}>
           <thead className={darkMode ? "spic-dark-mode" : "table-light"}>
             <tr>
               <th>#</th>
