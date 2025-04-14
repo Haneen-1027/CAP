@@ -4,31 +4,36 @@ export default function MultipleChoice({
   darkMode,
   addQuestionAnswer,
   question,
+  userAnswer,
 }) {
   const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
 
   const [shuffledOptions, setShuffledOptions] = useState([]);
 
   useEffect(() => {
-    let optionsCount = question.detailes.options_count;
-    const correctOptions = question.detailes.correctAnswer;
-    let wrongOptions = question.detailes.wrongOptions || [];
+    // Only run when question.id changes
+    const correctOptions = question.detailes.correctAnswer || [];
+    const wrongOptions = question.detailes.wrongOptions || [];
+    const optionsCount = question.detailes.options_count;
 
-    let options = [];
+    let selectedOptions = [];
 
-    if (optionsCount < correctOptions.length) {
-      options = [...correctOptions];
+    if (optionsCount <= correctOptions.length) {
+      // If space is not enough for wrong answers, only use correct ones
+      selectedOptions = [...correctOptions.slice(0, optionsCount)];
     } else {
-      let wrongOptionsCount = optionsCount - correctOptions.length;
-      let randomWrongOptions = shuffleArray([...wrongOptions]).slice(
+      // Always include all correct options
+      const numWrongNeeded = optionsCount - correctOptions.length;
+      const randomWrongOptions = shuffleArray(wrongOptions).slice(
         0,
-        wrongOptionsCount
+        numWrongNeeded
       );
-      options = [...correctOptions, ...randomWrongOptions];
+      selectedOptions = [...correctOptions, ...randomWrongOptions];
     }
 
-    setShuffledOptions(shuffleArray(options));
-  }, [question]); // Runs only when the question changes
+    // Shuffle the final list once and store it
+    setShuffledOptions(shuffleArray(selectedOptions));
+  }, [question.id]);
 
   return (
     <div>
@@ -37,12 +42,16 @@ export default function MultipleChoice({
           <input
             className="form-check-input"
             type="radio"
-            name="multipleChoice"
-            id={`option-${index}`}
+            name={`multipleChoice-${question.id}`}
+            id={`option-${question.id}-${index}`}
             value={option}
             onChange={() => addQuestionAnswer(option, question.id)}
+            checked={userAnswer === option}
           />
-          <label className="form-check-label" htmlFor={`option-${index}`}>
+          <label
+            className={`form-check-label ${darkMode ? "text-light" : ""}`}
+            htmlFor={`option-${question.id}-${index}`}
+          >
             {option}
           </label>
         </div>

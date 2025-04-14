@@ -12,9 +12,9 @@ export default function AttemptAssessment({ user, darkMode }) {
     createdBy: "user112",
     name: "JavaScript Basics Quiz",
     duration: "00:45",
-    time: "2025-04-10",
+    time: "2025-04-14",
     start_time: "00:00",
-    end_time: "20:45",
+    end_time: "23:45",
     total_mark: 40,
     questions_count: 4,
     questions: [

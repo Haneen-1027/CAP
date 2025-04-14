@@ -7,6 +7,7 @@ export default function CodingQuestion({
   darkMode,
   addQuestionAnswer,
   question,
+  userAnswer,
 }) {
   const [code, setCode] = useState("def solution():\n\n pass");
   const [isCodeEditting, setIsCodeEditting] = useState(true);
@@ -47,6 +48,9 @@ export default function CodingQuestion({
   //////
   useEffect(() => {
     console.log("Coding Question: ", question);
+    if (userAnswer != "") {
+      setCode(userAnswer);
+    }
   }, []);
   //////
   return (
@@ -54,8 +58,13 @@ export default function CodingQuestion({
       <div className="row overflow-xAxis">
         <div className="col-4 row border m-0">
           <div className="p-2 col-12">
-            Description
-            <hr className="m-0" />
+            <span className="">
+              <strong> Description :</strong>
+            </span>
+            <hr className="mt-0 mb-4" />
+            {question.detailes.description
+              ? question.detailes.description
+              : "Old Question: Description is not supported!"}
           </div>
 
           <div className="col-12">
