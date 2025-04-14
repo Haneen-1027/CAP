@@ -47,7 +47,7 @@ export default function RenderVisibleAssessments({
                   isUpComing={isUpComing}
                 />
                 <Link
-                  to={`/assessment/${1}`}
+                  to={`/assessment/${10}`}
                   className="btn btn-sm btn-outline-primary"
                   title="Edit"
                 >

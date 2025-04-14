@@ -9,7 +9,7 @@ import { getAllAssessments } from "../../../../APIs/ApisHandaler";
 import assessments from "./assessmentTest.json";
 
 export default function CompAssessment({ user, darkMode }) {
-  //  const [assessments, setAssessments] = useState([]);
+    const [assessments, setAssessments] = useState([]);
 
   //////////
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
@@ -33,36 +33,15 @@ export default function CompAssessment({ user, darkMode }) {
     end_date: "2025-12-08",
   });
   //////////
-  // const getAssessments = async () => {
-  //   try {
-  //     const response = await getAllAssessments();
-  //     console.log("All assessments:", response.data);
-  //     if (Array.isArray(response.data)) {
-  //       setAssessments(response.data);
-  //       setAssessmentsListCount(response.data.length);
-  //       // Immediately update visibleList based on initial filter
-  //       filterAssessments(response.data, showSchdAssessments);
-  //     } else {
-  //       console.error("API did not return an array:", response.data);
-  //       setAssessments([]);
-  //       setVisibleList([]);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching assessments:", error);
-  //     setAssessments([]);
-  //     setVisibleList([]);
-  //   }
-  // };
-
   const getAssessments = async () => {
-    /*
     try {
       const response = await getAllAssessments();
       console.log("All assessments:", response.data);
       if (Array.isArray(response.data)) {
         setAssessments(response.data);
         setAssessmentsListCount(response.data.length);
-        setVisibleList(response.data);
+        // Immediately update visibleList based on initial filter
+        filterAssessments(response.data, showSchdAssessments);
       } else {
         console.error("API did not return an array:", response.data);
         setAssessments([]);
@@ -73,7 +52,6 @@ export default function CompAssessment({ user, darkMode }) {
       setAssessments([]);
       setVisibleList([]);
     }
-      */
   };
 
   // Helper function to filter assessments
@@ -86,10 +64,10 @@ export default function CompAssessment({ user, darkMode }) {
   };
 
   // Fetch questions when the component mounts
-  // useEffect(() => {
-  //   getAssessments();
-  //   console.log("All assessments",getAllAssessments);
-  // }, []);
+  useEffect(() => {
+    getAssessments();
+    console.log("All assessments",getAllAssessments);
+  }, []);
 
   useEffect(() => {
     getAssessments();
