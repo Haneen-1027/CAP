@@ -6,7 +6,7 @@ export default function LargeModal({ goal, darkMode, isUpComing }) {
     <>
       <button
         type="button"
-        class="btn btn-sm btn-primary"
+        class="btn btn-sm btn-success"
         data-bs-toggle="modal"
         data-bs-target=".bd-example-modal-lg"
       >

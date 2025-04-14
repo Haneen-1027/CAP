@@ -4,21 +4,22 @@ import { loginUser } from "../../APIs/ApisHandaler";
 import { useNavigate } from "react-router";
 
 export default function Login({ darkMode }) {
-
   const navigate = useNavigate();
-  
+
   const login = async (email, password) => {
     try {
-      await loginUser(email, password).then((response) => {
-        console.log(`The axios response is:`, response.data);
-  
-        localStorage.setItem("token", response.data.token); 
-        console.log("Login successful!");
-  
-        navigate("/home");
-      }).catch((error) => {
-        console.error("Login failed:", error);
-      });
+      await loginUser(email, password)
+        .then((response) => {
+          console.log(`The axios response is:`, response.data);
+
+          localStorage.setItem("token", response.data.token);
+          console.log("Login successful!");
+
+          navigate("/home");
+        })
+        .catch((error) => {
+          console.error("Login failed:", error);
+        });
     } catch (e) {
       console.error("An unexpected error occurred:", e);
     }
@@ -74,7 +75,7 @@ export default function Login({ darkMode }) {
               Don't have an Account? <Link to={"/signup"}>Sign up</Link>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary w-100 high-bold p-2">
+          <button type="submit" className="btn btn-success w-100 high-bold p-2">
             LogIn
           </button>
         </form>

@@ -12,7 +12,7 @@ function App() {
     lastName: "Admin",
     email: "Admin@gmail.com",
     bio: "Software developer with a passion for coding and learning.",
-    role: "Admin",
+    role: "Contributor",
   });
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function App() {
         fallback={
           <div className="center-container d-flex justify-content-center align-items-center w-100 h-100">
             <div
-              className="spinner-border text-primary d-flex justify-content-center align-items-center"
+              className="spinner-border text-success d-flex justify-content-center align-items-center"
               role="status"
             >
               <span className="sr-only">Loading...</span>

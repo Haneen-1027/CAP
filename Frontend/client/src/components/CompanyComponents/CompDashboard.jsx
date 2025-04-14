@@ -31,18 +31,25 @@ export default function CompDashboard({ user, darkMode }) {
         <div className="col-lg-4">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body card2 text-center ${darkMode ? "spic-dark-mode text-light" : ""
-                }`}
+              className={`card-body card2 text-center ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
             >
-              <h5 className="card-title">Welcome <strong>{companyDetails.firstName} {companyDetails.lastName}</strong></h5>
+              <h5 className="card-title">
+                Welcome{" "}
+                <strong>
+                  {companyDetails.firstName} {companyDetails.lastName}
+                </strong>
+              </h5>
               <p
-                className={`card-text ${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                  }`}
+                className={`card-text ${
+                  darkMode ? "spic-dark-mode text-white" : "text-muted"
+                }`}
               >
                 {companyDetails.bio || "No description available."}
               </p>
               <Link
-                className="btn btn-primary btn-sm"
+                className="btn btn-success btn-sm"
                 to={`/profile/${companyDetails.id}`}
               >
                 View Company Profile
@@ -55,15 +62,18 @@ export default function CompDashboard({ user, darkMode }) {
         <div className="col-lg-8">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
             >
               <h5 className="card-title">Company Performance Overview</h5>
               <div className="row text-center mt-4">
                 <div className="col-md-4">
-                  <h4 className="text-primary">50+</h4>
+                  <h4 className="text-success">50+</h4>
                   <p
-                    className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                      }`}
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
                   >
                     Assessments Created
                   </p>
@@ -71,8 +81,9 @@ export default function CompDashboard({ user, darkMode }) {
                 <div className="col-md-4">
                   <h4 className="text-warning">1,200+</h4>
                   <p
-                    className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                      }`}
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
                   >
                     Candidates Evaluated
                   </p>
@@ -80,8 +91,9 @@ export default function CompDashboard({ user, darkMode }) {
                 <div className="col-md-4">
                   <h4 className="text-success">95%</h4>
                   <p
-                    className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                      }`}
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
                   >
                     Success Rate
                   </p>
@@ -95,12 +107,14 @@ export default function CompDashboard({ user, darkMode }) {
         <div className="col-lg-7">
           <div className="card shadow-sm h-100 ">
             <div
-              className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""}`}
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
             >
               <div className=" d-flex justify-content-between">
                 <h5 className="card-title">Active Assessments</h5>
                 <Link
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-success btn-sm"
                   type="button"
                   to="/assessment/view"
                 >
@@ -116,22 +130,17 @@ export default function CompDashboard({ user, darkMode }) {
                 {assessments.slice(0, visibleCount).map((assessment, index) => (
                   <li
                     key={index}
-                    className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item d-flex justify-content-between align-items-center ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
                     {assessment.title}
 
-                    <span>
-                      {assessment.date}
-                    </span>
-
+                    <span>{assessment.date}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                className="btn btn-link mt-3"
-                onClick={toggleVisibility}
-              >
+              <button className="btn btn-link mt-3" onClick={toggleVisibility}>
                 {expanded ? "See Less" : "See More"}
               </button>
             </div>
@@ -140,7 +149,11 @@ export default function CompDashboard({ user, darkMode }) {
 
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}>
+            <div
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
+            >
               <h5 className="card-title">Question Management</h5>
               <div className="mt-3">
                 {/* Total Questions */}
@@ -154,22 +167,25 @@ export default function CompDashboard({ user, darkMode }) {
                 </p>
                 <ul className="list-group">
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
-                    Coding: <span className="text-primary">20</span>
+                    Coding: <span className="text-success">20</span>
                   </li>
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
-                    Multiple-Choice: <span className="text-primary">15</span>
+                    Multiple-Choice: <span className="text-success">15</span>
                   </li>
                   <li
-                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
-                    Theoretical: <span className="text-primary">15</span>
+                    Theoretical: <span className="text-success">15</span>
                   </li>
                 </ul>
               </div>

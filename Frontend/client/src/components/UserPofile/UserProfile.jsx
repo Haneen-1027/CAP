@@ -117,7 +117,7 @@ export default function UserProfile({ userDetailes, darkMode }) {
             </>
           ) : (
             <button
-              className="btn btn-primary"
+              className="btn btn-success"
               onClick={() => setIsEditing(true)}
             >
               Edit Profile

@@ -46,7 +46,7 @@ export default function AdmDashboard({ user, darkMode }) {
                 {userDetailes.bio || "Admin for the coding platform."}
               </p>
               <Link
-                className="btn btn-primary btn-sm"
+                className="btn btn-success btn-sm"
                 to={`/profile/${userDetailes.id}`}
               >
                 View Profile
@@ -66,7 +66,7 @@ export default function AdmDashboard({ user, darkMode }) {
               <h5>Platform Overview</h5>
               <div className="row text-center mt-4">
                 <div className="col-md-3">
-                  <h4 className="text-primary">12</h4>
+                  <h4 className="text-success">12</h4>
                   <p>Assessments</p>
                 </div>
                 <div className="col-md-3">
@@ -96,7 +96,7 @@ export default function AdmDashboard({ user, darkMode }) {
             >
               <div className="d-flex justify-content-between">
                 <h5>Active Assessments</h5>
-                <Link className="btn btn-primary btn-sm" to="/assessment/view">
+                <Link className="btn btn-success btn-sm" to="/assessment/view">
                   Manage
                 </Link>
               </div>
@@ -142,21 +142,21 @@ export default function AdmDashboard({ user, darkMode }) {
                       darkMode ? "spic-dark-mode text-white" : ""
                     }`}
                   >
-                    Coding: <span className="text-primary">20</span>
+                    Coding: <span className="text-success">20</span>
                   </li>
                   <li
                     className={`list-group-item ${
                       darkMode ? "spic-dark-mode text-white" : ""
                     }`}
                   >
-                    Multiple-Choice: <span className="text-primary">15</span>
+                    Multiple-Choice: <span className="text-success">15</span>
                   </li>
                   <li
                     className={`list-group-item ${
                       darkMode ? "spic-dark-mode text-white" : ""
                     }`}
                   >
-                    Theoretical: <span className="text-primary">15</span>
+                    Theoretical: <span className="text-success">15</span>
                   </li>
                 </ul>
               </div>
@@ -185,7 +185,7 @@ export default function AdmDashboard({ user, darkMode }) {
                   </li>
                 ))}
               </ul>
-              <Link className="btn btn-primary btn-sm mt-3" to="/admin/users">
+              <Link className="btn btn-success btn-sm mt-3" to="/admin/users">
                 Manage Users
               </Link>
             </div>

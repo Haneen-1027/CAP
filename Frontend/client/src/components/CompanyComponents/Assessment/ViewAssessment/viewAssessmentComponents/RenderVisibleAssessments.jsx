@@ -35,7 +35,7 @@ export default function RenderVisibleAssessments({
               {assess.time}
             </td>
             <td>
-              <span className="bg-label-primary text-primary me-1">
+              <span className="bg-label-success text-success me-1">
                 {assess.questions.length}
               </span>
             </td>
@@ -48,7 +48,7 @@ export default function RenderVisibleAssessments({
                 />
                 <Link
                   to={`/assessment/${10}`}
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn-outline-success"
                   title="Edit"
                 >
                   <i className="fas fa-edit"></i>

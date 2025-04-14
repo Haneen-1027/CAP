@@ -30,7 +30,7 @@ export default function InviteContributors({ darkMode }) {
             </label>
           </form>
           <div className="col-12 col-md-1 my-2 m-md-0 d-flex justify-content-center">
-            <button className="btn btn-primary">Add</button>
+            <button className="btn btn-success">Add</button>
           </div>
         </div>
         {/** Handle emails */}

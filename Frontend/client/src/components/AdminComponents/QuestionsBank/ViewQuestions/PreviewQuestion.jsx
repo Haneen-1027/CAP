@@ -4,34 +4,32 @@ import { Link, useParams } from "react-router-dom";
 import { getQuestionById } from "../../../../APIs/ApisHandaler";
 
 export default function PreviewQuestion({ darkMode }) {
-  const { id } = useParams(); 
-  const [question, setQuestion] = useState(null); 
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+  const { id } = useParams();
+  const [question, setQuestion] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch question details when the component mounts
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await getQuestionById(id); 
-        setQuestion(response.data); 
-        setLoading(false); 
+        const response = await getQuestionById(id);
+        setQuestion(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching question:", error);
-        setError("Failed to fetch question details"); 
-        setLoading(false); 
+        setError("Failed to fetch question details");
+        setLoading(false);
       }
     };
 
     fetchQuestion();
   }, [id]);
 
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  
   if (error) {
     return <div>{error}</div>;
   }
@@ -55,9 +53,7 @@ export default function PreviewQuestion({ darkMode }) {
                     : "Non-valid Type"
                   : "No Data"}
               </div>
-              <div className="">
-                {question ? question.category : "No Data"}
-              </div>
+              <div className="">{question ? question.category : "No Data"}</div>
             </div>
           </div>
           <div className="w-50 position-relative my-3">
@@ -74,9 +70,7 @@ export default function PreviewQuestion({ darkMode }) {
                 id="prompt"
                 name="questionPrompt"
                 placeholder="Question ..."
-                value={
-                  question ? question.prompt : "Question Prompt ..."
-                }
+                value={question ? question.prompt : "Question Prompt ..."}
                 disabled
               />
             </div>
@@ -107,7 +101,7 @@ export default function PreviewQuestion({ darkMode }) {
             <Link
               to={`/admin/questions_bank/update_question/${id}`} // Use the id from the URL
               state={{ data: question }}
-              className="btn btn-primary"
+              className="btn btn-success"
             >
               Update Question
             </Link>

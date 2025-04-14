@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import "./Assessments/Assessments.css";
 
 export default function ContDashboard({ userDetailes, darkMode }) {
-
   const [user, setUser] = useState({ ...userDetailes });
   // State to manage visible assessments
   const [visibleCount, setVisibleCount] = useState(2);
@@ -11,11 +10,31 @@ export default function ContDashboard({ userDetailes, darkMode }) {
 
   // Assessment data
   const assessments = [
-    { title: "JavaScript Advanced Assessment", status: "In Progress", badgeClass: "bg-warning text-dark" },
-    { title: "React Basics Assessment", status: "Not Started", badgeClass: "bg-secondary" },
-    { title: "HTML & CSS Assessment", status: "Completed", badgeClass: "bg-success" },
-    { title: "HTML & CSS Assessment", status: "Completed", badgeClass: "bg-success" },
-    { title: "HTML & CSS Assessment", status: "Completed", badgeClass: "bg-success" },
+    {
+      title: "JavaScript Advanced Assessment",
+      status: "In Progress",
+      badgeClass: "bg-warning text-dark",
+    },
+    {
+      title: "React Basics Assessment",
+      status: "Not Started",
+      badgeClass: "bg-secondary",
+    },
+    {
+      title: "HTML & CSS Assessment",
+      status: "Completed",
+      badgeClass: "bg-success",
+    },
+    {
+      title: "HTML & CSS Assessment",
+      status: "Completed",
+      badgeClass: "bg-success",
+    },
+    {
+      title: "HTML & CSS Assessment",
+      status: "Completed",
+      badgeClass: "bg-success",
+    },
   ];
 
   const toggleVisibility = () => {
@@ -28,19 +47,30 @@ export default function ContDashboard({ userDetailes, darkMode }) {
   };
 
   return (
-
     <div className="container my-5">
       <div className="row g-4">
         {/* Profile Section */}
         <div className="col-lg-4">
           <div className="card shadow-sm h-100">
-            <div className={`card-body card2 text-center ${darkMode ? "spic-dark-mode text-light" : ""
-              } `}>
-
-              <h5 className="card-title">{user.firstName} {user.lastName}</h5>
-              <p className={`card-text ${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                }  `}>{user.bio}</p>
-              <Link className="btn btn-primary btn-sm" to={`/profile/${user.id}`}>
+            <div
+              className={`card-body card2 text-center ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              } `}
+            >
+              <h5 className="card-title">
+                {user.firstName} {user.lastName}
+              </h5>
+              <p
+                className={`card-text ${
+                  darkMode ? "spic-dark-mode text-white" : "text-muted"
+                }  `}
+              >
+                {user.bio}
+              </p>
+              <Link
+                className="btn btn-success btn-sm"
+                to={`/profile/${user.id}`}
+              >
                 View Profile
               </Link>
             </div>
@@ -50,23 +80,42 @@ export default function ContDashboard({ userDetailes, darkMode }) {
         {/* Statistics Section */}
         <div className="col-lg-8">
           <div className="card shadow-sm h-100">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}>
+            <div
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
+            >
               <h5 className="card-title">Performance Overview</h5>
               <div className="row text-center mt-4">
                 <div className="col-md-4">
-                  <h4 className="text-primary">85%</h4>
-                  <p className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                    }`}>Assessment Completion</p>
+                  <h4 className="text-success">85%</h4>
+                  <p
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
+                  >
+                    Assessment Completion
+                  </p>
                 </div>
                 <div className="col-md-4">
                   <h4 className="text-warning">92%</h4>
-                  <p className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                    }`}>Accuracy</p>
+                  <p
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
+                  >
+                    Accuracy
+                  </p>
                 </div>
                 <div className="col-md-4">
                   <h4 className="text-success">7</h4>
-                  <p className={`${darkMode ? "spic-dark-mode text-white" : "text-muted"
-                    }`}>Assessments Completed</p>
+                  <p
+                    className={`${
+                      darkMode ? "spic-dark-mode text-white" : "text-muted"
+                    }`}
+                  >
+                    Assessments Completed
+                  </p>
                 </div>
               </div>
             </div>
@@ -76,21 +125,31 @@ export default function ContDashboard({ userDetailes, darkMode }) {
         {/* Assessment Section */}
         <div className="col-lg-7">
           <div className="card shadow-sm h-100">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
-              }`}>
+            <div
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-white" : ""
+              }`}
+            >
               <h5 className="card-title">Active Assessments</h5>
-              <Link className="btn btn-primary btn-sm" type="button" to="/contributer/assessments">
+              <Link
+                className="btn btn-success btn-sm"
+                type="button"
+                to="/contributer/assessments"
+              >
                 Show Details
               </Link>
               <ul className="list-group mt-3">
                 {assessments.slice(0, visibleCount).map((assessment, index) => (
                   <li
                     key={index}
-                    className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? "spic-dark-mode text-white" : ""
-                      }`}
+                    className={`list-group-item d-flex justify-content-between align-items-center ${
+                      darkMode ? "spic-dark-mode text-white" : ""
+                    }`}
                   >
                     {assessment.title}
-                    <span className={`badge ${assessment.badgeClass}`}>{assessment.status}</span>
+                    <span className={`badge ${assessment.badgeClass}`}>
+                      {assessment.status}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -104,20 +163,32 @@ export default function ContDashboard({ userDetailes, darkMode }) {
         {/* Upcoming Deadlines */}
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
-            <div className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""}`}>
+            <div
+              className={`card-body ${
+                darkMode ? "spic-dark-mode text-light" : ""
+              }`}
+            >
               <h5 className="card-title">Results</h5>
               <ul className="list-group mt-3">
-                <li className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""
-                  }`}>
-                  <span> HTML & CSS Assessment </span><span className="text-success"> 8 / 10</span>
+                <li
+                  className={`list-group-item d-flex justify-content-between ${
+                    darkMode ? "spic-dark-mode text-white" : ""
+                  }`}
+                >
+                  <span> HTML & CSS Assessment </span>
+                  <span className="text-success"> 8 / 10</span>
                 </li>
-                <li className={`list-group-item d-flex justify-content-between  ${darkMode ? "spic-dark-mode text-white" : ""
-                  }`}>
-                  <span>JavaScript Advanced Assessment</span> <span className="text-danger"> 6 / 15</span>
+                <li
+                  className={`list-group-item d-flex justify-content-between  ${
+                    darkMode ? "spic-dark-mode text-white" : ""
+                  }`}
+                >
+                  <span>JavaScript Advanced Assessment</span>{" "}
+                  <span className="text-danger"> 6 / 15</span>
                 </li>
               </ul>
               <Link
-                className="btn btn-primary btn-sm mt-4"
+                className="btn btn-success btn-sm mt-4"
                 type="button"
                 to="/contributer/result"
               >

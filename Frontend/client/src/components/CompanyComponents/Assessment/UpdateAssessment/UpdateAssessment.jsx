@@ -84,7 +84,7 @@ export default function UpdateAssessment({ darkMode }) {
   );
   let loadingMessage = (
     <div className="d-flex justify-content-center align-items-center my-4">
-      <div className="spinner-border text-primary" role="status">
+      <div className="spinner-border text-success" role="status">
         <span className="sr-only">Loading...</span>
       </div>
     </div>
@@ -262,7 +262,7 @@ export default function UpdateAssessment({ darkMode }) {
                     })),
                   },
                 }}
-                className="btn btn-primary"
+                className="btn btn-success"
               >
                 Update Assessment
               </Link>

@@ -72,7 +72,10 @@ export default function AddQuestion({ userdetails, darkMode }) {
     if (validateResult.error) {
       setErrorList(validateResult.error.details);
     } else {
-      const newDetails = {...details, ["description"]: "this is static description"};
+      const newDetails = {
+        ...details,
+        ["description"]: "this is static description",
+      };
       const newQuestion = {
         ...question,
         ["details"]: newDetails,
@@ -101,7 +104,6 @@ export default function AddQuestion({ userdetails, darkMode }) {
               console.error(e);
             });
         }
-        
       } catch (e) {
         console.error(e);
       }
@@ -229,7 +231,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
         <div className="mid-aligment d-flex justify-content-center w-50 my-4">
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-success"
             onClick={() => addQuestion()}
           >
             {isEditing ? "Update Question" : "Add Question"}

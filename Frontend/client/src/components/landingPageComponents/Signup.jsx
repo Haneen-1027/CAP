@@ -39,7 +39,7 @@ export default function Signup({ darkMode }) {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary w-100 high-bold p-2">
+          <button type="submit" className="btn btn-success w-100 high-bold p-2">
             Create Account
           </button>
         </form>

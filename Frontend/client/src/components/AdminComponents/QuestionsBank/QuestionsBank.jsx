@@ -33,7 +33,7 @@ export default function QuestionsBank({ userDetailes, darkMode }) {
         <Suspense
           fallback={
             <div className="center-container">
-              <div className="spinner-border text-primary" role="status">
+              <div className="spinner-border text-success" role="status">
                 <span className="sr-only">Loading...</span>
               </div>
             </div>

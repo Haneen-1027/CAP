@@ -123,7 +123,7 @@ export default function AssessmentDetails({
                     ? true
                     : false
                 }
-                className="btn btn-primary"
+                className="btn btn-success"
               >
                 {isWithinRange.toLowerCase() === "yet"
                   ? "Please Wait"

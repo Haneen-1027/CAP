@@ -12,8 +12,9 @@ export default function SubNavbar({ values }) {
   }, [activeId]);
   return (
     <nav
-      className={`${darkMode ? " spic-dark-mode" : ""
-        } navbar bg-white w-sm-50 navbar-expand-lg mb-4 border`}
+      className={`${
+        darkMode ? " spic-dark-mode" : ""
+      } navbar bg-white w-sm-50 navbar-expand-lg mb-4 border`}
       id="nav"
     >
       <div className="container d-flex justify-content-sm-center ">
@@ -25,8 +26,9 @@ export default function SubNavbar({ values }) {
               onClick={() => setActiveId(val.id)}
             >
               <Link
-                className={`${activeId === val.id ? "nav-link active" : "nav-link"
-                  } ${darkMode ? " spic-dark-mode border-0" : ""} text-truncate`}
+                className={`${
+                  activeId === val.id ? "nav-link active" : "nav-link"
+                } ${darkMode ? " spic-dark-mode border-0" : ""} text-truncate`}
                 to={val.path}
               >
                 {val.text}

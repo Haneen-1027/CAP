@@ -132,7 +132,7 @@ export default function CodingQuestion({
           <div className="col-12 d-flex justify-content-center p-0">
             <button
               onClick={() => handleSaveCode()}
-              className="btn btn-primary"
+              className="btn btn-success"
               disabled={!isCodeEditting}
             >
               Run & Save

@@ -6,10 +6,10 @@
   --main-margin-top: 2.5rem;
   --main-margin-bottom: 2.5rem;
   --main-bg: #fafafa;
-  --footer-bg: #113f67;
-  --Headers_Colors: #2c67bf;
-  --Primary_Buttons: #4a90e2;
-  --highlites_color: #b3d4fc;
+  --footer-bg: #30ee26;
+  --Headers_Colors: #0ac100;
+  --Primary_Buttons: #64f35d;
+  --highlites_color: #98f793;
   --HomePageSize: 1rem;
   --DetailPageSize: 0.875rem;
   --lowBold: 300;
@@ -322,6 +322,7 @@ textarea.form-input:focus {
 }
 .nav-link.active::before {
   width: calc(100% - 5%);
+  background-color: var(--Primary_Buttons);
 }
 
 .delete-button,

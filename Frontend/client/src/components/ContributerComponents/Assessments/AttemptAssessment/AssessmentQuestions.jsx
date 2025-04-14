@@ -142,7 +142,7 @@ export default function AssessmentQuestions({
           {currentQuestionIndex + 1 === questions.length ? (
             <button
               style={{ width: "6rem" }}
-              className="btn btn-primary"
+              className="btn btn-success"
               onClick={() => handleSubmitAssessment()}
             >
               Submit
@@ -150,7 +150,7 @@ export default function AssessmentQuestions({
           ) : (
             <button
               style={{ width: "6rem" }}
-              className="btn btn-primary"
+              className="btn btn-success"
               onClick={() => handleNext()}
             >
               Next

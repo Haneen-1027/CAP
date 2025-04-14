@@ -87,7 +87,7 @@ export default function CreateAssessment({ darkMode }) {
 
   const loadingMessage = (
     <div className="d-flex justify-content-center align-items-center my-4">
-      <div className="spinner-border text-primary" role="status">
+      <div className="spinner-border text-success" role="status">
         <span className="sr-only">Loading...</span>
       </div>
     </div>
@@ -413,7 +413,7 @@ export default function CreateAssessment({ darkMode }) {
         className="d-flex justify-content-center align-items-center"
         style={{ height: "100vh" }}
       >
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border text-success" role="status">
           <span className="sr-only">Loading...</span>
         </div>
       </div>
@@ -630,7 +630,7 @@ export default function CreateAssessment({ darkMode }) {
             <div className="mid-aligment d-flex justify-content-center w-50">
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn btn-success"
                 onClick={() => addAssessment()}
               >
                 {isEditing ? "Update Assessment" : "Add Assessment"}
