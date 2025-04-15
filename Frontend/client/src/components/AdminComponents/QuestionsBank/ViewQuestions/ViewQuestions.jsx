@@ -98,7 +98,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
               state={{ question: q }}
               className={`btn view-button ${darkMode ? "text-light" : ""}`}
             >
-              <i class="fa-regular fa-eye"></i>
+              <i className="fa-regular fa-eye"></i>
             </Link>
             <div
               className={`btn delete-button ${darkMode ? "text-light" : ""}`}
