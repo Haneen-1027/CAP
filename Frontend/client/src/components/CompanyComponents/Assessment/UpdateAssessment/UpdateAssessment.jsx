@@ -20,7 +20,7 @@ export default function UpdateAssessment({ darkMode }) {
     questions: [
       {
         question: {
-          id: "Id0What does HTML stand for?",
+          id: "1",
           type: "mc",
           prompt: "What does HTML stand for?",
           category: "HTML",

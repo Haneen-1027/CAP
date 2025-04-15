@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LargeModal } from "../../../../../componentsLoader/ComponentsLoader";
 
@@ -11,8 +11,9 @@ export default function RenderVisibleAssessments({
   currentDate,
   isUpComing,
 }) {
-  console.log("assess: ", assessments);
-
+  useEffect(() => {
+    console.log("Visiple Assessments: ", assessments);
+  }, []);
   function renderAssessments() {
     return assessments.map((assess, index) => {
       if (

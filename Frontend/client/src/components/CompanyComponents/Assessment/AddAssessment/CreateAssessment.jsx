@@ -69,7 +69,7 @@ export default function CreateAssessment({ darkMode }) {
           endTime: "",
           totalMark: 0,
           questionsCount: 0,
-          questionsIds: [],
+          questions: [],
         }
   );
 
@@ -213,15 +213,13 @@ export default function CreateAssessment({ darkMode }) {
 
   function renderQuestions() {
     return visibleList.map((question, index) => {
-      const isChecked = assessment.questionsIds.some(
-        (q) => q.id === question.id
-      );
+      const isChecked = assessment.questions.some((q) => q.id === question.id);
       const remainingTotalMark =
         assessment.totalMark -
-        assessment.questionsIds.reduce((total, q) => total + q.mark, 0);
+        assessment.questions.reduce((total, q) => total + q.mark, 0);
       const isDisabled =
         !isChecked &&
-        (assessment.questionsIds.length >= assessment.questionsCount ||
+        (assessment.questions.length >= assessment.questionsCount ||
           remainingTotalMark === 0);
 
       return (
@@ -257,7 +255,7 @@ export default function CreateAssessment({ darkMode }) {
               onChange={(e) => selectQuestion(e, question.id)}
               value={
                 isChecked
-                  ? assessment.questionsIds.find((q) => q.id === question.id)
+                  ? assessment.questions.find((q) => q.id === question.id)
                       ?.mark || 0
                   : ""
               }
@@ -282,7 +280,7 @@ export default function CreateAssessment({ darkMode }) {
                 }
                 value={
                   isChecked
-                    ? assessment.questionsIds.find((q) => q.id === question.id)
+                    ? assessment.questions.find((q) => q.id === question.id)
                         ?.options_count || 0
                     : ""
                 }
@@ -330,7 +328,7 @@ export default function CreateAssessment({ darkMode }) {
 
   function selectQuestion(e, id, q, q_type) {
     const { name, value } = e.target;
-    const selectedQuestions = [...assessment.questionsIds];
+    const selectedQuestions = [...assessment.questions];
 
     if (e.target.type === "checkbox") {
       if (e.target.checked) {
@@ -346,7 +344,7 @@ export default function CreateAssessment({ darkMode }) {
 
         selectedQuestions.push(question);
         setSelectedTotalMark((prev) => prev + question.mark);
-        setAssessment((prev) => ({ ...prev, questionsIds: selectedQuestions }));
+        setAssessment((prev) => ({ ...prev, questions: selectedQuestions }));
       } else {
         const questionToRemove = selectedQuestions.find((q) => q.id === id);
         if (questionToRemove) {
@@ -355,7 +353,7 @@ export default function CreateAssessment({ darkMode }) {
         const updatedQuestions = selectedQuestions.filter(
           (question) => question.id !== id
         );
-        setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
+        setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
       }
     } else if (name === "mark") {
       const newValue = value.trim() === "" ? 0 : parseInt(value, 10);
@@ -372,7 +370,7 @@ export default function CreateAssessment({ darkMode }) {
       );
 
       setSelectedTotalMark((prev) => prev - currentQuestion.mark + newMark);
-      setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
+      setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
     } else if (name === "options_count" && q_type === "mc") {
       const correctCount = q?.correctAnswer?.length || 0;
       const wrongCount = q?.wrongOptions?.length || 0;
@@ -391,7 +389,7 @@ export default function CreateAssessment({ darkMode }) {
           : question
       );
 
-      setAssessment((prev) => ({ ...prev, questionsIds: updatedQuestions }));
+      setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
     }
   }
 

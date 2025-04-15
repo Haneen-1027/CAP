@@ -6,10 +6,10 @@ import {
   RenderVisibleAssessments,
 } from "../../../../componentsLoader/ComponentsLoader";
 import { getAllAssessments } from "../../../../APIs/ApisHandaler";
-import assessments from "./assessmentTest.json";
+//import assessments from "./assessmentTest.json";
 
 export default function CompAssessment({ user, darkMode }) {
-    const [assessments, setAssessments] = useState([]);
+  const [assessments, setAssessments] = useState([]);
 
   //////////
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
@@ -66,7 +66,7 @@ export default function CompAssessment({ user, darkMode }) {
   // Fetch questions when the component mounts
   useEffect(() => {
     getAssessments();
-    console.log("All assessments",getAllAssessments);
+    console.log("All assessments", getAllAssessments);
   }, []);
 
   useEffect(() => {
