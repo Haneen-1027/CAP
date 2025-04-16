@@ -32,8 +32,8 @@ export default function CreateAssessment({ darkMode }) {
   // State variables
   const [selectedTotalMark, setSelectedTotalMark] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [questions, setQuestions] = useState([]);
-  const [questionsListCount, setQuestionsListCount] = useState(0);
+  const [questionsIds, setquestionsIds] = useState([]);
+  const [questionsIdsListCount, setquestionsIdsListCount] = useState(0);
   const [visibleList, setVisibleList] = useState([]);
   const [apiError, setApiError] = useState(false);
 
@@ -69,7 +69,7 @@ export default function CreateAssessment({ darkMode }) {
           endTime: "",
           totalMark: 0,
           questionsCount: 0,
-          questions: [],
+          questionsIds: [],
         }
   );
 
@@ -93,43 +93,57 @@ export default function CreateAssessment({ darkMode }) {
     </div>
   );
 
-  // Fetch questions from API on component mount
+  // Fetch questionsIds from API on component mount
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchquestionsIds = async () => {
       try {
         setIsLoading(true);
         setApiError(false);
         const response = await getAllQuestions();
-        setQuestions(response.data);
+        setquestionsIds(response.data);
         setVisibleList(response.data);
-        setQuestionsListCount(response.data.length);
+        setquestionsIdsListCount(response.data.length);
       } catch (error) {
-        console.error("Error fetching questions:", error);
+        console.error("Error fetching questionsIds:", error);
         setApiError(true);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchQuestions();
+    fetchquestionsIds();
 
     // Set editing state if ID exists
     if (id) {
       setAssessment(data);
       setIsEditing(true);
       setSelectedTotalMark(
-        data.questions.reduce((total, question) => total + question.mark, 0)
+        data.questionsIds.reduce((total, question) => total + question.mark, 0)
       );
     }
   }, [id, data]);
 
   const addAssessment = async () => {
     try {
+      const formatTimeFields = (time) => {
+        if (!time) return "00:00:00";
+        return time.length === 5 ? `${time}:00` : time;
+      };
+  
+      // Convert fields before sending
+      const preparedAssessment = {
+        ...assessment,
+        assessmentDate: assessment.time || "2025-01-01",
+        startTime: formatTimeFields(assessment.startTime),
+        endTime: formatTimeFields(assessment.endTime),
+        duration: formatTimeFields(assessment.duration),
+      };
+  
       if (isEditing) {
-        console.log("assessment before update:", assessment);
+        console.log("assessment before update:", preparedAssessment);
       } else {
-        console.log("assessment before Adding:", assessment);
-        await addNewAssessment(assessment)
+        console.log("assessment before Adding:", preparedAssessment);
+        await addNewAssessment(preparedAssessment)
           .then((response) => {
             console.log(`The axios response is: ${response}`);
           })
@@ -141,9 +155,10 @@ export default function CreateAssessment({ darkMode }) {
       console.error(e);
     }
   };
+  
 
   function clearResults() {
-    setVisibleList([...questions]);
+    setVisibleList([...questionsIds]);
   }
 
   function handleSearchValue(value) {
@@ -159,7 +174,7 @@ export default function CreateAssessment({ darkMode }) {
     if (searchValue.trim() === "") {
       return;
     }
-    let srchResultsArray = questions.filter((question) =>
+    let srchResultsArray = questionsIds.filter((question) =>
       question.prompt.toLowerCase().includes(searchValue.toLowerCase())
     );
     if (srchResultsArray.length === 0) {
@@ -182,44 +197,44 @@ export default function CreateAssessment({ darkMode }) {
     const typeOptions = questionTypes.map((type) => type.value);
     const categoryOptions = categories.map((category) => category.value);
 
-    let filteredQuestions = [];
+    let filteredquestionsIds = [];
 
     if (searchResults.length > 0 && searchValue.trim() !== "") {
-      filteredQuestions = [...searchResults];
+      filteredquestionsIds = [...searchResults];
     } else {
-      filteredQuestions = [...questions];
+      filteredquestionsIds = [...questionsIds];
     }
 
     if (type !== 0 && typeOptions.includes(type)) {
-      filteredQuestions = filteredQuestions.filter(
+      filteredquestionsIds = filteredquestionsIds.filter(
         (question) => question.type.toLowerCase() === type.toLowerCase()
       );
     }
 
     if (category !== 0 && categoryOptions.includes(category)) {
-      filteredQuestions = filteredQuestions.filter(
+      filteredquestionsIds = filteredquestionsIds.filter(
         (question) => question.category.toLowerCase() === category.toLowerCase()
       );
     }
 
-    setVisibleList(filteredQuestions);
+    setVisibleList(filteredquestionsIds);
 
-    if (filteredQuestions.length === 0) {
+    if (filteredquestionsIds.length === 0) {
       setNoResults(true);
     } else {
       setNoResults(false);
     }
   }
 
-  function renderQuestions() {
+  function renderquestionsIds() {
     return visibleList.map((question, index) => {
-      const isChecked = assessment.questions.some((q) => q.id === question.id);
+      const isChecked = assessment.questionsIds.some((q) => q.id === question.id);
       const remainingTotalMark =
         assessment.totalMark -
-        assessment.questions.reduce((total, q) => total + q.mark, 0);
+        assessment.questionsIds.reduce((total, q) => total + q.mark, 0);
       const isDisabled =
         !isChecked &&
-        (assessment.questions.length >= assessment.questionsCount ||
+        (assessment.questionsIds.length >= assessment.questionsCount ||
           remainingTotalMark === 0);
 
       return (
@@ -255,7 +270,7 @@ export default function CreateAssessment({ darkMode }) {
               onChange={(e) => selectQuestion(e, question.id)}
               value={
                 isChecked
-                  ? assessment.questions.find((q) => q.id === question.id)
+                  ? assessment.questionsIds.find((q) => q.id === question.id)
                       ?.mark || 0
                   : ""
               }
@@ -280,7 +295,7 @@ export default function CreateAssessment({ darkMode }) {
                 }
                 value={
                   isChecked
-                    ? assessment.questions.find((q) => q.id === question.id)
+                    ? assessment.questionsIds.find((q) => q.id === question.id)
                         ?.options_count || 0
                     : ""
                 }
@@ -328,7 +343,7 @@ export default function CreateAssessment({ darkMode }) {
 
   function selectQuestion(e, id, q, q_type) {
     const { name, value } = e.target;
-    const selectedQuestions = [...assessment.questions];
+    const selectedquestionsIds = [...assessment.questionsIds];
 
     if (e.target.type === "checkbox") {
       if (e.target.checked) {
@@ -342,35 +357,35 @@ export default function CreateAssessment({ darkMode }) {
           question = { ...question, options_count: optionsCount };
         }
 
-        selectedQuestions.push(question);
+        selectedquestionsIds.push(question);
         setSelectedTotalMark((prev) => prev + question.mark);
-        setAssessment((prev) => ({ ...prev, questions: selectedQuestions }));
+        setAssessment((prev) => ({ ...prev, questionsIds: selectedquestionsIds }));
       } else {
-        const questionToRemove = selectedQuestions.find((q) => q.id === id);
+        const questionToRemove = selectedquestionsIds.find((q) => q.id === id);
         if (questionToRemove) {
           setSelectedTotalMark((prev) => prev - questionToRemove.mark);
         }
-        const updatedQuestions = selectedQuestions.filter(
+        const updatedquestionsIds = selectedquestionsIds.filter(
           (question) => question.id !== id
         );
-        setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
+        setAssessment((prev) => ({ ...prev, questionsIds: updatedquestionsIds }));
       }
     } else if (name === "mark") {
       const newValue = value.trim() === "" ? 0 : parseInt(value, 10);
-      const currentQuestion = selectedQuestions.find((q) => q.id === id);
-      const sumOfOtherMarks = selectedQuestions.reduce(
+      const currentQuestion = selectedquestionsIds.find((q) => q.id === id);
+      const sumOfOtherMarks = selectedquestionsIds.reduce(
         (total, q) => (q.id === id ? total : total + q.mark),
         0
       );
       const remainingTotalMark = assessment.totalMark - sumOfOtherMarks;
       const newMark = Math.min(newValue, remainingTotalMark);
 
-      const updatedQuestions = selectedQuestions.map((question) =>
+      const updatedquestionsIds = selectedquestionsIds.map((question) =>
         question.id === id ? { ...question, mark: newMark } : question
       );
 
       setSelectedTotalMark((prev) => prev - currentQuestion.mark + newMark);
-      setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
+      setAssessment((prev) => ({ ...prev, questionsIds: updatedquestionsIds }));
     } else if (name === "options_count" && q_type === "mc") {
       const correctCount = q?.correctAnswer?.length || 0;
       const wrongCount = q?.wrongOptions?.length || 0;
@@ -383,13 +398,13 @@ export default function CreateAssessment({ darkMode }) {
         Math.min(newOptionsCount, maxOptionsCount)
       );
 
-      const updatedQuestions = selectedQuestions.map((question) =>
+      const updatedquestionsIds = selectedquestionsIds.map((question) =>
         question.id === id
           ? { ...question, options_count: newOptionsCount }
           : question
       );
 
-      setAssessment((prev) => ({ ...prev, questions: updatedQuestions }));
+      setAssessment((prev) => ({ ...prev, questionsIds: updatedquestionsIds }));
     }
   }
 
@@ -421,7 +436,7 @@ export default function CreateAssessment({ darkMode }) {
   if (apiError) {
     return (
       <div className="alert alert-danger">
-        Error loading questions. Please try again later.
+        Error loading questionsIds. Please try again later.
       </div>
     );
   }
@@ -499,7 +514,7 @@ export default function CreateAssessment({ darkMode }) {
               </div>
             </div>
           </div>
-          {/** Filtiration & Total Mark & Questions Count  */}
+          {/** Filtiration & Total Mark & questionsIds Count  */}
           <div className="card-header p-4 row gap-1 m-0 d-flex justify-content-between align-items-md-center">
             <div className="col-12 col-md-6 row">
               <div className="category col-12 my-1 m-md-0 col-md-6">
@@ -534,7 +549,7 @@ export default function CreateAssessment({ darkMode }) {
                 />
               </div>
               <div className="form-group col-6 d-flex flex-column ">
-                <label htmlFor="questionsCount">Questions Count:</label>
+                <label htmlFor="questionsCount">questionsIds Count:</label>
                 <input
                   type="number"
                   className="form-control"
@@ -559,7 +574,7 @@ export default function CreateAssessment({ darkMode }) {
             <div className="p-0 my-4 m-md-0 col-12 col-md-8 col-lg-6 d-flex justify-content-md-center align-items-center">
               <PaginationNav
                 darkMode={darkMode}
-                counts={questionsListCount}
+                counts={questionsIdsListCount}
                 pageNo={pageNo}
                 setPageNo={setPageNo}
                 countPerPage={countPerPage}
@@ -567,7 +582,7 @@ export default function CreateAssessment({ darkMode }) {
             </div>
             <div className="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-end">
               <label className="" style={{ fontSize: "0.95rem" }}>
-                Questions per Page:
+                questionsIds per Page:
               </label>
               <select
                 className="form-select"
@@ -583,7 +598,7 @@ export default function CreateAssessment({ darkMode }) {
               </select>
             </div>
           </div>
-          {/** Questions to choose  */}
+          {/** questionsIds to choose  */}
           <div className="table-responsive text-nowrap">
             <table
               className={`table ${
@@ -612,7 +627,7 @@ export default function CreateAssessment({ darkMode }) {
               </thead>
               {Array.isArray(visibleList) && visibleList.length > 0 ? (
                 <tbody className="table-border-bottom-0">
-                  {renderQuestions()}
+                  {renderquestionsIds()}
                 </tbody>
               ) : noResults ? (
                 <div className="my-4 mid-bold d-flex justify-content-center">

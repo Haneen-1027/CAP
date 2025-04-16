@@ -83,6 +83,22 @@ export const getAllAssessments = async () => {
   });
 };
 
+
+export const getAssessmentById = async (id) => {
+  return await axios.get(`${BASE_URL}/assessments/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+};
+
+export const updateAssessment = async (id, updatedData) => {
+  return await axios.put(`${BASE_URL}/assessments/${id}`, updatedData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

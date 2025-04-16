@@ -1,275 +1,325 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
-import { Link } from "react-router";
+import { useParams } from "react-router-dom";
+import {
+  getAssessmentById,
+  updateAssessment,
+  getAllQuestions,
+} from "../../../../APIs/ApisHandaler";
 
 export default function UpdateAssessment({ darkMode }) {
-  //
-  /* const [selectedQuestionsTotalMark, setSelectedQuestionsTotalMark] =
-    useState(0);*/
+  const { id } = useParams();
+  const [assessment, setAssessment] = useState({
+    name: "",
+    duration: "",
+    assessmentDate: "",
+    startTime: "",
+    endTime: "",
+    totalMark: 0,
+    questionsCount: 0,
+    questionsIds: []
+  });
+  const [allQuestions, setAllQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState(false);
+  const [error, setError] = useState("");
 
-  //
-  const assessment = {
-    createdBy: "user111",
-    name: "First Test Assessment.",
-    duration: "01:30",
-    time: "2025-04-02",
-    start_time: "16:00",
-    end_time: "18:00",
-    total_mark: 35,
-    questions_count: 5,
-    questions: [
-      {
-        question: {
-          id: "1",
-          type: "mc",
-          prompt: "What does HTML stand for?",
-          category: "HTML",
-          detailes: {
-            isTrueFalse: false,
-            correctAnswer: "HyperText Markup Language",
-            wrongOptions: [
-              "Hyper Transfer Markup Language",
-              "HighText Machine Language",
-              "Hyperlink and Text Markup Language",
-            ],
-          },
-        },
-        mark: 5.0,
-      },
-      {
-        question: {
-          id: "Id1Explain the importance of CSS in modern web development.",
-          type: "essay",
-          prompt: "Explain the importance of CSS in modern web development.",
-          category: "CSS",
-          detailes: {},
-        },
-        mark: 10.0,
-      },
-      {
-        question: {
-          id: "Id2Write a JavaScript function that reverses a string.",
-          type: "coding",
-          prompt: "Write a JavaScript function that reverses a string.",
-          category: "JavaScript",
-          detailes: {
-            inputsCount: 1,
-            testCases: [
-              {
-                inputs: ["hello"],
-                expectedOutput: "olleh",
-              },
-              {
-                inputs: ["world"],
-                expectedOutput: "dlrow",
-              },
-            ],
-          },
-        },
-        mark: 15.0,
-      },
-    ],
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const QUESTIONS_PER_PAGE = 5;
+
+  const indexOfLast = currentPage * QUESTIONS_PER_PAGE;
+  const indexOfFirst = indexOfLast - QUESTIONS_PER_PAGE;
+  const currentQuestions = allQuestions.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(allQuestions.length / QUESTIONS_PER_PAGE);
+
+  const nextPage = () => currentPage < totalPages && setCurrentPage((p) => p + 1);
+  const prevPage = () => currentPage > 1 && setCurrentPage((p) => p - 1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [assessmentRes, questionsRes] = await Promise.all([
+          getAssessmentById(id),
+          getAllQuestions(),
+        ]);
+
+        const data = assessmentRes.data;
+        const transformed = {
+          name: data.name || "",
+          duration: data.duration?.slice(0, 5) || "",
+          time: data.assessmentDate?.split("T")[0] || "",
+          startTime: data.startTime?.slice(0, 5) || "",
+          endTime: data.endTime?.slice(0, 5) || "",
+          totalMark: data.totalMark || 0,
+          questionsCount: data.questionsCount || 0,
+          questionsIds: data.questions?.map((q) => ({
+            id: q.questionId,
+            prompt: q.prompt,
+            mark: q.mark,
+          })) || []
+        };
+
+        setAssessment(transformed);
+        setAllQuestions(questionsRes.data);
+      } catch {
+        setApiError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const getSelectedQuestion = (id) =>
+    assessment.questionsIds.find((q) => q.id === id);
+
+  const totalSelectedMark = assessment.questionsIds.reduce((sum, q) => sum + q.mark, 0);
+
+  const toggleQuestion = (question) => {
+    const exists = getSelectedQuestion(question.id);
+    if (exists) {
+      setAssessment((prev) => ({
+        ...prev,
+        questionsIds: prev.questionsIds.filter((q) => q.id !== question.id),
+      }));
+      setError("");
+    } else {
+      if (assessment.questionsIds.length >= assessment.questionsCount) {
+        setError(`You can select up to ${assessment.questionsCount} questions.`);
+        return;
+      }
+      if (totalSelectedMark + 1 > assessment.totalMark) {
+        setError(`Total mark limit (${assessment.totalMark}) exceeded.`);
+        return;
+      }
+      setAssessment((prev) => ({
+        ...prev,
+        questionsIds: [...prev.questionsIds, { id: question.id, prompt: question.prompt, mark: 1 }],
+      }));
+      setError("");
+    }
   };
-  //Errors variables
-  let [apiError, setApiError] = useState(false);
-  let apiErrorMessage = (
-    <div className="w-100 h-100 d-flex flex-column align-items-center">
-      <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
-        Error!!!
-      </div>
-      <div className="my-4 mid-bold">
-        Theres a proplem! Please wait for us to solve the proplem.
+
+  const updateQuestionMark = (questionId, newMark) => {
+    const parsedMark = parseInt(newMark);
+    if (isNaN(parsedMark)) return;
+
+    const updated = assessment.questionsIds.map((q) =>
+      q.id === questionId ? { ...q, mark: parsedMark } : q
+    );
+
+    const newTotal = updated.reduce((sum, q) => sum + q.mark, 0);
+    if (newTotal > assessment.totalMark) {
+      setError(`Total marks exceed the allowed mark of ${assessment.totalMark}.`);
+      return;
+    }
+
+    setAssessment({ ...assessment, questionsIds: updated });
+    setError("");
+  };
+
+  const handleUpdate = async () => {
+    if (
+      assessment.questionsIds.length !== assessment.questionsCount ||
+      totalSelectedMark !== assessment.totalMark
+    ) {
+      setError("Selected question count or total marks do not match input limits.");
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to update this assessment?")) {
+      try {
+        const payload = {
+          name: assessment.name,
+          duration: `${assessment.duration}:00`,
+          time: assessment.time,
+          startTime: `${assessment.startTime}:00`,
+          endTime: `${assessment.endTime}:00`,
+          totalMark: assessment.totalMark,
+          questionsCount: assessment.questionsCount,
+          questionsIds: assessment.questionsIds,
+        };
+        await updateAssessment(id, payload);
+        alert("Assessment updated successfully!");
+      } catch {
+        alert("Failed to update assessment.");
+      }
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (apiError) return <div>Error loading assessment</div>;
+
+  const renderQuestionTable = () => (
+    <div className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""}`}>
+      <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Prompt</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Mark</th>
+            <th>Select</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentQuestions.map((q, i) => {
+            const isSelected = !!getSelectedQuestion(q.id);
+            const selected = getSelectedQuestion(q.id);
+            const markLimitReached =
+              totalSelectedMark >= assessment.totalMark && !isSelected;
+            const questionLimitReached =
+              assessment.questionsIds.length >= assessment.questionsCount && !isSelected;
+
+            return (
+              <tr key={q.id}>
+                <td>{indexOfFirst + i + 1}</td>
+                <td>{q.prompt}</td>
+                <td>{q.category}</td>
+                <td>
+                  {q.type === "mc"
+                    ? q.details?.isTrueFalse
+                      ? "True/False"
+                      : "MCQ"
+                    : q.type}
+                </td>
+                <td>
+                  {isSelected ? (
+                    <input
+                      type="number"
+                      className="form-control"
+                      style={{ width: "80px" }}
+                      min={1}
+                      value={selected?.mark || ""}
+                      onChange={(e) => updateQuestionMark(q.id, e.target.value)}
+                    />
+                  ) : (
+                    "-"
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleQuestion(q)}
+                    disabled={questionLimitReached || markLimitReached}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* Pagination Controls */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <button className="btn btn-outline-secondary" onClick={prevPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>
+          Page <strong>{currentPage}</strong> of {totalPages}
+        </span>
+        <button className="btn btn-outline-secondary" onClick={nextPage} disabled={currentPage === totalPages}>
+          Next
+        </button>
       </div>
     </div>
   );
-  let loadingMessage = (
-    <div className="d-flex justify-content-center align-items-center my-4">
-      <div className="spinner-border text-success" role="status">
-        <span className="sr-only">Loading...</span>
-      </div>
-    </div>
-  );
-  //////////////////////
-  /** Functions */
-  //////////////////////
-  /** Effects */
-  //////////////////////
+
   return (
     <>
       <BackBtn />
-      {apiError ? (
-        apiErrorMessage
-      ) : (
-        <div className={`my-4 card ${darkMode ? "spic-dark-mode" : ""}`}>
-          <div className="card-header d-flex align-items-md-center">
-            <h5 className="text-center p-2 mb-0">
-              <strong>{assessment.name}</strong>
-            </h5>
-          </div>
-          {/** Duration & Time  */}
-          <div className="card-header p-4 row m-0 gap-1 d-flex justify-content-between align-items-md-center">
-            <div className="form-group  m-lg-0 col-12 col-lg-3 d-flex flex-column">
-              <label htmlFor="duration">Duration:</label>
+      <div className={`my-4 card ${darkMode ? "spic-dark-mode" : ""}`}>
+        <div className="card-header">
+          <h5 className="text-center mb-0"><strong>Update Assessment</strong></h5>
+        </div>
+
+        <div className="card-body">
+          <div className="row mb-3">
+            <div className="col-md-4">
+              <label>Name:</label>
               <input
-                type="text"
-                placeholder="hh:mm"
-                pattern="^([0-9]{1,2}):([0-5][0-9])$"
                 className="form-control"
-                id="duration"
-                name="duration"
+                value={assessment.name}
+                onChange={(e) => setAssessment({ ...assessment, name: e.target.value })}
+              />
+            </div>
+            <div className="col-md-4">
+              <label>Duration:</label>
+              <input
+                className="form-control"
                 value={assessment.duration}
-                disabled
+                onChange={(e) => setAssessment({ ...assessment, duration: e.target.value })}
               />
             </div>
-            <div className="p-0 form-group col-12 col-lg-8 row m-0  d-flex justify-content-center justify-content-lg-end">
-              <div className="my-2 m-md-0 col-12 col-md-4">
-                <label htmlFor="time">Date:</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="time"
-                  name="time"
-                  value={assessment.time}
-                  disabled
-                />
-              </div>
-              <div className="mb-2 m-md-0 col-12 col-md-4">
-                <label htmlFor="start_time">Start:</label>
-                <input
-                  type="time"
-                  className="form-control"
-                  id="start_time"
-                  name="start_time"
-                  value={assessment.start_time}
-                  disabled
-                />
-              </div>
-              <div className="col-12 col-md-4">
-                <label htmlFor="end_time">End:</label>
-                <input
-                  type="time"
-                  className="form-control"
-                  id="end_time"
-                  name="end_time"
-                  value={assessment.end_time}
-                  disabled
-                />
-              </div>
+            <div className="col-md-4">
+              <label>Date:</label>
+              <input
+                className="form-control"
+                type="date"
+                value={assessment.time || ""}
+                onChange={(e) => setAssessment({ ...assessment, time: e.target.value })}
+              />
             </div>
           </div>
-          {/** Total Mark & Questions Count */}
-          <div className="card-header p-4 row m-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <div className="mb-2 m-md-0 form-group col-12 col-md-6 d-flex flex-column ">
-              <label htmlFor="total_mark">Total Mark:</label>
+
+          <div className="row mb-4">
+            <div className="col-md-4">
+              <label>Start Time:</label>
+              <input
+                className="form-control"
+                type="time"
+                value={assessment.startTime || ""}
+                onChange={(e) => setAssessment({ ...assessment, startTime: e.target.value })}
+              />
+            </div>
+            <div className="col-md-4">
+              <label>End Time:</label>
+              <input
+                className="form-control"
+                type="time"
+                value={assessment.endTime || ""}
+                onChange={(e) => setAssessment({ ...assessment, endTime: e.target.value })}
+              />
+            </div>
+            <div className="col-md-2">
+              <label>Total Mark:</label>
               <input
                 type="number"
                 className="form-control"
-                id="total_mark"
-                name="total_mark"
-                value={assessment.total_mark}
-                disabled
+                value={assessment.totalMark}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, totalMark: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
-            <div className="form-group col-12 col-md-6 d-flex flex-column ">
-              <label htmlFor="questions_count">Questions Count:</label>
+            <div className="col-md-2">
+              <label>Questions Count:</label>
               <input
                 type="number"
                 className="form-control"
-                id="questions_count"
-                name="questions_count"
-                value={assessment.questions_count}
-                disabled
+                value={assessment.questionsCount}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, questionsCount: parseInt(e.target.value) || 0 })
+                }
               />
             </div>
           </div>
-          {/** Questions List */}
-          <div className="table-responsive text-nowrap">
-            <table
-              className={`table m-0 ${
-                darkMode ? "table-dark " : "table-light"
-              }`}
-            >
-              <thead className={``}>
-                <tr>
-                  <th>#.</th>
-                  <th className="text-start">Category</th>
-                  <th className="text-start" style={{ width: "20rem" }}>
-                    Prompt
-                  </th>
-                  <th className="text-start">Type</th>
-                  <th className="text-start">Mark</th>
-                </tr>
-              </thead>
-              <tbody className="table-border-bottom-0">
-                {assessment.questions.map((q, index) => (
-                  <tr key={index}>
-                    <td>{index < 9 ? "0" + (index + 1) : index + 1}.</td>
-                    <td className="text-start">{q.question.category}</td>
-                    <td
-                      className="text-start text-truncate"
-                      style={{
-                        maxWidth: "20rem",
-                      }}
-                    >
-                      <strong className="text-truncate">
-                        {q.question.prompt}
-                      </strong>
-                    </td>
-                    <td className="text-start">
-                      {q.question.type
-                        ? q.question.type === "mc"
-                          ? q.question.detailes.isTrueFalse === true
-                            ? "True/False"
-                            : "Multiple Choice"
-                          : q.question.type === "essay"
-                          ? "Essay"
-                          : q.question.type === "coding"
-                          ? "Coding"
-                          : "Not-valid type"
-                        : "There is no Type"}
-                    </td>
-                    <td className="text-start">{q.mark}</td>
-                  </tr>
-                ))}
-                <tr className="">
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td className="text-start">
-                    Total Selected:{" "}
-                    <strong className="">
-                      {assessment.questions.reduce(
-                        (total, question) => total + parseFloat(question.mark),
-                        0
-                      )}
-                    </strong>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="card-header p-4 row m-0 ">
-            <div className="d-flex justify-content-center align-items-center">
-              <Link
-                to={`/assessment/update/${1234}`}
-                state={{
-                  data: {
-                    ...assessment,
-                    ["questions_ids"]: assessment.questions.map((q, index) => ({
-                      id: q.question.id,
-                      mark: q.mark,
-                    })),
-                  },
-                }}
-                className="btn btn-success"
-              >
-                Update Assessment
-              </Link>
-            </div>
+
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          {renderQuestionTable()}
+
+          <div className="d-flex justify-content-center mt-4">
+            <button className="btn btn-success" onClick={handleUpdate}>
+              Update Assessment
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }

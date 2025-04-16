@@ -12,7 +12,7 @@ export default function RenderVisibleAssessments({
   isUpComing,
 }) {
   useEffect(() => {
-    console.log("Visiple Assessments: ", assessments);
+    console.log("MY  Assessments: ", assessments);
   }, []);
   function renderAssessments() {
     return assessments.map((assess, index) => {
@@ -22,7 +22,7 @@ export default function RenderVisibleAssessments({
       )
         return (
           <tr
-            key={index}
+            key={assess.id}
             className={`${assess.time === currentDate ? "alert-row" : ""}`}
           >
             <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
@@ -48,7 +48,7 @@ export default function RenderVisibleAssessments({
                   isUpComing={isUpComing}
                 />
                 <Link
-                  to={`/assessment/${10}`}
+                  to={`/assessment/${assess.id}`}
                   className="btn btn-sm btn-outline-success"
                   title="Edit"
                 >
