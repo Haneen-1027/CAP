@@ -92,8 +92,8 @@ textarea {
 }
 
 /* If you have other specific input classes, add them as well */
-input.form-input:focus,
-textarea.form-input:focus {
+input:focus,
+textarea:focus {
   border-color: var(--Primary_Buttons) !important;
   outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
 }
@@ -351,6 +351,14 @@ textarea.form-input:focus {
 }
 .alert-row td {
   color: var(--Headers_Colors) !important;
+}
+
+/*************************/
+
+.active > .page-link,
+.page-link.active {
+  background-color: var(--Primary_Buttons);
+  border-color: var(--Primary_Buttons);
 }
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */
