@@ -1,46 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import {
   AssessmentsTableHeaders,
   RenderVisibleAssessments,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { getAllAssessments } from "../../../../APIs/ApisHandaler";
-//import assessments from "./assessmentTest.json";
+import { getAllAssessments, deleteAssessment as deleteAssessmentAPI } from "../../../../APIs/ApisHandaler";
 
 export default function CompAssessment({ user, darkMode }) {
   const [assessments, setAssessments] = useState([]);
-
-  //////////
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
-  const [visibleList, setVisibleList] = useState(assessments);
-  // Pagination
-  const countPerPageValues = [10, 15, 25, 50, 75, 100];
-  const [countPerPage, setCounPerPage] = useState(25);
+  const [visibleList, setVisibleList] = useState([]);
+  const [countPerPage, setCountPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
-  const [assessmentsListCount, setAssessmentsListCount] = useState(15); // Calculated after get questions from API for Pagination
-  // Searching
+  const [assessmentsListCount, setAssessmentsListCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  let [searchResults, setSearchResults] = useState([]);
-
-  //
-  const [curDate, setCurDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-
+  const [searchResults, setSearchResults] = useState([]);
+  const [curDate, setCurDate] = useState(new Date().toISOString().split("T")[0]);
   const [timeFilteration, setTimeFilteration] = useState({
     start_date: "2024-01-01",
     end_date: "2025-12-08",
   });
-  //////////
+
+  const countPerPageValues = [10, 15, 25, 50, 75, 100];
+
   const getAssessments = async () => {
     try {
       const response = await getAllAssessments();
-      console.log("All assessments:", response.data);
       if (Array.isArray(response.data)) {
         setAssessments(response.data);
         setAssessmentsListCount(response.data.length);
-        // Immediately update visibleList based on initial filter
         filterAssessments(response.data, showSchdAssessments);
       } else {
         console.error("API did not return an array:", response.data);
@@ -54,7 +42,6 @@ export default function CompAssessment({ user, darkMode }) {
     }
   };
 
-  // Helper function to filter assessments
   const filterAssessments = (assessmentsToFilter, showUpcoming) => {
     const currentDate = new Date().toISOString().split("T")[0];
     const filtered = assessmentsToFilter.filter((asses) =>
@@ -63,74 +50,49 @@ export default function CompAssessment({ user, darkMode }) {
     setVisibleList(filtered);
   };
 
-  // Fetch questions when the component mounts
-  useEffect(() => {
-    getAssessments();
-    console.log("All assessments", getAllAssessments);
-  }, []);
+  const handleCountPerPageMenu = (e) => {
+    setCountPerPage(Number(e.target.value));
+  };
 
-  useEffect(() => {
-    getAssessments();
-  }, []);
-
-  // Pagination Functions
-  function handleCountPerPageMenu(e) {
-    setCounPerPage(e.target.value);
-  }
-  function clearResults() {}
-
-  //
-  function handleDateFilter(e) {
-    const { name, value } = e.target;
-    setTimeFilteration((prevFilter) => ({ ...prevFilter, [name]: value }));
-  }
-  /** ====================== Search Section ====================== **/
-  function handleSearchValue(value) {
+  const handleSearchValue = (value) => {
     if (value.trim() === "") {
-      clearResults();
+      setSearchResults([]);
       setSearchValue(value);
     } else {
       setSearchValue(value);
     }
-  }
+  };
 
-  function handleSearching() {}
+  const handleDateFilter = (e) => {
+    const { name, value } = e.target;
+    setTimeFilteration((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
 
-  /** ============= Delete Section */
-  async function deleteAssessment(id) {
+  const handleDeleteAssessment = async (id) => {
     try {
-      console.log("Assessment Deleted! ", id);
+      await deleteAssessmentAPI(id);
+      setAssessments(prev => prev.filter(assessment => assessment.id !== id));
+      console.log("Assessment deleted successfully");
     } catch (error) {
-      console.error("Error in 'deleteAssessment(id)': ", error);
+      console.error("Failed to delete assessment:", error);
     }
-  }
-  //////////
+  };
+
   useEffect(() => {
-    const currentDate = new Date().toISOString().split("T")[0];
+    getAssessments();
+  }, []);
+
+  useEffect(() => {
     if (Array.isArray(assessments)) {
-      if (showSchdAssessments) {
-        const visbAssessments = assessments.filter(
-          (asses) => asses.time >= currentDate
-        );
-        setVisibleList(visbAssessments);
-      } else {
-        const visbAssessments = assessments.filter(
-          (asses) => asses.time < currentDate
-        );
-        setVisibleList(visbAssessments);
-      }
+      filterAssessments(assessments, showSchdAssessments);
     }
   }, [showSchdAssessments, assessments]);
 
-  useEffect(() => {
-    console.log("Filteration: ", timeFilteration);
-  }, [timeFilteration]);
-  /////////
   return (
     <>
       <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
         <div
-          className={`card-header d-flex flex-column flex-md-row  justify-content-between align-items-center ${
+          className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
             darkMode ? " spic-dark-mode" : ""
           }`}
         >
@@ -169,7 +131,7 @@ export default function CompAssessment({ user, darkMode }) {
           darkMode={darkMode}
           assessments={visibleList}
           role={user.role}
-          deleteAssessment={deleteAssessment}
+          deleteAssessment={handleDeleteAssessment}
           timeFilteration={timeFilteration}
           currentDate={curDate}
           isUpComing={showSchdAssessments}

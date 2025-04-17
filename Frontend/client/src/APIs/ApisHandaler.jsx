@@ -99,6 +99,15 @@ export const updateAssessment = async (id, updatedData) => {
     },
   });
 };
+
+export const deleteAssessment = async (id) => {
+  return await axios.delete(`${BASE_URL}/assessments/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

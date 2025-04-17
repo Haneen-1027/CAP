@@ -65,50 +65,48 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
   function renderQuestions() {
     // const questionsList = questions.questions;
     return questionsList.map((q, index) => (
-      <>
-        <tr key={index}>
-          <td className="text-start">
-            {index < 9 ? "0" + (index + 1) : index + 1}.
-          </td>
-          <td className="">{q.category ? q.category : "Null"}</td>
-          <td
-            className="text-start text-truncate"
-            style={{
-              maxWidth: "15rem",
-            }}
-          >
-            {q.prompt ? q.prompt : "There is no valid question."}
-          </td>
-          <td className="text-start">
-            {q.type
-              ? q.type === "mc"
-                ? q.detailes?.isTrueFalse === true
-                  ? "True/False"
-                  : "Multiple Choice"
-                : q.type === "essay"
+      <tr key={index}>
+        <td className="text-start">
+          {index < 9 ? "0" + (index + 1) : index + 1}.
+        </td>
+        <td className="">{q.category ? q.category : "Null"}</td>
+        <td
+          className="text-start text-truncate"
+          style={{
+            maxWidth: "15rem",
+          }}
+        >
+          {q.prompt ? q.prompt : "There is no valid question."}
+        </td>
+        <td className="text-start">
+          {q.type
+            ? q.type === "mc"
+              ? q.detailes?.isTrueFalse === true
+                ? "True/False"
+                : "Multiple Choice"
+              : q.type === "essay"
                 ? "Essay"
                 : q.type === "coding"
-                ? "Coding"
-                : "Not-valid type"
-              : "There is no Type"}
-          </td>
-          <td className="gap-2">
-            <Link
-              to={`/admin/questions_bank/preview/${q.id}`}
-              state={{ question: q }}
-              className={`btn view-button ${darkMode ? "text-light" : ""}`}
-            >
-              <i className="fa-regular fa-eye"></i>
-            </Link>
-            <div
-              className={`btn delete-button ${darkMode ? "text-light" : ""}`}
-              onClick={()=>handleDelete(q.id)}
-            >
-              <i className="fa-solid fa-trash" />
-            </div>
-          </td>
-        </tr>
-      </>
+                  ? "Coding"
+                  : "Not-valid type"
+            : "There is no Type"}
+        </td>
+        <td className="gap-2">
+          <Link
+            to={`/admin/questions_bank/preview/${q.id}`}
+            state={{ question: q }}
+            className={`btn view-button ${darkMode ? "text-light" : ""}`}
+          >
+            <i className="fa-regular fa-eye"></i>
+          </Link>
+          <div
+            className={`btn delete-button ${darkMode ? "text-light" : ""}`}
+            onClick={() => handleDelete(q.id)}
+          >
+            <i className="fa-solid fa-trash" />
+          </div>
+        </td>
+      </tr>
     ));
   }
   ////
@@ -131,9 +129,8 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     <>
       <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
         <div
-          className={`p-3 card-header d-flex align-items-center ${
-            darkMode ? " spic-dark-mode" : ""
-          }`}
+          className={`p-3 card-header d-flex align-items-center ${darkMode ? " spic-dark-mode" : ""
+            }`}
         >
           <h5 className="text-center mb-0">
             <strong>Questions:</strong>
@@ -189,14 +186,12 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
         </div>
 
         <div
-          className={`table-responsive text-nowrap ${
-            darkMode ? "spic-dark-mode" : ""
-          }`}
+          className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""
+            }`}
         >
           <table
             className={`table ${darkMode ? "table-dark " : "table-light"}`}
           >
-            {" "}
             <thead>
               <tr>
                 <th className="text-start">#</th>
