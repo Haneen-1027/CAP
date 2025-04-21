@@ -29,6 +29,8 @@ import {
   AssessmentOutlet,
   AttemptAssessment,
   SubmittedAssessment,
+  NotFoundPath,
+  AuthorizeError,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -47,7 +49,7 @@ function Main({
   return (
     <main className="container my-5">
       <Routes>
-        {/* Landing Page */}
+        {/*** General Path - "..domain.../your_path" ***/}
         <Route
           path="/"
           element={
@@ -60,149 +62,22 @@ function Main({
                 </div>
               }
             >
-              <LandingPage user={userDetailes} darkMode={darkMode} />
+              {userDetailes.role === "Admin" ? (
+                <AdmDashboard darkMode={darkMode} />
+              ) : userDetailes.role === "Company" ? (
+                <CompDashboard darkMode={darkMode} />
+              ) : userDetailes.role === "Contributor" ? (
+                <ContDashboard darkMode={darkMode} />
+              ) : (
+                <LandingPage darkMode={darkMode} />
+              )}
             </Suspense>
           }
         >
-          {/* Domain starts with : '/' */}
-          <Route
-            path="/"
-            element={
-              userDetailes.role === "Admin" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <AdmDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : userDetailes.role === "Company" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <CompDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : userDetailes.role === "Contributer" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <ContDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <LpHome darkMode={darkMode} />
-                </Suspense>
-              )
-            }
-          ></Route>
           {/* Home Componenet path: '/home' */}
 
           <Route
             path="/home"
-            element={
-              userDetailes.role === "Admin" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <AdmDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : userDetailes.role === "Company" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <CompDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : userDetailes.role === "Contributer" ? (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <ContDashboard darkMode={darkMode} />
-                </Suspense>
-              ) : (
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <LpHome darkMode={darkMode} />
-                </Suspense>
-              )
-            }
-          ></Route>
-
-          {/* About Componenet path: '/about' */}
-          <Route
-            path="/about"
             element={
               <Suspense
                 fallback={
@@ -213,7 +88,15 @@ function Main({
                   </div>
                 }
               >
-                <LpAbout darkMode={darkMode} />
+                {userDetailes.role === "Admin" ? (
+                  <AdmDashboard darkMode={darkMode} />
+                ) : userDetailes.role === "Company" ? (
+                  <CompDashboard darkMode={darkMode} />
+                ) : userDetailes.role === "Contributor" ? (
+                  <ContDashboard darkMode={darkMode} />
+                ) : (
+                  <LandingPage darkMode={darkMode} />
+                )}
               </Suspense>
             }
           ></Route>
@@ -326,7 +209,8 @@ function Main({
                 </div>
               }
             >
-              <Admin user={userDetailes} darkMode={darkMode} />
+              {" "}
+              <Admin user={userDetailes} darkMode={darkMode} />{" "}
             </Suspense>
           }
         >
@@ -489,7 +373,7 @@ function Main({
                 </div>
               }
             >
-              <Contributer user={userDetailes} darkMode={darkMode} />
+              <Contributer user={userDetailes} darkMode={darkMode} />{" "}
             </Suspense>
           }
         >
@@ -707,6 +591,43 @@ function Main({
             }
           />
         </Route>
+        {/* Catch-all for unauthorized access */}
+        {/* AuthorizeError Componenet path: '/AuthorizeError' */}
+        <Route
+          path="/AuthorizeError"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <AuthorizeError darkMode={darkMode} />
+            </Suspense>
+          }
+        ></Route>
+        <Route
+          path="*"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div
+                    className="spinner-border text-primary d-flex justify-content-center align-items-center"
+                    role="status"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <NotFoundPath />
+            </Suspense>
+          }
+        />{" "}
       </Routes>
     </main>
   );

@@ -1,13 +1,16 @@
 import "./Contributer.css";
-import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 
-export default function Contributer() {
-  return (
-    <>
-      <div>
-        <Outlet />
-      </div>
-    </>
-  );
+export default function Contributer({ user }) {
+  const location = useLocation();
+
+  if (!user) {
+    // Not logged in (optional check)
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (user.role !== "Contributor") {
+    return <Navigate to="/AuthorizeError" replace />;
+  }
+  return <Outlet />;
 }

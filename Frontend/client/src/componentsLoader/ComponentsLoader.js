@@ -19,6 +19,10 @@ export const Company = lazy(() => import("../pages/Company/Company.jsx"));
 export const Contributer = lazy(() =>
   import("../pages/Contributer/Contributer.jsx")
 );
+export const NotFoundPath = lazy(() => import("../pages/Error/Error.jsx"));
+export const AuthorizeError = lazy(() =>
+  import("../pages/Error/AuthorizeError.jsx")
+);
 
 /*==========================================  Componenets ===========*/
 // Navbar Component
