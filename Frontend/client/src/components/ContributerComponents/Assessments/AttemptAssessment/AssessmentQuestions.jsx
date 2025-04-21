@@ -15,7 +15,7 @@ export default function AssessmentQuestions({
     assessment_id: assessment.id,
     Answers: [],
     submitted: false,
-    started_time: "",
+    started_time: new Date().toISOString(), // Set current time as started time
     submitted_time: "",
   });
 
@@ -26,16 +26,20 @@ export default function AssessmentQuestions({
     setAssessmentAttempt((prevAttempt) => ({ ...prevAttempt, [name]: value }));
   }
 
-  function addQuestionAnswer(option, question_id) {
+  function addQuestionAnswer(answer, question_id) {
     let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
     const index = updatedQuestionsAnswers.findIndex(
       (answer) => answer.question_id === question_id
     );
 
     if (index === -1) {
-      updatedQuestionsAnswers.push({ question_id, contributor_answer: option });
+      updatedQuestionsAnswers.push({ 
+        question_id, 
+        contributor_answer: answer,
+        question_type: questions.find(q => q.id === question_id)?.type || 'essay'
+      });
     } else {
-      updatedQuestionsAnswers[index].contributor_answer = option;
+      updatedQuestionsAnswers[index].contributor_answer = answer;
     }
 
     setAssessmentAttempt((prevAttempt) => ({
@@ -57,14 +61,19 @@ export default function AssessmentQuestions({
   };
 
   const handleSubmitAssessment = () => {
-    console.log("Submitted! ", assessmentAttempt);
+    const finalAttempt = {
+      ...assessmentAttempt,
+      submitted: true,
+      submitted_time: new Date().toISOString()
+    };
+    console.log("Submitted! ", finalAttempt);
+    // Here we send the attempt to backend API
   };
 
   useEffect(() => {
     console.log("Assessment Attempt: ", assessmentAttempt);
   }, [assessmentAttempt]);
 
-  // Extract userAnswer for current question
   const currentQuestion = questions[currentQuestionIndex];
   const currentQuestionId = currentQuestion.id;
 
@@ -84,6 +93,9 @@ export default function AssessmentQuestions({
           <div>
             <p className={`${darkMode ? "text-light" : "text-muted"} m-0`}>
               <strong>Question #{currentQuestionIndex + 1}:</strong>
+              <span className="ms-2 badge bg-primary">
+                {currentQuestion.mark} marks
+              </span>
             </p>
           </div>
           <div>
@@ -114,9 +126,9 @@ export default function AssessmentQuestions({
             />
           ) : (
             <textarea
-              className="w-100"
+              className={`form-control ${darkMode ? "bg-dark text-light" : ""}`}
               rows={4}
-              placeholder="Answer ..."
+              placeholder="Type your answer here..."
               value={userAnswer}
               onChange={(e) =>
                 addQuestionAnswer(e.target.value, currentQuestionId)
@@ -132,7 +144,7 @@ export default function AssessmentQuestions({
         >
           <button
             style={{ width: "6rem" }}
-            className="btn btn-dark"
+            className={`btn ${darkMode ? "btn-light" : "btn-dark"}`}
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
           >
@@ -149,7 +161,7 @@ export default function AssessmentQuestions({
           ) : (
             <button
               style={{ width: "6rem" }}
-              className="btn btn-success"
+              className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
               onClick={handleNext}
             >
               Next
