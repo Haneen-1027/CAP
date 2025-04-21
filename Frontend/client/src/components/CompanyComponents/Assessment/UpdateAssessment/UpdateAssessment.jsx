@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
+import { BackBtn, PaginationNav } from "../../../../componentsLoader/ComponentsLoader";
 import { useParams } from "react-router-dom";
 import {
   getAssessmentById,
@@ -26,16 +26,19 @@ export default function UpdateAssessment({ darkMode }) {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const QUESTIONS_PER_PAGE = 5;
+  const [questionsPerPage, setQuestionsPerPage] = useState(5);
+  const countPerPageOptions = [5, 10, 15, 20, 25];
 
-  const indexOfLast = currentPage * QUESTIONS_PER_PAGE;
-  const indexOfFirst = indexOfLast - QUESTIONS_PER_PAGE;
-  const currentQuestions = allQuestions.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(allQuestions.length / QUESTIONS_PER_PAGE);
+  // Calculate pagination values
+  const indexOfLastQuestion = currentPage * questionsPerPage;
+  const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
+  const currentQuestions = allQuestions.slice(indexOfFirstQuestion, indexOfLastQuestion);
+  const totalQuestionsCount = allQuestions.length;
 
-  const nextPage = () =>
-    currentPage < totalPages && setCurrentPage((p) => p + 1);
-  const prevPage = () => currentPage > 1 && setCurrentPage((p) => p - 1);
+  const handleCountPerPageChange = (e) => {
+    setQuestionsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,93 +170,72 @@ export default function UpdateAssessment({ darkMode }) {
   if (apiError) return <div>Error loading assessment</div>;
 
   const renderQuestionTable = () => (
-    <div
-      className={`table-responsive text-nowrap ${
-        darkMode ? "spic-dark-mode" : ""
-      }`}
-    >
-      <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Prompt</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Mark</th>
-            <th>Select</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentQuestions.map((q, i) => {
-            const isSelected = !!getSelectedQuestion(q.id);
-            const selected = getSelectedQuestion(q.id);
-            const markLimitReached =
-              totalSelectedMark >= assessment.totalMark && !isSelected;
-            const questionLimitReached =
-              assessment.questionsIds.length >= assessment.questionsCount &&
-              !isSelected;
+      <div
+        className={`table-responsive text-nowrap mt-5 ${darkMode ? "spic-dark-mode" : ""
+          }`}
+      >
 
-            return (
-              <tr key={q.id}>
-                <td>{indexOfFirst + i + 1}</td>
-                <td>{q.prompt}</td>
-                <td>{q.category}</td>
-                <td>
-                  {q.type === "mc"
-                    ? q.details?.isTrueFalse
-                      ? "True/False"
-                      : "MCQ"
-                    : q.type}
-                </td>
-                <td>
-                  {isSelected ? (
+        <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Prompt</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Mark</th>
+              <th>Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentQuestions.map((q, i) => {
+              const isSelected = !!getSelectedQuestion(q.id);
+              const selected = getSelectedQuestion(q.id);
+              const markLimitReached =
+                totalSelectedMark >= assessment.totalMark && !isSelected;
+              const questionLimitReached =
+                assessment.questionsIds.length >= assessment.questionsCount &&
+                !isSelected;
+
+              return (
+                <tr key={q.id}>
+                  <td>{indexOfFirstQuestion + i + 1}</td>
+                  <td>{q.prompt}</td>
+                  <td>{q.category}</td>
+                  <td>
+                    {q.type === "mc"
+                      ? q.details?.isTrueFalse
+                        ? "True/False"
+                        : "MCQ"
+                      : q.type}
+                  </td>
+                  <td>
+                    {isSelected ? (
+                      <input
+                        type="number"
+                        className="form-control"
+                        style={{ width: "80px" }}
+                        min={1}
+                        value={selected?.mark || ""}
+                        onChange={(e) => updateQuestionMark(q.id, e.target.value)}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td>
                     <input
-                      type="number"
-                      className="form-control"
-                      style={{ width: "80px" }}
-                      min={1}
-                      value={selected?.mark || ""}
-                      onChange={(e) => updateQuestionMark(q.id, e.target.value)}
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleQuestion(q)}
+                      disabled={questionLimitReached || markLimitReached}
                     />
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => toggleQuestion(q)}
-                    disabled={questionLimitReached || markLimitReached}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-
-      {/* Pagination Controls */}
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <button
-          className="btn btn-outline-secondary"
-          onClick={prevPage}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page <strong>{currentPage}</strong> of {totalPages}
-        </span>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={nextPage}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-    </div>
   );
 
   return (
@@ -353,6 +335,37 @@ export default function UpdateAssessment({ darkMode }) {
               />
             </div>
           </div>
+
+          <div className="row mt-3 align-items-center">
+        <div className="my-4 m-lg-0 col-12 col-lg-5 d-flex justify-content-center">
+          <PaginationNav
+            darkMode={darkMode}
+            counts={totalQuestionsCount}
+            pageNo={currentPage}
+            setPageNo={setCurrentPage}
+            countPerPage={questionsPerPage}
+          />
+        </div>
+
+        <div className="count-per-page col-12 col-lg-3 d-flex flex-column flex-lg-row align-items-center gap-2">
+          <label className="m-0" style={{ fontSize: "0.95rem" }}>
+            Questions per Page:
+          </label>
+          <select
+            className="form-select"
+            aria-label="Questions per page"
+            value={questionsPerPage}
+            onChange={handleCountPerPageChange}
+            style={{ width: "80px" }}
+          >
+            {countPerPageOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
           {error && <div className="alert alert-danger">{error}</div>}
 
