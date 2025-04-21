@@ -1,49 +1,79 @@
 import { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router";
 
-export default function InviteContributors({ darkMode }) {
+export default function InviteContributors({ darkMode, user }) {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const assessment_id = queryParams.get("id");
   const [invite, setInvite] = useState({
     first_name: "",
     last_name: "",
     email: "",
   });
-  const [invites, setInvites] = useState([]);
-
+  const [invitesByAssessment, setInvitesByAssessment] = useState({});
   const [validationMessage, setValidationMessage] = useState("");
+  ////
+  useEffect(() => {
+    console.log("Assessment_ID: ", assessment_id);
+  }, []);
+  useEffect(() => {
+    console.log("Invites by assessment: ", invitesByAssessment);
+  }, [invitesByAssessment]);
+
+  ////
+  if (!user || !user.role) {
+    // Not logged in (optional check)
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (user.role !== "Company") {
+    return <Navigate to="/AuthorizeError" replace />;
+  }
 
   // Add New Invitation
   function addNewInvite(e) {
-    const isEmailExists = invites.some((i) =>
-      Object.values(i).includes(invite.email)
-    );
+    e.preventDefault();
+
+    const currentList = invitesByAssessment[assessment_id] || [];
+
+    const isEmailExists = currentList.some((i) => i.email === invite.email);
+
     if (isEmailExists) {
       setValidationMessage("This email is already in the list!");
     } else {
-      setInvites((prevInvites) => [...prevInvites, invite]);
-      setInvite({
-        first_name: "",
-        last_name: "",
-        email: "",
-      });
+      const updatedList = [...currentList, invite];
+      setInvitesByAssessment((prev) => ({
+        ...prev,
+        [assessment_id]: updatedList,
+      }));
+      setInvite({ first_name: "", last_name: "", email: "" });
+      setValidationMessage("");
     }
   }
 
-  // Remove a record from the array based on (email)
-  function removeRecord(inv) {
-    const updatedList = invites.filter((invite) => invite.email !== inv.email);
-    setInvites(updatedList);
+  // Remove a record from the current assessment's list
+  function removeRecord(emailToRemove) {
+    const currentList = invitesByAssessment[assessment_id] || [];
+    const updatedList = currentList.filter((i) => i.email !== emailToRemove);
+
+    setInvitesByAssessment((prev) => ({
+      ...prev,
+      [assessment_id]: updatedList,
+    }));
   }
 
-  // Render Invites in the table
+  // Render invites for current assessment
   function renderInvites() {
-    return invites.map((inv, index) => (
-      <tr key={index} className="">
-        <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
+    const currentList = invitesByAssessment[assessment_id] || [];
+    return currentList.map((inv, index) => (
+      <tr key={index}>
+        <td>{index < 9 ? "0" + (index + 1) : index + 1}</td>
         <td>{inv.first_name + " " + inv.last_name}</td>
         <td>{inv.email}</td>
         <td>
           <button
             className="btn btn-danger btn-sm"
-            onClick={() => removeRecord(inv)}
+            onClick={() => removeRecord(inv.email)}
           >
             X
           </button>
@@ -51,18 +81,11 @@ export default function InviteContributors({ darkMode }) {
       </tr>
     ));
   }
-  ///////////
 
-  useEffect(() => {
-    console.log("Invites List: ", invites);
-  }, [invites]);
-  useEffect(() => {
-    console.log("new invite: ", invite);
-  }, [invite]);
   return (
     <>
       <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
-        {/** Modal Title */}
+        {/* Modal Title */}
         <div
           className={`card-header text-start p-3 ${
             darkMode ? " spic-dark-mode" : ""
@@ -72,7 +95,8 @@ export default function InviteContributors({ darkMode }) {
             <strong>Invite Contributors:</strong>
           </h1>
         </div>
-        {/** Invite an email */}
+
+        {/* Invite an email */}
         <div
           className={`card-header p-3 row m-0 ${
             darkMode ? " spic-dark-mode" : ""
@@ -81,9 +105,7 @@ export default function InviteContributors({ darkMode }) {
           <form className="form-floating col-12">
             <input
               type="text"
-              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
-              id="floatingInputValue"
-              name="first_name"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""}`}
               placeholder="First Name"
               value={invite.first_name}
               onChange={(e) =>
@@ -93,19 +115,15 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label
-              htmlFor="floatingInputValue"
-              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
-            >
+            <label className={` mx-4 ${darkMode ? "bg-transparent" : ""}`}>
               First Name:
             </label>
           </form>
+
           <form className="form-floating col-12 my-2">
             <input
               type="text"
-              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
-              id="floatingInputValue"
-              name="last_name"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""}`}
               placeholder="Last Name"
               value={invite.last_name}
               onChange={(e) =>
@@ -115,19 +133,15 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label
-              htmlFor="floatingInputValue"
-              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
-            >
+            <label className={` mx-4 ${darkMode ? "bg-transparent" : ""}`}>
               Last Name:
             </label>
           </form>
+
           <form className="form-floating col-12 mb-2">
             <input
               type="email"
-              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
-              id="floatingInputValue"
-              name="email"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""}`}
               placeholder="name@example.com"
               value={invite.email}
               onChange={(e) =>
@@ -137,24 +151,27 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label
-              htmlFor="floatingInputValue"
-              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
-            >
+            <label className={` mx-4 ${darkMode ? "bg-transparent" : ""}`}>
               Add Email - "name@example.com"
             </label>
           </form>
+
+          {validationMessage && (
+            <div className="text-danger text-center">{validationMessage}</div>
+          )}
+
           <div className="col-12 my-2 m-md-0 d-flex justify-content-center">
             <button
               className="btn btn-success"
               style={{ width: "10rem" }}
-              onClick={(e) => addNewInvite(e)}
+              onClick={addNewInvite}
             >
               Add
             </button>
           </div>
         </div>
-        {/** Handle emails */}
+
+        {/* Handle emails */}
         <div
           className={`table-responsive text-nowrap ${
             darkMode ? "spic-dark-mode" : ""
@@ -171,8 +188,19 @@ export default function InviteContributors({ darkMode }) {
             </thead>
             <tbody className="table-border-bottom-0">{renderInvites()}</tbody>
           </table>
-          <div className="my-4">
-            <button className="btn btn-success" style={{ width: "10rem" }}>
+
+          <div className="my-4 d-flex justify-content-center">
+            <button
+              className="btn btn-success"
+              style={{ width: "10rem" }}
+              onClick={() => {
+                // handle sending invites logic here
+                setInvitesByAssessment((prev) => ({
+                  ...prev,
+                  [assessment_id]: [],
+                }));
+              }}
+            >
               Send Invites
             </button>
           </div>

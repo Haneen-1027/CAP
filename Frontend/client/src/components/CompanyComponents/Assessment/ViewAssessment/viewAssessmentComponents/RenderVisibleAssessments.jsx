@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LargeModal } from "../../../../../componentsLoader/ComponentsLoader";
+import {
+  InviteContributors,
+  LargeModal,
+} from "../../../../../componentsLoader/ComponentsLoader";
 
 export default function RenderVisibleAssessments({
   darkMode,
@@ -53,11 +56,13 @@ export default function RenderVisibleAssessments({
           </td>
           <td>
             <div className="d-flex gap-2 justify-content-center">
-              <LargeModal
-                goal={isUpComing ? "fa-user-plus" : "fa-eye"}
-                darkMode={darkMode}
-                isUpComing={isUpComing}
-              />
+              <Link
+                className="btn btn-sm btn-success"
+                to={`/InviteContributors/${assess.id}`}
+                title="Invite Contributors"
+              >
+                <i className="fas fa-user-plus"></i>
+              </Link>
               <Link
                 to={`/assessment/${assess.id}`}
                 className="btn btn-sm btn-outline-success"
