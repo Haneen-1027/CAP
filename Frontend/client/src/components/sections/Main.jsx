@@ -33,7 +33,14 @@ import {
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
 
-function Main({ userDetailes, darkMode }) {
+function Main({
+  userDetailes,
+  darkMode,
+  setActiveId,
+  goToPage,
+  setUserData,
+  logout,
+}) {
   useEffect(() => {
     console.log("Main.jsx: ", userDetailes);
   }, []);
@@ -260,7 +267,13 @@ function Main({ userDetailes, darkMode }) {
                   </div>
                 }
               >
-                <LpLogin darkMode={darkMode} />
+                <LpLogin
+                  darkMode={darkMode}
+                  setUserData={setUserData}
+                  goToPage={goToPage}
+                  userDetails={userDetailes}
+                  setActiveId={setActiveId}
+                />
               </Suspense>
             }
           ></Route>

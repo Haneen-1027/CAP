@@ -17,7 +17,7 @@ export default function UpdateAssessment({ darkMode }) {
     endTime: "",
     totalMark: 0,
     questionsCount: 0,
-    questionsIds: []
+    questionsIds: [],
   });
   const [allQuestions, setAllQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,8 @@ export default function UpdateAssessment({ darkMode }) {
   const currentQuestions = allQuestions.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(allQuestions.length / QUESTIONS_PER_PAGE);
 
-  const nextPage = () => currentPage < totalPages && setCurrentPage((p) => p + 1);
+  const nextPage = () =>
+    currentPage < totalPages && setCurrentPage((p) => p + 1);
   const prevPage = () => currentPage > 1 && setCurrentPage((p) => p - 1);
 
   useEffect(() => {
@@ -53,11 +54,12 @@ export default function UpdateAssessment({ darkMode }) {
           endTime: data.endTime?.slice(0, 5) || "",
           totalMark: data.totalMark || 0,
           questionsCount: data.questionsCount || 0,
-          questionsIds: data.questions?.map((q) => ({
-            id: q.questionId,
-            prompt: q.prompt,
-            mark: q.mark,
-          })) || []
+          questionsIds:
+            data.questions?.map((q) => ({
+              id: q.questionId,
+              prompt: q.prompt,
+              mark: q.mark,
+            })) || [],
         };
 
         setAssessment(transformed);
@@ -75,7 +77,10 @@ export default function UpdateAssessment({ darkMode }) {
   const getSelectedQuestion = (id) =>
     assessment.questionsIds.find((q) => q.id === id);
 
-  const totalSelectedMark = assessment.questionsIds.reduce((sum, q) => sum + q.mark, 0);
+  const totalSelectedMark = assessment.questionsIds.reduce(
+    (sum, q) => sum + q.mark,
+    0
+  );
 
   const toggleQuestion = (question) => {
     const exists = getSelectedQuestion(question.id);
@@ -87,7 +92,9 @@ export default function UpdateAssessment({ darkMode }) {
       setError("");
     } else {
       if (assessment.questionsIds.length >= assessment.questionsCount) {
-        setError(`You can select up to ${assessment.questionsCount} questions.`);
+        setError(
+          `You can select up to ${assessment.questionsCount} questions.`
+        );
         return;
       }
       if (totalSelectedMark + 1 > assessment.totalMark) {
@@ -96,7 +103,10 @@ export default function UpdateAssessment({ darkMode }) {
       }
       setAssessment((prev) => ({
         ...prev,
-        questionsIds: [...prev.questionsIds, { id: question.id, prompt: question.prompt, mark: 1 }],
+        questionsIds: [
+          ...prev.questionsIds,
+          { id: question.id, prompt: question.prompt, mark: 1 },
+        ],
       }));
       setError("");
     }
@@ -112,7 +122,9 @@ export default function UpdateAssessment({ darkMode }) {
 
     const newTotal = updated.reduce((sum, q) => sum + q.mark, 0);
     if (newTotal > assessment.totalMark) {
-      setError(`Total marks exceed the allowed mark of ${assessment.totalMark}.`);
+      setError(
+        `Total marks exceed the allowed mark of ${assessment.totalMark}.`
+      );
       return;
     }
 
@@ -125,7 +137,9 @@ export default function UpdateAssessment({ darkMode }) {
       assessment.questionsIds.length !== assessment.questionsCount ||
       totalSelectedMark !== assessment.totalMark
     ) {
-      setError("Selected question count or total marks do not match input limits.");
+      setError(
+        "Selected question count or total marks do not match input limits."
+      );
       return;
     }
 
@@ -153,7 +167,11 @@ export default function UpdateAssessment({ darkMode }) {
   if (apiError) return <div>Error loading assessment</div>;
 
   const renderQuestionTable = () => (
-    <div className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""}`}>
+    <div
+      className={`table-responsive text-nowrap ${
+        darkMode ? "spic-dark-mode" : ""
+      }`}
+    >
       <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
         <thead>
           <tr>
@@ -172,7 +190,8 @@ export default function UpdateAssessment({ darkMode }) {
             const markLimitReached =
               totalSelectedMark >= assessment.totalMark && !isSelected;
             const questionLimitReached =
-              assessment.questionsIds.length >= assessment.questionsCount && !isSelected;
+              assessment.questionsIds.length >= assessment.questionsCount &&
+              !isSelected;
 
             return (
               <tr key={q.id}>
@@ -216,13 +235,21 @@ export default function UpdateAssessment({ darkMode }) {
 
       {/* Pagination Controls */}
       <div className="d-flex justify-content-between align-items-center mt-3">
-        <button className="btn btn-outline-secondary" onClick={prevPage} disabled={currentPage === 1}>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={prevPage}
+          disabled={currentPage === 1}
+        >
           Previous
         </button>
         <span>
           Page <strong>{currentPage}</strong> of {totalPages}
         </span>
-        <button className="btn btn-outline-secondary" onClick={nextPage} disabled={currentPage === totalPages}>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
+        >
           Next
         </button>
       </div>
@@ -234,7 +261,9 @@ export default function UpdateAssessment({ darkMode }) {
       <BackBtn />
       <div className={`my-4 card ${darkMode ? "spic-dark-mode" : ""}`}>
         <div className="card-header">
-          <h5 className="text-center mb-0"><strong>Update Assessment</strong></h5>
+          <h5 className="text-center mb-0">
+            <strong>Update Assessment</strong>
+          </h5>
         </div>
 
         <div className="card-body">
@@ -244,7 +273,9 @@ export default function UpdateAssessment({ darkMode }) {
               <input
                 className="form-control"
                 value={assessment.name}
-                onChange={(e) => setAssessment({ ...assessment, name: e.target.value })}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, name: e.target.value })
+                }
               />
             </div>
             <div className="col-md-4">
@@ -252,7 +283,9 @@ export default function UpdateAssessment({ darkMode }) {
               <input
                 className="form-control"
                 value={assessment.duration}
-                onChange={(e) => setAssessment({ ...assessment, duration: e.target.value })}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, duration: e.target.value })
+                }
               />
             </div>
             <div className="col-md-4">
@@ -261,7 +294,9 @@ export default function UpdateAssessment({ darkMode }) {
                 className="form-control"
                 type="date"
                 value={assessment.time || ""}
-                onChange={(e) => setAssessment({ ...assessment, time: e.target.value })}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, time: e.target.value })
+                }
               />
             </div>
           </div>
@@ -273,7 +308,9 @@ export default function UpdateAssessment({ darkMode }) {
                 className="form-control"
                 type="time"
                 value={assessment.startTime || ""}
-                onChange={(e) => setAssessment({ ...assessment, startTime: e.target.value })}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, startTime: e.target.value })
+                }
               />
             </div>
             <div className="col-md-4">
@@ -282,7 +319,9 @@ export default function UpdateAssessment({ darkMode }) {
                 className="form-control"
                 type="time"
                 value={assessment.endTime || ""}
-                onChange={(e) => setAssessment({ ...assessment, endTime: e.target.value })}
+                onChange={(e) =>
+                  setAssessment({ ...assessment, endTime: e.target.value })
+                }
               />
             </div>
             <div className="col-md-2">
@@ -292,7 +331,10 @@ export default function UpdateAssessment({ darkMode }) {
                 className="form-control"
                 value={assessment.totalMark}
                 onChange={(e) =>
-                  setAssessment({ ...assessment, totalMark: parseInt(e.target.value) || 0 })
+                  setAssessment({
+                    ...assessment,
+                    totalMark: parseInt(e.target.value) || 0,
+                  })
                 }
               />
             </div>
@@ -303,7 +345,10 @@ export default function UpdateAssessment({ darkMode }) {
                 className="form-control"
                 value={assessment.questionsCount}
                 onChange={(e) =>
-                  setAssessment({ ...assessment, questionsCount: parseInt(e.target.value) || 0 })
+                  setAssessment({
+                    ...assessment,
+                    questionsCount: parseInt(e.target.value) || 0,
+                  })
                 }
               />
             </div>

@@ -1,44 +1,91 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
+import Joi from "joi";
 import { loginUser } from "../../APIs/ApisHandaler";
-import { useNavigate } from "react-router";
 
-export default function Login({ darkMode }) {
-  const navigate = useNavigate();
+export default function Login({
+  darkMode,
+  setUserData,
+  goToPage,
+  userDetails,
+  setActiveId,
+}) {
+  let [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
+  let [errorList, setErrorList] = useState([]);
+  let [apiError, setApiError] = useState(false);
+  let [notFoundMessage, setNotFoundMessage] = useState(false);
 
-  const login = async (email, password) => {
+  /* Submite Function */
+  async function onFormSubmit(e) {
+    e.preventDefault();
+    // Call Validation Function
+    let validateResult = validateForm();
+    if (validateResult.error) {
+      setErrorList(validateResult.error.details);
+    }
+
     try {
-      await loginUser(email, password)
+      console.log("user", user);
+      await loginUser(user.email, user.password)
         .then((response) => {
-          console.log(`The axios response is:`, response.data);
-
-          localStorage.setItem("token", response.data.token);
-          console.log("Login successful!");
-
-          navigate("/home");
+          // Handle the response data
+          console.log("Resssponse: ", response);
+          setApiError(false);
+          if (response.status === 200) {
+            localStorage.setItem("token", response.data.token);
+            console.log("Done!");
+            setUserData();
+          }
         })
         .catch((error) => {
-          console.error("Login failed:", error);
+          // Handle errors
+          if (error.response) {
+            setApiError(true);
+            if (
+              error.response.status === 400 &&
+              error.response.data.message === "invaild email or Password"
+            ) {
+              setNotFoundMessage(true);
+            }
+          }
+          console.error("Axios error:", error);
         });
-    } catch (e) {
-      console.error("An unexpected error occurred:", e);
+    } catch (error) {
+      console.error(error);
     }
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+  }
 
-    // Get the email and password from the form inputs
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  /* Get New Data Function */
+  function getData(e) {
+    setErrorList([]);
+    setNotFoundMessage(false);
+    let newUser = { ...user };
+    newUser[e.target.name] = e.target.value;
+    setUser(newUser);
+  }
 
-    if (!email || !password) {
-      console.error("Both fields are required.");
-      return;
+  useEffect(() => {
+    if (Object.keys(userDetails).length > 0) {
+      goToPage();
     }
+  }, [userDetails]);
 
-    // Call the login function with the email and password
-    login(email, password);
-  };
+  /* Validation Function */
+  function validateForm() {
+    const schema = Joi.object({
+      email: Joi.string().trim().min(2).max(15).required(),
+      password: Joi.string().trim().min(8).required(),
+    });
+
+    return schema.validate(user, { abortEarly: false });
+  }
+  /////////////////
+  useEffect(() => {
+    setActiveId(7);
+  }, []);
 
   return (
     <div className={`custom-form ${darkMode ? "spic-dark-mode" : ""}`}>
@@ -49,8 +96,23 @@ export default function Login({ darkMode }) {
         {" "}
         <hr className="bold-hr mid-aligment" />
       </div>
+      {notFoundMessage ? (
+        <div className="col-12">
+          <div className="alert alert-danger">"invaild email or Password"</div>
+        </div>
+      ) : (
+        ""
+      )}
+      {errorList.map((error, index) => (
+        <div className="col-12">
+          <div key={index} className="alert alert-danger">
+            {" "}
+            {error.message}{" "}
+          </div>
+        </div>
+      ))}
       <div className="w-50 my-4 position-relative">
-        <form className="mid-aligment" onSubmit={handleSubmit}>
+        <form className="mid-aligment" onSubmit={onFormSubmit}>
           <div className="form-group my-4">
             <input
               type="email"
@@ -58,6 +120,7 @@ export default function Login({ darkMode }) {
               id="email"
               name="email"
               placeholder="Email..."
+              onChange={(e) => getData(e)}
             />
           </div>
           <div className="form-group my-4">
@@ -67,6 +130,7 @@ export default function Login({ darkMode }) {
               id="password"
               name="password"
               placeholder="Password..."
+              onChange={(e) => getData(e)}
             />
           </div>
           <div className="d-flex flex-column flex-md-row justify-content-between my-4 mid-bold">

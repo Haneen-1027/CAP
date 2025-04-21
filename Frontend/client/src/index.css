@@ -360,6 +360,10 @@ textarea:focus {
   background-color: var(--Primary_Buttons);
   border-color: var(--Primary_Buttons);
 }
+
+.form-check-input:checked {
+  background-color: var(--Primary_Buttons);
+}
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */
 @keyframes alert {

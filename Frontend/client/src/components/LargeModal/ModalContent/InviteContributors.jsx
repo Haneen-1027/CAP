@@ -81,7 +81,7 @@ export default function InviteContributors({ darkMode }) {
           <form className="form-floating col-12">
             <input
               type="text"
-              className="form-control"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
               id="floatingInputValue"
               name="first_name"
               placeholder="First Name"
@@ -93,14 +93,17 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label htmlFor="floatingInputValue" className="mx-4">
+            <label
+              htmlFor="floatingInputValue"
+              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
+            >
               First Name:
             </label>
           </form>
           <form className="form-floating col-12 my-2">
             <input
               type="text"
-              className="form-control"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
               id="floatingInputValue"
               name="last_name"
               placeholder="Last Name"
@@ -112,14 +115,17 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label htmlFor="floatingInputValue" className="mx-4">
+            <label
+              htmlFor="floatingInputValue"
+              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
+            >
               Last Name:
             </label>
           </form>
           <form className="form-floating col-12 mb-2">
             <input
               type="email"
-              className="form-control"
+              className={`form-control ${darkMode ? "spic-dark-mode" : ""} `}
               id="floatingInputValue"
               name="email"
               placeholder="name@example.com"
@@ -131,7 +137,10 @@ export default function InviteContributors({ darkMode }) {
                 }))
               }
             />
-            <label htmlFor="floatingInputValue" className="mx-4">
+            <label
+              htmlFor="floatingInputValue"
+              className={` mx-4 ${darkMode ? "bg-transparent" : ""} `}
+            >
               Add Email - "name@example.com"
             </label>
           </form>

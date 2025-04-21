@@ -3,21 +3,47 @@ import { Footer, Header, Main } from "./componentsLoader/ComponentsLoader";
 
 import { jwtDecode } from "jwt-decode";
 import { useDarkMode } from "./Context/DarkMode";
+import { useNavigate } from "react-router";
 
 function App() {
   const { darkMode } = useDarkMode();
-  let [userDetailes, setUserDetails] = useState({
-    id: "1234560",
-    firstName: "Mena",
-    lastName: "Admin",
-    email: "Admin@gmail.com",
-    bio: "Software developer with a passion for coding and learning.",
-    role: "Admin",
-  });
+  let [activeId, setActiveId] = useState();
+  const navigate = useNavigate();
 
+  //login user details
+  let [userDetailes, setUserDetails] = useState({});
+  /* get user token and decode it */
+  function setUserData() {
+    let token = localStorage.getItem("token");
+    let decodeData = jwtDecode(token);
+    setUserDetails(decodeData);
+  }
+
+  /* log out: clear toke local storage, clear userDetails. */
+  function logout() {
+    localStorage.removeItem("token");
+    setUserDetails({});
+    navigate({
+      pathname: "/Login",
+    });
+  }
+
+  /* goTo page */
+  function goToPage() {
+    setActiveId(1);
+    navigate({
+      pathname: `/`,
+    });
+  }
+  ///////////////
   useEffect(() => {
-    console.log("App.jsx: ", userDetailes);
+    if (localStorage.getItem("token")) {
+      setUserData();
+    }
   }, []);
+  useEffect(() => {
+    console.log("userDetails", userDetailes);
+  }, [userDetailes]);
 
   return (
     <>
@@ -36,7 +62,14 @@ function App() {
         {/* Header */}
         <Header userDetailes={userDetailes} darkMode={darkMode} />
         {/* Main */}
-        <Main userDetailes={userDetailes} darkMode={darkMode} />
+        <Main
+          userDetailes={userDetailes}
+          setUserData={setUserData}
+          goToPage={goToPage}
+          logout={logout}
+          setActiveId={setActiveId}
+          darkMode={darkMode}
+        />
         {/* Footer */}
         <Footer darkMode={darkMode} />
       </Suspense>
