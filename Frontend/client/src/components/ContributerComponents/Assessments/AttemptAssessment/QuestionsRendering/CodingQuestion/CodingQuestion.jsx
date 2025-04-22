@@ -17,18 +17,16 @@ export default function CodingQuestion({
     { name: "JavaScript", value: "javascript" },
   ];
 
-  ///////////
-  //
   function handleCodeUpdate(newValue) {
     setIsCodeEditting(true);
     setCode(newValue);
   }
-  //
+
   function handleSaveCode() {
     addQuestionAnswer(code, question.id);
     setIsCodeEditting(false);
   }
-  //
+
   function handleProgrammingLanguage(e) {
     const selectedLanguage = e.target.value;
     setLanguage(selectedLanguage);
@@ -45,14 +43,13 @@ export default function CodingQuestion({
     setCode(code);
   }
 
-  //////
   useEffect(() => {
     console.log("Coding Question: ", question);
     if (userAnswer != "") {
       setCode(userAnswer);
     }
   }, []);
-  //////
+
   return (
     <>
       <div className="row overflow-xAxis">
@@ -76,31 +73,20 @@ export default function CodingQuestion({
               {question.detailes.testCases.map((testCase, index) => {
                 if (index < 2) {
                   return (
-                    <>
-                      <li key={index} className="my-2">
-                        Inputs:{" "}
-                        <strong>
-                          {testCase.inputs.map(
-                            (input, i) =>
-                              input +
-                              (i === testCase.inputs.length - 1 ? "" : ", ")
-                          )}
-                        </strong>{" "}
-                        - Excpected Output:{" "}
-                        <strong>
-                          {testCase.expectedOutput.map(
-                            (out, i) =>
-                              out +
-                              (i === testCase.expectedOutput.length - 1
-                                ? ""
-                                : ", ")
-                          )}
-                        </strong>
-                        .
-                      </li>
-                    </>
+                    <li key={index} className="my-2">
+                      Inputs:{" "}
+                      <strong>
+                        {testCase.inputs.map(
+                          (input, i) =>
+                            input +
+                            (i === testCase.inputs.length - 1 ? "" : ", ")
+                        )}
+                      </strong>{" "}
+                      - Expected Output: <strong>{testCase.expectedOutput}</strong>.
+                    </li>
                   );
                 }
+                return null;
               })}
             </ul>
           </div>

@@ -11,7 +11,13 @@ export default function MultipleChoice({
   const [shuffledOptions, setShuffledOptions] = useState([]);
 
   useEffect(() => {
-    // Only run when question.id changes
+    // Handle True/False questions specially
+    if (question.detailes.isTrueFalse) {
+      setShuffledOptions(["true", "false"]);
+      return;
+    }
+
+    // Regular multiple choice questions
     const correctOptions = question.detailes.correctAnswer || [];
     const wrongOptions = question.detailes.wrongOptions || [];
     const optionsCount = question.detailes.options_count;
@@ -41,7 +47,7 @@ export default function MultipleChoice({
         <div key={index} className="form-check">
           <input
             className="form-check-input"
-            type="radio"
+            type={question.detailes.isTrueFalse ? "radio" : "radio"}
             name={`multipleChoice-${question.id}`}
             id={`option-${question.id}-${index}`}
             value={option}
@@ -52,7 +58,7 @@ export default function MultipleChoice({
             className={`form-check-label ${darkMode ? "text-light" : ""}`}
             htmlFor={`option-${question.id}-${index}`}
           >
-            {option}
+            {question.detailes.isTrueFalse ? option.charAt(0).toUpperCase() + option.slice(1) : option}
           </label>
         </div>
       ))}

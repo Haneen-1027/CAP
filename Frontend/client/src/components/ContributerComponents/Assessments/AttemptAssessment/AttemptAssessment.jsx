@@ -5,16 +5,25 @@ import {
   AssessmentQuestions,
   BackBtn,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { getAssessmentById } from "../../../../APIs/ApisHandaler";
+import { getAssessmentById, getQuestionById } from "../../../../APIs/ApisHandaler";
 
 export default function AttemptAssessment({ user, darkMode }) {
-  const { id } = useParams(); // Get assessment ID
+  const { id } = useParams();
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
   const [isStarted, setIsStarted] = useState(false);
   const [isWithinRange, setIsWithinRange] = useState("yet");
+
+  const fetchQuestionDetails = async (questionId) => {
+    try {
+      const response = await getQuestionById(questionId);
+      return response.data;
+    } catch (err) {
+      console.error(`Failed to fetch question ${questionId}:`, err);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchAssessment = async () => {
@@ -22,25 +31,32 @@ export default function AttemptAssessment({ user, darkMode }) {
         const response = await getAssessmentById(id);
         const apiData = response.data;
         
-        // Transform the backend data 
+        // Fetch details for all questions
+        const questionsWithDetails = await Promise.all(
+          apiData.questions.map(async (q) => {
+            const questionDetails = await fetchQuestionDetails(q.questionId);
+            return {
+              id: `Id${q.questionId}`,
+              type: questionDetails?.type || "essay",
+              mark: q.mark,
+              prompt: q.prompt,
+              category: questionDetails?.category || "General",
+              detailes: transformQuestionDetails(questionDetails)
+            };
+          })
+        );
+        
         const transformedAssessment = {
           id: `Ass-${apiData.id}`,
-          createdBy: "unknown", // need update
+          createdBy: "unknown",
           name: apiData.name,
-          duration: apiData.duration.substring(0, 5), // Convert "01:00:00" to "01:00"
+          duration: apiData.duration.substring(0, 5),
           time: apiData.time,
-          start_time: apiData.startTime.substring(0, 5), // Convert "14:05:00" to "14:05"
+          start_time: apiData.startTime.substring(0, 5),
           end_time: apiData.endTime.substring(0, 5),
           total_mark: apiData.totalMark,
           questions_count: apiData.questionsCount,
-          questions: apiData.questions.map((q, index) => ({
-            id: `Id${index}`,
-            type: getQuestionType(q.prompt), //  need to implement 
-            mark: q.mark,
-            prompt: q.prompt,
-            category: "General", // Default category
-            detailes: getQuestionDetails(q.prompt, q.mark) // need to implement 
-          }))
+          questions: questionsWithDetails
         };
         
         setAssessment(transformedAssessment);
@@ -55,6 +71,44 @@ export default function AttemptAssessment({ user, darkMode }) {
     fetchAssessment();
   }, [id]);
 
+  // Transform question details from API to your component's expected format
+  const transformQuestionDetails = (questionDetails) => {
+    if (!questionDetails || !questionDetails.details) return {};
+    
+    const details = questionDetails.details;
+    
+    if (questionDetails.type === "mc") {
+      // Handle True/False questions specially
+      if (details.isTrueFalse) {
+        return {
+          isTrueFalse: true,
+          correctAnswer: details.correctAnswer || [],
+          wrongOptions: ["true", "false"].filter(
+            opt => !details.correctAnswer?.includes(opt)
+          ),
+          options_count: 2 // Always 2 for True/False
+        };
+      }
+      
+      // Regular multiple choice
+      return {
+        isTrueFalse: false,
+        correctAnswer: details.correctAnswer || [],
+        wrongOptions: details.wrongOptions || [],
+        options_count: details.optionsCount || 
+          (details.correctAnswer?.length + details.wrongOptions?.length || 0)
+      };
+    } else if (questionDetails.type === "coding") {
+      return {
+        inputsCount: details.inputsCount || 0,
+        testCases: details.testCases || [],
+        description: details.description || ""
+      };
+    } else {
+      return {};
+    }
+  };
+
   const checkTimeRange = (date, startTime, endTime) => {
     const now = new Date();
     const startDateTime = new Date(`${date}T${startTime}`);
@@ -66,40 +120,6 @@ export default function AttemptAssessment({ user, darkMode }) {
       setIsWithinRange("now");
     } else {
       setIsWithinRange("passed");
-    }
-  };
-
-  // determine question type based on prompt
-  const getQuestionType = (prompt) => {
-    // to determine question type
-    // example 
-    if (prompt.toLowerCase().includes("which")) return "mc";
-    if (prompt.toLowerCase().includes("write code")) return "coding";
-    return "essay";
-  };
-
-  // generate question details
-  const getQuestionDetails = (prompt, mark) => {
-    // example
-    const type = getQuestionType(prompt);
-    
-    if (type === "mc") {
-      return {
-        isTrueFalse: false,
-        correctAnswer: ["Sample answer"],
-        wrongOptions: ["Option 1", "Option 2", "Option 3"],
-        options_count: 4
-      };
-    } else if (type === "coding") {
-      return {
-        inputsCount: 1,
-        testCases: [
-          { inputs: [1], expectedOutput: [2] },
-          { inputs: [2], expectedOutput: [3] }
-        ]
-      };
-    } else {
-      return {};
     }
   };
 
