@@ -22,16 +22,22 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     { name: "Essay Question", value: "essay" },
     { name: "Coding Question", value: "coding" },
   ];
-  const [questionType, setQuestionType] = useState("mc");
-  const [category, setCategory] = useState("all");
+
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCounPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
   const [questionsCount, setQuestionsCount] = useState(33);
   const [questionsList, setQuestionsList] = useState([]); //new new
 
-  //
+  // Searching
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  // Filtiration
+  const [questionType, setQuestionType] = useState(0);
+  const [category, setCategory] = useState(0);
+  const [noResults, setNoResults] = useState(false);
 
+  //
   const viewAllQuestions = async () => {
     try {
       const response = await getAllQuestions();
@@ -85,10 +91,10 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 ? "True/False"
                 : "Multiple Choice"
               : q.type === "essay"
-                ? "Essay"
-                : q.type === "coding"
-                  ? "Coding"
-                  : "Not-valid type"
+              ? "Essay"
+              : q.type === "coding"
+              ? "Coding"
+              : "Not-valid type"
             : "There is no Type"}
         </td>
         <td className="gap-2">
@@ -129,8 +135,9 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     <>
       <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
         <div
-          className={`p-3 card-header d-flex align-items-center ${darkMode ? " spic-dark-mode" : ""
-            }`}
+          className={`p-3 card-header d-flex align-items-center ${
+            darkMode ? " spic-dark-mode" : ""
+          }`}
         >
           <h5 className="text-center mb-0">
             <strong>Questions:</strong>
@@ -186,8 +193,9 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
         </div>
 
         <div
-          className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""
-            }`}
+          className={`table-responsive text-nowrap ${
+            darkMode ? "spic-dark-mode" : ""
+          }`}
         >
           <table
             className={`table ${darkMode ? "table-dark " : "table-light"}`}

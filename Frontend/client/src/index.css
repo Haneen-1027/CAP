@@ -17,6 +17,41 @@
   --highBold: 800;
   --bg-dark-color: #202d36;
 }
+.text-success {
+  color: var(--footer-bg) !important;
+}
+.btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #30ee26;
+  --bs-btn-border-color: #30ee26;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #0ac100;
+  --bs-btn-hover-border-color: #0ac100;
+  --bs-btn-focus-shadow-rgb: 60, 153, 110;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #0ac100;
+  --bs-btn-active-border-color: #0ac100;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #30ee26;
+  --bs-btn-disabled-border-color: #30ee26;
+}
+.btn-outline-success {
+  --bs-btn-color: #30ee26;
+  --bs-btn-border-color: #30ee26;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #30ee26;
+  --bs-btn-hover-border-color: #30ee26;
+  --bs-btn-focus-shadow-rgb: 25, 135, 84;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #30ee26;
+  --bs-btn-active-border-color: #30ee26;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #30ee26;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #30ee26;
+  --bs-gradient: none;
+}
 * {
   transition: 0 !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -87,15 +122,15 @@ textarea {
 }
 .custom-form input:focus,
 .custom-form textarea:focus {
-  border-color: var(--Primary_Buttons) !important;
-  outline: 1px solid var(--Primary_Buttons) !important;
+  border-color: var(--footer-bg) !important;
+  outline: 1px solid var(--footer-bg) !important;
 }
 
 /* If you have other specific input classes, add them as well */
 input:focus,
 textarea:focus {
-  border-color: var(--Primary_Buttons) !important;
-  outline: 1px solid var(--Primary_Buttons) !important; /* Remove default outline */
+  border-color: var(--footer-bg) !important;
+  outline: 1px solid var(--footer-bg) !important; /* Remove default outline */
 }
 
 /* Shadow Section */
@@ -289,10 +324,10 @@ textarea:focus {
   background-color: var(--main-bg) !important;
 }
 .primary-button-color {
-  color: var(--Primary_Buttons) !important;
+  color: var(--footer-bg) !important;
 }
 .primary-button-background {
-  background-color: var(--Primary_Buttons) !important;
+  background-color: var(--footer-bg) !important;
 }
 .bold-hr {
   border-width: 3px !important;
@@ -322,7 +357,7 @@ textarea:focus {
 }
 .nav-link.active::before {
   width: calc(100% - 5%);
-  background-color: var(--Primary_Buttons);
+  background-color: var(--footer-bg);
 }
 
 .delete-button,
@@ -333,7 +368,7 @@ textarea:focus {
   color: red !important;
 }
 .view-button:hover i {
-  color: var(--Primary_Buttons) !important;
+  color: var(--footer-bg) !important;
 }
 
 .table {
@@ -357,12 +392,19 @@ textarea:focus {
 
 .active > .page-link,
 .page-link.active {
-  background-color: var(--Primary_Buttons);
-  border-color: var(--Primary_Buttons);
+  background-color: var(--footer-bg);
+  border-color: var(--footer-bg);
 }
 
 .form-check-input:checked {
-  background-color: var(--Primary_Buttons);
+  background-color: var(--footer-bg);
+}
+
+.form-floating label::after {
+  background-color: transparent !important;
+}
+.form-floating > .form-control:focus ~ label {
+  color: inherit;
 }
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */

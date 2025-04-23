@@ -18,7 +18,7 @@ export const loginUser = async (email, password) => {
   );
 };
 
-/** */
+/** Questions */
 //
 export const addNewQuestion = async (question) => {
   return await axios.post(`${BASE_URL}/questions`, question, {
@@ -83,13 +83,12 @@ export const getAllAssessments = async () => {
   });
 };
 
-
 export const getAssessmentById = async (id) => {
   return await axios.get(`${BASE_URL}/assessments/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
-  })
+  });
 };
 
 export const updateAssessment = async (id, updatedData) => {
@@ -108,6 +107,21 @@ export const deleteAssessment = async (id) => {
   });
 };
 
+/** Users' APIs */
+export const getUsers = async () => {
+  return await axios.get(`${BASE_URL}/users`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const addUser = async (user) => {
+  return await axios.post(`${BASE_URL}/users`, user, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

@@ -32,6 +32,8 @@ import {
   NotFoundPath,
   AuthorizeError,
   InviteContributors,
+  AddUser,
+  PreviewUsers,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -360,7 +362,46 @@ function Main({
                 <UsersMain user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
-          />
+          >
+            <Route
+              path="/admin/users/preview"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <PreviewUsers user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/users/add_user"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <AddUser user={userDetailes} darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+          </Route>
         </Route>
         {/* Contributer Page */}
         <Route

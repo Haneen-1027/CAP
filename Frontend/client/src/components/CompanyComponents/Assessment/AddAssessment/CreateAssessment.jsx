@@ -129,7 +129,7 @@ export default function CreateAssessment({ darkMode }) {
         if (!time) return "00:00:00";
         return time.length === 5 ? `${time}:00` : time;
       };
-  
+
       // Convert fields before sending
       const preparedAssessment = {
         ...assessment,
@@ -138,7 +138,7 @@ export default function CreateAssessment({ darkMode }) {
         endTime: formatTimeFields(assessment.endTime),
         duration: formatTimeFields(assessment.duration),
       };
-  
+
       if (isEditing) {
         console.log("assessment before update:", preparedAssessment);
       } else {
@@ -155,7 +155,6 @@ export default function CreateAssessment({ darkMode }) {
       console.error(e);
     }
   };
-  
 
   function clearResults() {
     setVisibleList([...questionsIds]);
@@ -228,7 +227,9 @@ export default function CreateAssessment({ darkMode }) {
 
   function renderquestionsIds() {
     return visibleList.map((question, index) => {
-      const isChecked = assessment.questionsIds.some((q) => q.id === question.id);
+      const isChecked = assessment.questionsIds.some(
+        (q) => q.id === question.id
+      );
       const remainingTotalMark =
         assessment.totalMark -
         assessment.questionsIds.reduce((total, q) => total + q.mark, 0);
@@ -359,7 +360,10 @@ export default function CreateAssessment({ darkMode }) {
 
         selectedquestionsIds.push(question);
         setSelectedTotalMark((prev) => prev + question.mark);
-        setAssessment((prev) => ({ ...prev, questionsIds: selectedquestionsIds }));
+        setAssessment((prev) => ({
+          ...prev,
+          questionsIds: selectedquestionsIds,
+        }));
       } else {
         const questionToRemove = selectedquestionsIds.find((q) => q.id === id);
         if (questionToRemove) {
@@ -368,7 +372,10 @@ export default function CreateAssessment({ darkMode }) {
         const updatedquestionsIds = selectedquestionsIds.filter(
           (question) => question.id !== id
         );
-        setAssessment((prev) => ({ ...prev, questionsIds: updatedquestionsIds }));
+        setAssessment((prev) => ({
+          ...prev,
+          questionsIds: updatedquestionsIds,
+        }));
       }
     } else if (name === "mark") {
       const newValue = value.trim() === "" ? 0 : parseInt(value, 10);
@@ -633,6 +640,8 @@ export default function CreateAssessment({ darkMode }) {
                 <div className="my-4 mid-bold d-flex justify-content-center">
                   No results Found.
                 </div>
+              ) : apiError ? (
+                apiErrorMessage
               ) : (
                 loadingMessage
               )}

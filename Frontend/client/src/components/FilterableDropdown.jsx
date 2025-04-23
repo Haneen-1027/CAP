@@ -12,10 +12,6 @@ export default function FilterableDropdown({
 }) {
   const [filterText, setFilterText] = useState("");
 
-  const handleFilterChange = (e) => {
-    setFilterText(e.target.value.toLowerCase());
-  };
-
   const handleEvent = (e) => {
     console.log(e.target.value);
     handleFunction(e);
@@ -27,22 +23,28 @@ export default function FilterableDropdown({
   }, []);
   ////////////////
   return (
-    <select
-      className={`p-2 ${darkMode ? " spic-dark-mode" : ""}`}
-      style={{ width: "100%" }}
-      onChange={(e) => handleEvent(e)}
-      name={name}
-      value={selectedValue ? selectedValue : 0}
-      disabled={isDisabled}
-    >
-      {!noExtraOption ? <option value={0}>{filterType}</option> : ""}
-      {items
-        .filter((item) => item.name.toLowerCase().includes(filterText))
-        .map((item, index) => (
-          <option value={item.value} key={index} className="dropdown-item">
-            {item.name}
-          </option>
-        ))}
-    </select>
+    <div className="form-floating">
+      {" "}
+      <select
+        className={`form-select ${darkMode ? " spic-dark-mode" : ""}`}
+        id="floatingSelectGrid"
+        style={{ width: "100%" }}
+        onChange={(e) => handleEvent(e)}
+        name={name}
+        value={selectedValue ? selectedValue : 0}
+        disabled={isDisabled ? isDisabled : false}
+      >
+        {items
+          .filter((item) => item.name.toLowerCase().includes(filterText))
+          .map((item, index) => (
+            <option value={item.value} key={index} className="dropdown-item">
+              {item.name}
+            </option>
+          ))}
+      </select>{" "}
+      <label for="floatingSelectGrid">
+        {filterType ? filterType : "Select Option"}
+      </label>
+    </div>
   );
 }

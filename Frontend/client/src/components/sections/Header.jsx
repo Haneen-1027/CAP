@@ -23,7 +23,7 @@ function Header({ darkMode, userDetailes }) {
   ];
   //
   const contNavBarValues = [
-    { id: 1, text: "Home", path: "/contributer/home" }, 
+    { id: 1, text: "Home", path: "/contributer/home" },
     { id: 2, text: "Assessments", path: "/contributer/assessments" },
     { id: 3, text: "Results", path: "/contributer/result" },
     { id: 0, text: "|", path: null },

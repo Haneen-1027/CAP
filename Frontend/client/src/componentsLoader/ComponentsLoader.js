@@ -37,6 +37,8 @@ export const PaginationNav = lazy(() =>
 export const FilterableDropdown = lazy(() =>
   import("../components/FilterableDropdown.jsx")
 );
+// SearchBar
+export const SearchBar = lazy(() => import("../components/SearchBar.jsx"));
 // Back Button
 export const BackBtn = lazy(() => import("../components/BackBtn.jsx"));
 
@@ -115,6 +117,13 @@ export const ContactsMain = lazy(() =>
 );
 export const UsersMain = lazy(() =>
   import("../components/AdminComponents/Users/Users.jsx")
+);
+
+export const PreviewUsers = lazy(() =>
+  import("../components/AdminComponents/Users/UsersComponents/PreviewUsers.jsx")
+);
+export const AddUser = lazy(() =>
+  import("../components/AdminComponents/Users/UsersComponents/AddUser.jsx")
 );
 ///////////////////////////////////////////////////////////
 //// Company Page Components:

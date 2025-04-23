@@ -22,7 +22,7 @@ export default function InviteContributors({ darkMode, user }) {
 
   ////
   if (!user || !user.role) {
-    // Not logged in (optional check)
+    // Not logged in
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
