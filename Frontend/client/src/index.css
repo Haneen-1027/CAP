@@ -21,7 +21,7 @@
   color: var(--footer-bg) !important;
 }
 .btn-success {
-  --bs-btn-color: #fff;
+  --bs-btn-color: black;
   --bs-btn-bg: #30ee26;
   --bs-btn-border-color: #30ee26;
   --bs-btn-hover-color: #fff;
@@ -35,6 +35,7 @@
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #30ee26;
   --bs-btn-disabled-border-color: #30ee26;
+  font-weight: 600;
 }
 .btn-outline-success {
   --bs-btn-color: #30ee26;
@@ -406,6 +407,7 @@ textarea:focus {
 .form-floating > .form-control:focus ~ label {
   color: inherit;
 }
+
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */
 @keyframes alert {

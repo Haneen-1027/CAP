@@ -144,8 +144,8 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
           </h5>
         </div>
         <div className="p-4 card-header row m-0">
-          <div className="col-12 col-lg-4 d-flex flex-column flex-lg-row gap-1 ">
-            <div className="category">
+          <div className="col-12 col-lg-5 d-flex flex-column flex-lg-row justify-content-between row m-0 ">
+            <div className="category col-12 col-lg-5">
               <FilterableDropdown
                 darkMode={darkMode}
                 filterType={"Select Category:"}
@@ -154,7 +154,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
                 selectedValue={category}
               />
             </div>
-            <div className="type">
+            <div className="type col-12 col-lg-5">
               <FilterableDropdown
                 darkMode={darkMode}
                 filterType={"Select Question Type:"}
@@ -164,7 +164,7 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
               />
             </div>
           </div>
-          <div className="my-4 m-lg-0 col-12 col-lg-5 d-flex justify-content-center">
+          <div className="my-4 m-lg-0 col-12 col-lg-4 d-flex justify-content-center align-items-center">
             <PaginationNav
               darkMode={darkMode}
               counts={questionsCount}

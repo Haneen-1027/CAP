@@ -122,6 +122,13 @@ export const addUser = async (user) => {
     },
   });
 };
+export const deleteUser = async (id) => {
+  return await axios.delete(`${BASE_URL}/users`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

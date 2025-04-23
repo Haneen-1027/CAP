@@ -8,7 +8,6 @@ export default function FilterableDropdown({
   name,
   selectedValue,
   isDisabled,
-  noExtraOption,
 }) {
   const [filterText, setFilterText] = useState("");
 
@@ -23,10 +22,10 @@ export default function FilterableDropdown({
   }, []);
   ////////////////
   return (
-    <div className="form-floating">
+    <div className="form-floating" style={{ width: "100%" }}>
       {" "}
       <select
-        className={`form-select ${darkMode ? " spic-dark-mode" : ""}`}
+        className={`form-select ${darkMode ? " spic-dark-mode" : ""} w-100`}
         id="floatingSelectGrid"
         style={{ width: "100%" }}
         onChange={(e) => handleEvent(e)}
@@ -42,7 +41,10 @@ export default function FilterableDropdown({
             </option>
           ))}
       </select>{" "}
-      <label for="floatingSelectGrid">
+      <label
+        style={{ color: `${darkMode ? "#ccc" : ""}` }}
+        for="floatingSelectGrid"
+      >
         {filterType ? filterType : "Select Option"}
       </label>
     </div>

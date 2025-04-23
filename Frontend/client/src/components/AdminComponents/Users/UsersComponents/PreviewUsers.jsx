@@ -4,6 +4,7 @@ import { getUsers } from "../../../../APIs/ApisHandaler";
 import {
   FilterableDropdown,
   SearchBar,
+  PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 
 export default function PreviewUsers({ darkMode }) {
@@ -35,6 +36,29 @@ export default function PreviewUsers({ darkMode }) {
       </div>
     </div>
   );
+
+  // Pagination
+  const countPerPageValues = [10, 15, 25, 50, 75, 100];
+  const [countPerPage, setCountPerPage] = useState(25);
+  const [pageNo, setPageNo] = useState(1);
+  const [usersCount, setUsersCount] = useState(0);
+
+  // Searching
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  // Filtiration
+  const roles = [
+    { name: "All", value: -999 },
+    { name: "Admin", value: "Admin" },
+    { name: "Company", value: "Company" },
+    { name: "Contributor", value: "Contributor" },
+  ];
+  const [roleFiltiration, setRoleFiltiration] = useState(-999);
+  const [timeFilteration, setTimeFilteration] = useState({
+    start_date: "2024-01-01",
+    end_date: "2025-12-08",
+  });
 
   ///////////////////////// Functions ///////////////////////////////////////////////////////////////////////////
   // Render users
@@ -76,10 +100,9 @@ export default function PreviewUsers({ darkMode }) {
       </tr>
     ));
   }
-
   // Sort function
   const sortedUsers = useMemo(() => {
-    let sortableUsers = [...users];
+    let sortableUsers = [...visibleList];
     if (sortConfig.key) {
       sortableUsers.sort((a, b) => {
         let aKey = a[sortConfig.key];
@@ -111,6 +134,31 @@ export default function PreviewUsers({ darkMode }) {
     setSortConfig({ key, direction });
   };
 
+  /** Pagination Functions */
+  const handleCountPerPageMenu = (e) => {
+    setCountPerPage(Number(e.target.value));
+  };
+
+  /** Searching Functions */
+  const handleSearchValue = (value) => {
+    if (value.trim() === "") {
+      setSearchResults([]);
+      setSearchValue(value);
+    } else {
+      setSearchValue(value);
+    }
+  };
+
+  /** Filtiration Functions */
+  function handleRole(e) {
+    setRoleFiltiration(e.target.value);
+  }
+  const handleDateFilter = (e) => {
+    const { name, value } = e.target;
+    setTimeFilteration((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
+
+  /** Delete Function */
   //////////////////////// use Effects ///////////////////////////////////////////////////////////////////
   // Fetch questionsIds from API on component mount
   useEffect(() => {
@@ -120,6 +168,8 @@ export default function PreviewUsers({ darkMode }) {
         setApiError(false);
         const response = await getUsers();
         setUsers(response.data);
+        setVisibleList(response.data);
+        setUsersCount(response.data.length);
       } catch (error) {
         console.error("Error fetching questionsIds:", error);
         setApiError(true);

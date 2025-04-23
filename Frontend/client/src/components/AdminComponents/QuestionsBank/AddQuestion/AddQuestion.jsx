@@ -141,25 +141,31 @@ export default function AddQuestion({ userdetails, darkMode }) {
         ""
       )}
       <div className="position-relative p-4 d-flex flex-column">
-        <div className="general d-flex flex-column flex-md-row align-items-center justify-content-between">
-          <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
-            <FilterableDropdown
-              darkMode={darkMode}
-              filterType={"Select Question Type:"}
-              items={questionTypes}
-              handleFunction={handleGeneralChange}
-              name={"type"}
-              isDisabled={isEditing}
-              selectedValue={question.type}
-            />
-            <FilterableDropdown
-              darkMode={darkMode}
-              filterType={"Select Question Category:"}
-              items={categories}
-              handleFunction={handleGeneralChange}
-              name={"category"}
-              selectedValue={question.category}
-            />
+        <div className="row flex-column flex-md-row align-items-center m-0">
+          <div className="col-12 col-md-6 row m-0 justify-content-between">
+            <div className="col-12 col-lg-5 form-floating p-0">
+              {" "}
+              <FilterableDropdown
+                darkMode={darkMode}
+                filterType={"Select Question Type:"}
+                items={questionTypes}
+                handleFunction={handleGeneralChange}
+                name={"type"}
+                isDisabled={isEditing}
+                selectedValue={question.type}
+              />
+            </div>
+            <div className="col-12 col-lg-5 form-floating p-0">
+              {" "}
+              <FilterableDropdown
+                darkMode={darkMode}
+                filterType={"Select Question Category:"}
+                items={categories}
+                handleFunction={handleGeneralChange}
+                name={"category"}
+                selectedValue={question.category}
+              />
+            </div>
           </div>
         </div>
         <div className="w-50 position-relative my-3">
