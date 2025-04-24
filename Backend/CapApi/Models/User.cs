@@ -14,4 +14,5 @@ public class User
     public DateTime DateOfBirth { get; set; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

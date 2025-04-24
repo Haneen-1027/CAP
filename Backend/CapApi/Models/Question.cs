@@ -14,4 +14,5 @@ public class Question
     public CodingQuestion? CodingQuestion { get; set; }
     public EssayQuestion? EssayQuestion { get; set; }
     public List<AssessmentQuestion>? AssessmentQuestions { get; init; } = [];
+    public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

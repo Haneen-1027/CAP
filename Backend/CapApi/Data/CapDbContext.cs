@@ -17,6 +17,7 @@ public class CapDbContext : DbContext
     public DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
     public DbSet<TestCase> TestCases { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Submission> Submissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,9 +40,27 @@ public class CapDbContext : DbContext
             .HasForeignKey(tc => tc.CodingQuestionId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Optional: Configure the User entity (e.g., adding unique constraints)
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
-            .IsUnique(); // Example of adding a unique constraint on Email
+            .IsUnique();
+
+        // Configure Submission relationships
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.Assessment)
+            .WithMany(a => a.Submissions)
+            .HasForeignKey(s => s.AssessmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.Question)
+            .WithMany(q => q.Submissions)
+            .HasForeignKey(s => s.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.User)
+            .WithMany(u => u.Submissions)
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
