@@ -129,6 +129,19 @@ export const deleteUser = async (id) => {
     },
   });
 };
+
+/** Code Execution API */
+export const executeCode = async (questionId, sourceCode, languageId) => {
+  return await axios.post(
+    `${BASE_URL}/Code/execute/${questionId}`,
+    { sourceCode, languageId },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;
