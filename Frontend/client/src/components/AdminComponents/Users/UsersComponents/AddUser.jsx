@@ -139,12 +139,18 @@ export default function AddUser({ darkMode }) {
             <div className="col-12 col-md-5 form-floating p-0 my-2 m-md-0 p-0">
               <input
                 type="date"
-                className="form-control"
+                className={`form-control ${darkMode ? "spic-dark-mode" : ""}`}
                 id="dateOfBirth"
                 name="dateOfBirth"
                 onChange={(e) => handleChanges(e)}
-              />
-              <label htmlFor="dateOfBirth" style={{ margin: "0 !important" }}>
+              />{" "}
+              <label
+                htmlFor="dateOfBirth"
+                style={{
+                  margin: "0 !important",
+                  color: `${darkMode ? "#ccc" : ""}`,
+                }}
+              >
                 Birth Date:
               </label>
             </div>
