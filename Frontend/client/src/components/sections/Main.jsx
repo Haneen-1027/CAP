@@ -98,7 +98,7 @@ function Main({
                 ) : userDetailes.role === "Contributor" ? (
                   <ContDashboard darkMode={darkMode} />
                 ) : (
-                  <LandingPage darkMode={darkMode} />
+                  <LpHome darkMode={darkMode} />
                 )}
               </Suspense>
             }

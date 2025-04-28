@@ -24,6 +24,42 @@ public class CodeController : ControllerBase
     }
 
 
+    //[HttpPost("execute/{questionId}")]
+    //public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
+    //{
+    //    var codingQuestion = await _context.CodingQuestions
+    //        .Include(q => q.TestCases)
+    //        .FirstOrDefaultAsync(q => q.QuestionId == questionId);
+
+    //    if (codingQuestion is null)
+    //    {
+    //        return NotFound(new { message = "Question not found" });
+    //    }
+
+    //    var testResults = new List<TestCaseResultDto>();
+
+    //    foreach (var testCase in codingQuestion.TestCases)
+    //    {
+    //        string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId);
+
+    //        //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
+    //        var (output, error) =
+    //            await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
+    //                string.Join(" ", testCase.Inputs)); // Compare the actual output with the expected output
+    //        testResults.Add(new TestCaseResultDto
+    //        {
+    //            Inputs = testCase.Inputs,
+    //            ExpectedOutput = testCase.ExpectedOutput,
+    //            ActualOutput = output,
+    //            Error = error
+    //        });
+    //    }
+
+    //    return Ok(testResults);
+    //}
+
+
+
     [HttpPost("execute/{questionId}")]
     public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
     {
@@ -40,12 +76,15 @@ public class CodeController : ControllerBase
 
         foreach (var testCase in codingQuestion.TestCases)
         {
-            string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId);
+            // Infer input type from the expected output
+            Type inputType = InferInputType(testCase.ExpectedOutput);
 
-            //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
+            string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId, inputType);
+
             var (output, error) =
                 await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
-                    string.Join(" ", testCase.Inputs)); // Compare the actual output with the expected output
+                    string.Join(" ", testCase.Inputs));
+
             testResults.Add(new TestCaseResultDto
             {
                 Inputs = testCase.Inputs,
@@ -57,35 +96,95 @@ public class CodeController : ControllerBase
 
         return Ok(testResults);
     }
+    //private string WrapUserCode(string userCode, List<string> inputs, int languageId)
+    //{
+    //    switch (languageId)
+    //    {
+    //        case 71: // Python
+    //            return WrapPythonCode(userCode, inputs);
 
-    private string WrapUserCode(string userCode, List<string> inputs, int languageId)
+    //        case 63: // JavaScript (Node.js)
+    //            Console.WriteLine(WrapJavaScriptCode(userCode, inputs));
+    //            return WrapJavaScriptCode(userCode, inputs);
+
+    //        default:
+    //            throw new NotSupportedException("Language not supported");
+    //    }
+    //}
+
+    private string WrapUserCode(string userCode, List<string> inputs, int languageId, Type inputType)
     {
         switch (languageId)
         {
             case 71: // Python
-                return WrapPythonCode(userCode, inputs);
+                return WrapPythonCode(userCode, inputs, inputType);
 
-            case 63: // JavaScript (Node.js)
-                Console.WriteLine(WrapJavaScriptCode(userCode, inputs));
-                return WrapJavaScriptCode(userCode, inputs);
+            //case 63: // JavaScript (Node.js)
+            //    return WrapJavaScriptCode(userCode, inputs, inputType);
 
             default:
                 throw new NotSupportedException("Language not supported");
         }
     }
 
-    private string WrapPythonCode(string userCode, List<string> inputs)
+    private string ExtractTypeHints(string userCode)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(userCode, @"def\s+\w+\s*\(([^)]+)\)");
+        if (match.Success)
+        {
+            string parameters = match.Groups[1].Value;
+            // Example: Parse "a: int, b: float" to determine types
+            return parameters; // Further processing needed
+        }
+        return null;
+    }
+
+    private Type InferInputType(string expectedOutput)
+    {
+        if (int.TryParse(expectedOutput, out _))
+        {
+            return typeof(int);
+        }
+        else if (double.TryParse(expectedOutput, out _))
+        {
+            return typeof(double);
+        }
+        else
+        {
+            return typeof(string);
+        }
+    }
+    private string WrapPythonCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractFunctionName(userCode);
         string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
+
+        string conversionLogic = inputType == typeof(int) ? "map(int, input().split())" :
+                                 inputType == typeof(double) ? "map(float, input().split())" :
+                                 "input().split()";
+
         return $@"
 {userCode}
 
 if __name__ == '__main__':
-    {inputVariables} = input().split()
+    {inputVariables} = {conversionLogic}
     print({functionName}({inputVariables}))
 ";
     }
+
+
+    //    private string WrapPythonCode(string userCode, List<string> inputs)
+    //    {
+    //        string functionName = ExtractFunctionName(userCode);
+    //        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
+    //        return $@"
+    //{userCode}
+
+    //if __name__ == '__main__':
+    //    {inputVariables} = input().split()
+    //    print({functionName}({inputVariables}))
+    //";
+    //    }
 
     private string WrapJavaScriptCode(string userCode, List<string> inputs)
     {

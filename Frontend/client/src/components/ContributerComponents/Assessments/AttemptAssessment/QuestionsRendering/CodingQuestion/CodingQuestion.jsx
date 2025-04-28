@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { FilterableDropdown } from "../../../../../../componentsLoader/ComponentsLoader";
+import { executeCode } from "../../../../../../APIs/ApisHandaler";
+import Swal from "sweetalert2";
 
 export default function CodingQuestion({
   darkMode,
@@ -12,6 +13,14 @@ export default function CodingQuestion({
   const [code, setCode] = useState("def solution():\n\n pass");
   const [isCodeEditting, setIsCodeEditting] = useState(true);
   const [language, setLanguage] = useState("python");
+  const [isRunning, setIsRunning] = useState(false);
+  const [testResults, setTestResults] = useState([]);
+  
+  const languageIds = {
+    python: 71,
+    javascript: 63
+  };
+
   const items = [
     { name: "Python", value: "python" },
     { name: "JavaScript", value: "javascript" },
@@ -22,9 +31,59 @@ export default function CodingQuestion({
     setCode(newValue);
   }
 
-  function handleSaveCode() {
-    addQuestionAnswer(code, question.id);
-    setIsCodeEditting(false);
+  async function handleRunAndSave() {
+    if (!code.trim()) {
+      Swal.fire("Error", "Please write some code before running", "error");
+      return;
+    }
+
+    setIsRunning(true);
+    try {
+      // Extract numeric ID from question.id (remove "Id" prefix if present)
+      const questionId = question.id.replace(/^Id/, '');
+      
+      // Execute the code
+      const response = await executeCode(
+        questionId,  // Use the cleaned ID
+        code, 
+        languageIds[language]
+      );
+      
+      const results = response.data;
+      setTestResults(results);
+      
+      // Rest of the function remains the same...
+      const allPassed = results.every(
+        test => test.actualOutput === test.expectedOutput && !test.error
+      );
+      
+      if (allPassed) {
+        Swal.fire("Success", "All test cases passed!", "success");
+      } else {
+        const passedCount = results.filter(
+          test => test.actualOutput === test.expectedOutput && !test.error
+        ).length;
+        
+        Swal.fire(
+          "Test Results", 
+          `Passed ${passedCount} of ${results.length} test cases`, 
+          passedCount > 0 ? "warning" : "error"
+        );
+      }
+      
+      addQuestionAnswer(code, question.id);
+      setIsCodeEditting(false);
+      
+    } catch (error) {
+      console.error("Error executing code:", error);
+      Swal.fire(
+        "Error", 
+        error.response?.data?.message || "Failed to execute code", 
+        "error"
+      );
+    } finally {
+      setIsRunning(false);
+    }
   }
 
   function handleProgrammingLanguage(e) {
@@ -41,14 +100,14 @@ export default function CodingQuestion({
     }
 
     setCode(code);
+    setIsCodeEditting(true);
   }
 
   useEffect(() => {
-    console.log("Coding Question: ", question);
-    if (userAnswer != "") {
+    if (userAnswer) {
       setCode(userAnswer);
     }
-  }, []);
+  }, [userAnswer]);
 
   return (
     <>
@@ -56,7 +115,7 @@ export default function CodingQuestion({
         <div className="col-4 row border m-0">
           <div className="p-2 col-12">
             <span className="">
-              <strong> Description :</strong>
+              <strong>Description:</strong>
             </span>
             <hr className="mt-0 mb-4" />
             {question.detailes.description
@@ -82,7 +141,7 @@ export default function CodingQuestion({
                             (i === testCase.inputs.length - 1 ? "" : ", ")
                         )}
                       </strong>{" "}
-                      - Expected Output: <strong>{testCase.expectedOutput}</strong>.
+                      - Expected Output: <strong>{testCase.expectedOutput}</strong>
                     </li>
                   );
                 }
@@ -91,9 +150,10 @@ export default function CodingQuestion({
             </ul>
           </div>
         </div>
+        
         <div
           style={{ backgroundColor: darkMode ? "#1E1E1E" : "#FFFF" }}
-          className={`py-3 col-8 border row m-0 `}
+          className={`py-3 col-8 border row m-0`}
         >
           <div className="col-12 col-md-4 m-0">
             <FilterableDropdown
@@ -104,12 +164,13 @@ export default function CodingQuestion({
               noExtraOption={true}
             />
           </div>
+          
           <div className="col-12 my-2">
             <hr className="m-0 my-2" />
             <div>
               <Editor
                 height="400px"
-                language="python"
+                language={language}
                 theme={darkMode ? "vs-dark" : "vs-light"}
                 value={code}
                 onChange={(newValue) => handleCodeUpdate(newValue)}
@@ -124,13 +185,64 @@ export default function CodingQuestion({
               />
             </div>
           </div>
-          <div className="col-12 d-flex justify-content-center p-0">
+          
+          {/* Test Results Section */}
+          {testResults.length > 0 && (
+            <div className="col-12 mt-3">
+              <h5>Test Results:</h5>
+              <div className="table-responsive">
+                <table className={`table ${darkMode ? "table-dark" : ""}`}>
+                  <thead>
+                    <tr>
+                      <th>Input</th>
+                      <th>Expected</th>
+                      <th>Your Output</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {testResults.map((test, index) => (
+                      <tr key={index}>
+                        <td>{test.inputs.join(", ")}</td>
+                        <td>{test.expectedOutput}</td>
+                        <td>
+                          {test.error ? (
+                            <span className="text-danger">{test.error}</span>
+                          ) : (
+                            test.actualOutput
+                          )}
+                        </td>
+                        <td>
+                          {test.error ? (
+                            <span className="text-danger">❌ Error</span>
+                          ) : test.actualOutput === test.expectedOutput ? (
+                            <span className="text-success">✓ Passed</span>
+                          ) : (
+                            <span className="text-warning">✗ Failed</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          
+          <div className="col-12 d-flex justify-content-center p-0 mt-3">
             <button
-              onClick={() => handleSaveCode()}
+              onClick={handleRunAndSave}
               className="btn btn-success"
-              disabled={!isCodeEditting}
+              disabled={isRunning}
             >
-              Run & Save
+              {isRunning ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Running...
+                </>
+              ) : (
+                "Run & Save"
+              )}
             </button>
           </div>
         </div>

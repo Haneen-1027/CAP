@@ -43,7 +43,7 @@ export default function FilterableDropdown({
       </select>{" "}
       <label
         style={{ color: `${darkMode ? "#ccc" : ""}` }}
-        for="floatingSelectGrid"
+        htmlFor="floatingSelectGrid"
       >
         {filterType ? filterType : "Select Option"}
       </label>

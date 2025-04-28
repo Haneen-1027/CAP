@@ -1,32 +1,63 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CodingQuestion,
   MultipleChoiceQuestion,
 } from "../../../../componentsLoader/ComponentsLoader";
 
-export default function AssessmentQuestions({
+const AssessmentQuestions = ({
   user,
   darkMode,
   assessment,
-  questions,
-}) {
+  questions
+}) => {
+  const navigate = useNavigate();
   const [assessmentAttempt, setAssessmentAttempt] = useState({
     contributor_id: user.id,
     assessment_id: assessment.id,
     Answers: [],
     submitted: false,
-    started_time: new Date().toISOString(), // Set current time as started time
+    started_time: new Date().toISOString(),
     submitted_time: "",
   });
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [timeExpired, setTimeExpired] = useState(false);
 
-  function handleAttemptAttributes(e) {
+  // Calculate end time based on assessment duration
+  const calculateEndTime = () => {
+    const [hours, minutes] = assessment.duration.split(':');
+    const durationInMs = (parseInt(hours) * 60 * 60 + parseInt(minutes) * 60) * 1000;
+    return new Date(new Date(assessmentAttempt.started_time).getTime() + durationInMs);
+  };
+
+  // Check if time has expired
+  useEffect(() => {
+    const endTime = calculateEndTime();
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      if (now >= endTime) {
+        setTimeExpired(true);
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [assessmentAttempt.started_time, assessment.duration]);
+
+  // Handle time expiration
+  useEffect(() => {
+    if (timeExpired) {
+      handleSubmitAssessment();
+    }
+  }, [timeExpired]);
+
+  const handleAttemptAttributes = (e) => {
     const { name, value } = e.target;
     setAssessmentAttempt((prevAttempt) => ({ ...prevAttempt, [name]: value }));
-  }
+  };
 
-  function addQuestionAnswer(answer, question_id) {
+  const addQuestionAnswer = (answer, question_id) => {
     let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
     const index = updatedQuestionsAnswers.findIndex(
       (answer) => answer.question_id === question_id
@@ -46,7 +77,7 @@ export default function AssessmentQuestions({
       ...prevAttempt,
       Answers: updatedQuestionsAnswers,
     }));
-  }
+  };
 
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
@@ -63,11 +94,26 @@ export default function AssessmentQuestions({
   const handleSubmitAssessment = () => {
     const finalAttempt = {
       ...assessmentAttempt,
+      assessment_id: parseInt(assessment.id.replace('Ass-', '')),
+      Answers: assessmentAttempt.Answers.map(answer => ({
+        ...answer,
+        question_id: parseInt(answer.question_id.replace('Id', ''))
+      })),
       submitted: true,
       submitted_time: new Date().toISOString()
     };
+    
     console.log("Submitted! ", finalAttempt);
-    // Here we send the attempt to backend API
+    // Here we would send the attempt to backend API
+    
+    // Redirect to main assessment page with success message
+    navigate('/', { 
+      state: { 
+        message: timeExpired 
+          ? "Time has expired! Your assessment has been automatically submitted." 
+          : "Assessment submitted successfully!" 
+      } 
+    });
   };
 
   useEffect(() => {
@@ -84,6 +130,12 @@ export default function AssessmentQuestions({
 
   return (
     <>
+      {timeExpired && (
+        <div className="alert alert-warning text-center">
+          Time has expired! Your assessment is being submitted...
+        </div>
+      )}
+      
       <div className={`card ${darkMode ? "spic-dark-mode border-light" : ""}`}>
         <div
           className={`px-2 py-3 card-header d-flex flex-column flex-md-row gap-4 align-md-center ${
@@ -155,6 +207,7 @@ export default function AssessmentQuestions({
               style={{ width: "6rem" }}
               className="btn btn-success"
               onClick={handleSubmitAssessment}
+              disabled={timeExpired}
             >
               Submit
             </button>
@@ -163,6 +216,7 @@ export default function AssessmentQuestions({
               style={{ width: "6rem" }}
               className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
               onClick={handleNext}
+              disabled={timeExpired}
             >
               Next
             </button>
@@ -171,4 +225,6 @@ export default function AssessmentQuestions({
       </div>
     </>
   );
-}
+};
+
+export default AssessmentQuestions;
