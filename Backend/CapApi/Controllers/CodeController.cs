@@ -4,14 +4,15 @@ using CapApi.Data;
 using CapApi.Dtos.Code;
 using CapApi.Services.Judge0;
 using Microsoft.AspNetCore.Cors;
+using System.Text.RegularExpressions;
+using System.Linq;
+using CapApi.Models;
 
 namespace CapApi.Controllers;
 
 [ApiController]
-//[Authorize(Roles = "Admin")]
 [Route("[controller]")]
 [EnableCors("AllowOrigin")]
-
 public class CodeController : ControllerBase
 {
     private readonly Judge0Service _judge0Service;
@@ -22,43 +23,6 @@ public class CodeController : ControllerBase
         _judge0Service = judge0Service;
         _context = context;
     }
-
-
-    //[HttpPost("execute/{questionId}")]
-    //public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
-    //{
-    //    var codingQuestion = await _context.CodingQuestions
-    //        .Include(q => q.TestCases)
-    //        .FirstOrDefaultAsync(q => q.QuestionId == questionId);
-
-    //    if (codingQuestion is null)
-    //    {
-    //        return NotFound(new { message = "Question not found" });
-    //    }
-
-    //    var testResults = new List<TestCaseResultDto>();
-
-    //    foreach (var testCase in codingQuestion.TestCases)
-    //    {
-    //        string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId);
-
-    //        //var result = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, string.Join(" ", testCase.Inputs));
-    //        var (output, error) =
-    //            await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
-    //                string.Join(" ", testCase.Inputs)); // Compare the actual output with the expected output
-    //        testResults.Add(new TestCaseResultDto
-    //        {
-    //            Inputs = testCase.Inputs,
-    //            ExpectedOutput = testCase.ExpectedOutput,
-    //            ActualOutput = output,
-    //            Error = error
-    //        });
-    //    }
-
-    //    return Ok(testResults);
-    //}
-
-
 
     [HttpPost("execute/{questionId}")]
     public async Task<IActionResult> ExecuteCode(int questionId, [FromBody] CodeExecutionDto dto)
@@ -76,14 +40,26 @@ public class CodeController : ControllerBase
 
         foreach (var testCase in codingQuestion.TestCases)
         {
-            // Infer input type from the expected output
             Type inputType = InferInputType(testCase.ExpectedOutput);
+            string stdinInput;
 
-            string wrappedCode = WrapUserCode(dto!.SourceCode, testCase!.Inputs, dto.LanguageId, inputType);
+            // Handle input formatting based on type
+            if (inputType == typeof(int))
+            {
+                stdinInput = string.Join(" ", testCase.Inputs.Select(i => int.Parse(i).ToString()));
+            }
+            else if (inputType == typeof(double))
+            {
+                stdinInput = string.Join(" ", testCase.Inputs.Select(i => double.Parse(i).ToString()));
+            }
+            else // string
+            {
+                // If single string, pass directly; else join with spaces
+                stdinInput = testCase.Inputs.Count == 1 ? testCase.Inputs[0] : string.Join(" ", testCase.Inputs);
+            }
 
-            var (output, error) =
-                await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId,
-                    string.Join(" ", testCase.Inputs));
+            string wrappedCode = WrapUserCode(dto!.SourceCode, testCase.Inputs, dto.LanguageId, inputType);
+            var (output, error) = await _judge0Service.SubmitCodeAsync(wrappedCode, dto.LanguageId, stdinInput);
 
             testResults.Add(new TestCaseResultDto
             {
@@ -96,21 +72,6 @@ public class CodeController : ControllerBase
 
         return Ok(testResults);
     }
-    //private string WrapUserCode(string userCode, List<string> inputs, int languageId)
-    //{
-    //    switch (languageId)
-    //    {
-    //        case 71: // Python
-    //            return WrapPythonCode(userCode, inputs);
-
-    //        case 63: // JavaScript (Node.js)
-    //            Console.WriteLine(WrapJavaScriptCode(userCode, inputs));
-    //            return WrapJavaScriptCode(userCode, inputs);
-
-    //        default:
-    //            throw new NotSupportedException("Language not supported");
-    //    }
-    //}
 
     private string WrapUserCode(string userCode, List<string> inputs, int languageId, Type inputType)
     {
@@ -118,25 +79,64 @@ public class CodeController : ControllerBase
         {
             case 71: // Python
                 return WrapPythonCode(userCode, inputs, inputType);
-
-            //case 63: // JavaScript (Node.js)
-            //    return WrapJavaScriptCode(userCode, inputs, inputType);
-
+            case 63: // JavaScript (Node.js)
+                return WrapJavaScriptCode(userCode, inputs, inputType);
             default:
                 throw new NotSupportedException("Language not supported");
         }
     }
-
-    private string ExtractTypeHints(string userCode)
+    
+    private string WrapJavaScriptCode(string userCode, List<string> inputs, Type inputType)
     {
-        var match = System.Text.RegularExpressions.Regex.Match(userCode, @"def\s+\w+\s*\(([^)]+)\)");
-        if (match.Success)
+        string functionName = ExtractFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
+
+        // Add type conversion for numbers
+        string conversion = "";
+        if (inputType == typeof(int) || inputType == typeof(double))
         {
-            string parameters = match.Groups[1].Value;
-            // Example: Parse "a: int, b: float" to determine types
-            return parameters; // Further processing needed
+            conversion = $".map(x => Number(x))"; // Convert inputs to numbers
         }
-        return null;
+
+        return $@"
+{userCode}
+
+const [{inputVariables}] = require('fs').readFileSync(0, 'utf-8').trim().split(/\s+/){conversion};
+console.log({functionName}({inputVariables}));
+";
+    }
+    
+    
+
+    private string WrapPythonCode(string userCode, List<string> inputs, Type inputType)
+    {
+        string functionName = ExtractFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
+
+        // If single string input, pass directly (no splitting)
+        if (inputType == typeof(string) && inputs.Count == 1)
+        {
+            return $@"
+{userCode}
+
+if __name__ == '__main__':
+    a = input()  # Takes full input as a string
+    print({functionName}(a))
+";
+        }
+
+        // Handle numbers/lists
+        string conversionLogic = inputType == typeof(int) ? "map(int, input().split())" :
+                               inputType == typeof(double) ? "map(float, input().split())" :
+                               "input().split()";
+
+        return $@"
+{userCode}
+
+if __name__ == '__main__':
+    {inputVariables} = {conversionLogic}
+    print({functionName}({inputVariables}))
+";
     }
 
     private Type InferInputType(string expectedOutput)
@@ -154,89 +154,17 @@ public class CodeController : ControllerBase
             return typeof(string);
         }
     }
-    private string WrapPythonCode(string userCode, List<string> inputs, Type inputType)
-    {
-        string functionName = ExtractFunctionName(userCode);
-        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
-
-        string conversionLogic = inputType == typeof(int) ? "map(int, input().split())" :
-                                 inputType == typeof(double) ? "map(float, input().split())" :
-                                 "input().split()";
-
-        return $@"
-{userCode}
-
-if __name__ == '__main__':
-    {inputVariables} = {conversionLogic}
-    print({functionName}({inputVariables}))
-";
-    }
-
-
-    //    private string WrapPythonCode(string userCode, List<string> inputs)
-    //    {
-    //        string functionName = ExtractFunctionName(userCode);
-    //        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
-    //        return $@"
-    //{userCode}
-
-    //if __name__ == '__main__':
-    //    {inputVariables} = input().split()
-    //    print({functionName}({inputVariables}))
-    //";
-    //    }
-
-    private string WrapJavaScriptCode(string userCode, List<string> inputs)
-    {
-        string functionName = ExtractFunctionName(userCode);
-        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"input{i + 1}"));
-
-        return $@"
-{userCode}
-
-// Read input from stdin
-let input = '';
-process.stdin.on('data', (chunk) => {{
-    input += chunk;
-}});
-
-process.stdin.on('end', () => {{
-    const [{inputVariables}] = input.trim().split(' ');
-    console.log({functionName}({inputVariables}));
-}});
-";
-    }
 
     private string ExtractFunctionName(string userCode)
     {
-        // Try to extract Python function name
+        // Python: def myFunc(...)
         var pythonMatch = System.Text.RegularExpressions.Regex.Match(userCode, @"def\s+(\w+)\s*\(");
-        if (pythonMatch.Success)
-        {
-            return pythonMatch.Groups[1].Value;
-        }
+        if (pythonMatch.Success) return pythonMatch.Groups[1].Value;
 
-        // Try to extract JavaScript function name
-        var jsMatch = System.Text.RegularExpressions.Regex.Match(userCode, @"function\s+(\w+)\s*\(");
-        if (jsMatch.Success)
-        {
-            return jsMatch.Groups[1].Value;
-        }
+        // JavaScript: function myFunc(...) or const myFunc = (...)
+        var jsMatch = System.Text.RegularExpressions.Regex.Match(userCode, @"(?:function|const|let|var)\s+(\w+)\s*[=(]");
+        if (jsMatch.Success) return jsMatch.Groups[1].Value;
 
-        throw new ArgumentException("Function definition not found in the user's code.");
-    }
-
-    private string GenerateInputHandling(int inputCount, string functionName)
-    {
-        // Generate input variables (e.g., "s1, s2" for 2 inputs)
-        string inputVariables = string.Join(", ", Enumerable.Range(0, inputCount).Select(i => $"s{i + 1}"));
-
-        // Generate the input handling logic
-
-        return $@"
-if __name__ == '__main__':
-    {inputVariables} = input().split()
-    print({functionName}({inputVariables}))
-";
+        throw new ArgumentException("Function definition not found in the code.");
     }
 }
