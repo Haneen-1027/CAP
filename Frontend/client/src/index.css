@@ -115,7 +115,6 @@ canvas {
   max-height: inherit;
 }
 
-/* Ensure these rules have higher specificity */
 .form-input,
 textarea {
   border-radius: 5px;
@@ -127,11 +126,14 @@ textarea {
   outline: 1px solid var(--footer-bg) !important;
 }
 
-/* If you have other specific input classes, add them as well */
 input:focus,
 textarea:focus {
   border-color: var(--footer-bg) !important;
   outline: 1px solid var(--footer-bg) !important; /* Remove default outline */
+}
+
+input:-webkit-autofill {
+  background-color: #202d36 !important;
 }
 
 /* Shadow Section */

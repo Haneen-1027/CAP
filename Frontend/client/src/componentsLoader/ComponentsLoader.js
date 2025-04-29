@@ -125,6 +125,9 @@ export const PreviewUsers = lazy(() =>
 export const AddUser = lazy(() =>
   import("../components/AdminComponents/Users/UsersComponents/AddUser.jsx")
 );
+export const PreviewUser = lazy(() =>
+  import("../components/AdminComponents/Users/UsersComponents/UserProfile.jsx")
+);
 ///////////////////////////////////////////////////////////
 //// Company Page Components:
 export const CompDashboard = lazy(() =>
