@@ -295,7 +295,12 @@ export default function AddUser({ darkMode }) {
                   value={user.dateOfBirth}
                   onChange={handleChanges}
                 />
-                <label htmlFor="dateOfBirth">Birth Date</label>
+                <label
+                  style={{ color: `${darkMode ? "#ccc" : ""}` }}
+                  htmlFor="dateOfBirth"
+                >
+                  Birth Date
+                </label>
                 {errors.dateOfBirth && (
                   <div className="invalid-feedback">{errors.dateOfBirth}</div>
                 )}

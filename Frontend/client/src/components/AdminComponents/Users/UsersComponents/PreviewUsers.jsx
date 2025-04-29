@@ -13,12 +13,13 @@ export default function PreviewUsers({ darkMode }) {
     key: null,
     direction: "ascending",
   });
-
-  const [visibleList, setVisibleList] = useState([]);
-  const [noResults, setNoResults] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [roleFilter, setRoleFilter] = useState(-999);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(false);
-  // Error messages
+  const [countPerPage, setCountPerPage] = useState(25);
+  const [pageNo, setPageNo] = useState(1);
+
   const apiErrorMessage = (
     <div className="w-100 h-100 d-flex flex-column align-items-center">
       <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
@@ -29,6 +30,7 @@ export default function PreviewUsers({ darkMode }) {
       </div>
     </div>
   );
+
   const loadingMessage = (
     <div className="d-flex justify-content-center align-items-center my-4">
       <div className="spinner-border text-success" role="status">
@@ -37,35 +39,100 @@ export default function PreviewUsers({ darkMode }) {
     </div>
   );
 
-  // Pagination
-  const countPerPageValues = [10, 15, 25, 50, 75, 100];
-  const [countPerPage, setCountPerPage] = useState(25);
-  const [pageNo, setPageNo] = useState(1);
-  const [usersCount, setUsersCount] = useState(0);
-
-  // Searching
-  const [searchValue, setSearchValue] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-
-  // Filtiration
   const roles = [
     { name: "All", value: -999 },
     { name: "Admin", value: "Admin" },
     { name: "Company", value: "Company" },
     { name: "Contributor", value: "Contributor" },
   ];
-  const [roleFiltiration, setRoleFiltiration] = useState(-999);
-  const [timeFilteration, setTimeFilteration] = useState({
-    start_date: "2024-01-01",
-    end_date: "2025-12-08",
-  });
 
-  ///////////////////////// Functions ///////////////////////////////////////////////////////////////////////////
-  // Render users
+  const countPerPageValues = [10, 15, 25, 50, 75, 100];
+
+  const handleCountPerPageMenu = (e) => {
+    setCountPerPage(Number(e.target.value));
+  };
+
+  // Fetch users on mount
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        setIsLoading(true);
+        const response = await getUsers();
+        setUsers(response.data || []);
+      } catch (err) {
+        console.error("Fetching users failed", err);
+        setApiError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchUsers();
+  }, []);
+
+  // Apply Search -> Filter -> Sort
+  const finalUsers = useMemo(() => {
+    let filteredUsers = [...users];
+
+    // Search
+    if (searchValue.trim() !== "") {
+      filteredUsers = filteredUsers.filter(
+        (user) =>
+          (user.firstName + " " + user.lastName)
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          user.username.toLowerCase().includes(searchValue.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    // Role Filter
+    if (roleFilter !== -999) {
+      filteredUsers = filteredUsers.filter((user) => user.role === roleFilter);
+    }
+
+    // Sort
+    if (sortConfig.key) {
+      filteredUsers.sort((a, b) => {
+        let aKey = a[sortConfig.key];
+        let bKey = b[sortConfig.key];
+
+        if (sortConfig.key === "createdAt") {
+          aKey = new Date(aKey);
+          bKey = new Date(bKey);
+        } else {
+          aKey = (aKey || "").toString().toLowerCase();
+          bKey = (bKey || "").toString().toLowerCase();
+        }
+
+        if (aKey < bKey) return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aKey > bKey) return sortConfig.direction === "ascending" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return filteredUsers;
+  }, [users, searchValue, roleFilter, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleSearchValue = (value) => {
+    setSearchValue(value);
+  };
+
+  const handleRoleFilter = (e) => {
+    setRoleFilter(e.target.value);
+  };
+
   function renderUsers() {
-    return sortedUsers.map((user, index) => (
-      <tr key={index}>
-        <td>{index < 9 ? "0" + (index + 1) : index + 1}.</td>
+    return finalUsers.map((user, index) => (
+      <tr key={user.id || index}>
+        <td>{index + 1}.</td>
         <td className="text-start">{user.firstName + " " + user.lastName}</td>
         <td className="text-start">{user.username}</td>
         <td className="text-start">{user.email}</td>
@@ -76,13 +143,10 @@ export default function PreviewUsers({ darkMode }) {
         >
           {user.role}
         </td>
-        <td className="text-start">{user.createdAt.split("T")[0]}</td>
+        <td className="text-start">{user.createdAt?.split("T")[0]}</td>
         <td>
           <div className="d-flex gap-2 justify-content-center">
-            <Link
-              className="btn btn-sm btn-success"
-              title="Invite Contributors"
-            >
+            <Link className="btn btn-sm btn-success" title="View">
               <i className="fas fa-eye"></i>
             </Link>
             <Link className="btn btn-sm btn-outline-success" title="Edit">
@@ -100,195 +164,156 @@ export default function PreviewUsers({ darkMode }) {
       </tr>
     ));
   }
-  // Sort function
-  const sortedUsers = useMemo(() => {
-    let sortableUsers = [...visibleList];
-    if (sortConfig.key) {
-      sortableUsers.sort((a, b) => {
-        let aKey = a[sortConfig.key];
-        let bKey = b[sortConfig.key];
 
-        // Handle date parsing for createdAt
-        if (sortConfig.key === "createdAt") {
-          aKey = new Date(aKey);
-          bKey = new Date(bKey);
-        } else {
-          aKey = aKey.toString().toLowerCase();
-          bKey = bKey.toString().toLowerCase();
-        }
+  if (isLoading) return loadingMessage;
+  if (apiError) return apiErrorMessage;
 
-        if (aKey < bKey) return sortConfig.direction === "ascending" ? -1 : 1;
-        if (aKey > bKey) return sortConfig.direction === "ascending" ? 1 : -1;
-        return 0;
-      });
-    }
-    return sortableUsers;
-  }, [users, sortConfig]);
+  return (
+    <div className={`card ${darkMode ? "spic-dark-mode" : ""}`}>
+      <div
+        className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
+          darkMode ? "spic-dark-mode" : ""
+        }`}
+      >
+        <h5 className="text-center mb-0">
+          <strong>Users:</strong>
+        </h5>
+        <Link
+          to="/admin/users/add_user"
+          className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
+            darkMode ? "spic-dark-mode" : ""
+          }`}
+        >
+          <i className="fas fa-plus me-2"></i>
+          Add New User
+        </Link>
+      </div>
 
-  // Toggole sort
-  const requestSort = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-    setSortConfig({ key, direction });
-  };
-
-  /** Pagination Functions */
-  const handleCountPerPageMenu = (e) => {
-    setCountPerPage(Number(e.target.value));
-  };
-
-  /** Searching Functions */
-  const handleSearchValue = (value) => {
-    if (value.trim() === "") {
-      setSearchResults([]);
-      setSearchValue(value);
-    } else {
-      setSearchValue(value);
-    }
-  };
-
-  /** Filtiration Functions */
-  function handleRole(e) {
-    setRoleFiltiration(e.target.value);
-  }
-  const handleDateFilter = (e) => {
-    const { name, value } = e.target;
-    setTimeFilteration((prevFilter) => ({ ...prevFilter, [name]: value }));
-  };
-
-  /** Delete Function */
-  //////////////////////// use Effects ///////////////////////////////////////////////////////////////////
-  // Fetch questionsIds from API on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true);
-        setApiError(false);
-        const response = await getUsers();
-        setUsers(response.data);
-        setVisibleList(response.data);
-        setUsersCount(response.data.length);
-      } catch (error) {
-        console.error("Error fetching questionsIds:", error);
-        setApiError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Track and debug states
-  useEffect(() => {
-    console.log("Users List: ", users);
-  }, [users]);
-
-  ///// Returns: ////////////////////////////////////////////////////////////////////////////
-
-  if (isLoading) {
-    return loadingMessage;
-  } else if (apiError) {
-    return apiErrorMessage;
-  } else {
-    return (
-      <>
-        <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
-          {/** Primary Header ( Title + Additional Link ) */}
-          <div
-            className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
-              darkMode ? " spic-dark-mode" : ""
-            }`}
-          >
-            <h5 className="text-center mb-0">
-              <strong>Users:</strong>
-            </h5>
-            <Link
-              to="/admin/users/add_user"
-              type="button"
-              className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
-                darkMode ? " spic-dark-mode" : ""
-              }`}
-            >
-              <i className="fas fa-plus me-2"></i>
-              Add New User
-            </Link>
+      <div
+        className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
+          darkMode ? "spic-dark-mode" : ""
+        }`}
+      >
+        <div className="col-12 col-md-6">
+          <SearchBar
+            darkMode={darkMode}
+            handleSearchValue={handleSearchValue}
+          />
+        </div>
+        <div className="col-12 col-md-4 row justify-content-between p-0">
+          <div className="col-12 col-md-5 p-0">
+            <div className="form-floating" style={{ width: "100%" }}>
+              {" "}
+              <select
+                className={`form-select ${
+                  darkMode ? " spic-dark-mode" : ""
+                } w-100`}
+                value={countPerPage}
+                style={{ width: "100%" }}
+                onChange={handleCountPerPageMenu}
+              >
+                {countPerPageValues.map((value, index) => (
+                  <option key={index} className="dropdown-item" value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>{" "}
+              <label
+                style={{ color: `${darkMode ? "#ccc" : ""}` }}
+                htmlFor="floatingSelectGrid"
+              >
+                Users per Page:{" "}
+              </label>
+            </div>
           </div>
-          {/** Search + Filtiration System */}
-          <div
-            className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
-              darkMode ? " spic-dark-mode" : ""
-            }`}
-          ></div>
-          {/** Pagination */}
-          <div
-            className={`card-header d-flex flex-column flex-md-row justify-content-between align-items-center ${
-              darkMode ? " spic-dark-mode" : ""
-            }`}
-          ></div>
-          {/** Users Table */}
-          <div className="table-responsive text-nowrap">
-            <table
-              className={`table ${
-                darkMode ? "table-dark " : "table-light"
-              } m-0`}
-            >
-              <thead>
-                <tr>
-                  <th>#.</th>
-                  <th className="text-start">Name</th>
-                  <th className="text-start">Username</th>
-                  <th className="text-start">Email</th>
-                  <th
-                    className="text-start"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => requestSort("role")}
-                  >
-                    Role{" "}
-                    {sortConfig.key === "role" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <i className="fa-solid fa-sort-up" />
-                      ) : (
-                        <i className="fa-solid fa-sort-down" />
-                      )
-                    ) : (
-                      <i className="fa-solid fa-sort" />
-                    )}
-                  </th>
-                  <th
-                    className="text-start"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => requestSort("createdAt")}
-                  >
-                    Joining At{" "}
-                    {sortConfig.key === "createdAt" ? (
-                      sortConfig.direction === "ascending" ? (
-                        <i className="fa-solid fa-sort-up" />
-                      ) : (
-                        <i className="fa-solid fa-sort-down" />
-                      )
-                    ) : (
-                      <i className="fa-solid fa-sort" />
-                    )}
-                  </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(users) && users.length > 0 ? (
-                  renderUsers()
-                ) : noResults ? (
-                  <div>There are no Users yet!</div>
-                ) : (
-                  ""
-                )}
-              </tbody>
-            </table>
+          <div className="col-12 col-md-5 p-0">
+            <FilterableDropdown
+              darkMode={darkMode}
+              items={roles}
+              name={"role"}
+              filterType={"Select Role:"}
+              handleFunction={handleRoleFilter}
+              selectedValue={roleFilter}
+            />
           </div>
         </div>
-      </>
-    );
-  }
+      </div>
+      <div className="my-4 d-flex justify-content-center">
+        <PaginationNav
+          darkMode={darkMode}
+          counts={users.length}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          countPerPage={countPerPage}
+        />
+      </div>
+      <div className="table-responsive text-nowrap">
+        <table
+          className={`table ${darkMode ? "table-dark" : "table-light"} m-0`}
+        >
+          <thead>
+            <tr>
+              <th>#.</th>
+              <th className="text-start">Name</th>
+              <th className="text-start">Username</th>
+              <th className="text-start">Email</th>
+              <th
+                className="text-start"
+                style={{ cursor: "pointer" }}
+                onClick={() => requestSort("role")}
+              >
+                Role{" "}
+                {sortConfig.key === "role" ? (
+                  sortConfig.direction === "ascending" ? (
+                    <i className="fa-solid fa-sort-up" />
+                  ) : (
+                    <i className="fa-solid fa-sort-down" />
+                  )
+                ) : (
+                  <i className="fa-solid fa-sort" />
+                )}
+              </th>
+              <th
+                className="text-start"
+                style={{ cursor: "pointer" }}
+                onClick={() => requestSort("createdAt")}
+              >
+                Joining At{" "}
+                {sortConfig.key === "createdAt" ? (
+                  sortConfig.direction === "ascending" ? (
+                    <i className="fa-solid fa-sort-up" />
+                  ) : (
+                    <i className="fa-solid fa-sort-down" />
+                  )
+                ) : (
+                  <i className="fa-solid fa-sort" />
+                )}
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {finalUsers.length > 0 ? (
+              renderUsers()
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">
+                  No users found!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <div className="my-4 d-flex justify-content-center">
+          <PaginationNav
+            darkMode={darkMode}
+            counts={users.length}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+            countPerPage={countPerPage}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

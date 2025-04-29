@@ -26,9 +26,9 @@ function SearchBarContainer({ darkMode, handleSearchValue, val, placeHolder }) {
             >
               <input
                 onChange={(e) => handleSearchValue(e.target.value)}
-                className={`${
+                className={`form-control ${
                   darkMode ? "spic-dark-mode " : ""
-                } form-control border-0`}
+                }  border-0`}
                 id="floatingInputGroup1"
                 type="search"
                 placeholder={placeHolder ? placeHolder : "Search ..."}
