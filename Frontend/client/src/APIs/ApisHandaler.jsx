@@ -142,6 +142,23 @@ export const executeCode = async (questionId, sourceCode, languageId) => {
     }
   );
 };
+
+/** submision api */
+export const submitAssessment = async (assessmentData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/submissions`, assessmentData, {
+      headers: {
+        'Content-Type': 'application/json',
+        // Add authorization header if needed
+        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('Error submitting assessment:', error);
+    throw error;
+  }
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;
