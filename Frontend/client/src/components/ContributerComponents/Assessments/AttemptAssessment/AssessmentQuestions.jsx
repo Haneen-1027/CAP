@@ -4,6 +4,7 @@ import {
   CodingQuestion,
   MultipleChoiceQuestion,
 } from "../../../../componentsLoader/ComponentsLoader";
+import { submitAssessment } from "../../../../APIs/ApisHandaler";
 
 const AssessmentQuestions = ({
   user,
@@ -13,8 +14,8 @@ const AssessmentQuestions = ({
 }) => {
   const navigate = useNavigate();
   const [assessmentAttempt, setAssessmentAttempt] = useState({
-    contributor_id: user.id,
     assessment_id: assessment.id,
+    user_id: 13, // Static user ID
     Answers: [],
     submitted: false,
     started_time: new Date().toISOString(),
@@ -23,6 +24,8 @@ const AssessmentQuestions = ({
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeExpired, setTimeExpired] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   // Calculate end time based on assessment duration
   const calculateEndTime = () => {
@@ -35,8 +38,7 @@ const AssessmentQuestions = ({
   useEffect(() => {
     const endTime = calculateEndTime();
     const timer = setInterval(() => {
-      const now = new Date().getTime();
-      if (now >= endTime) {
+      if (Date.now() >= endTime) {
         setTimeExpired(true);
         clearInterval(timer);
       }
@@ -51,11 +53,6 @@ const AssessmentQuestions = ({
       handleSubmitAssessment();
     }
   }, [timeExpired]);
-
-  const handleAttemptAttributes = (e) => {
-    const { name, value } = e.target;
-    setAssessmentAttempt((prevAttempt) => ({ ...prevAttempt, [name]: value }));
-  };
 
   const addQuestionAnswer = (answer, question_id) => {
     let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
@@ -91,34 +88,44 @@ const AssessmentQuestions = ({
     }
   };
 
-  const handleSubmitAssessment = () => {
-    const finalAttempt = {
-      ...assessmentAttempt,
-      assessment_id: parseInt(assessment.id.replace('Ass-', '')),
-      Answers: assessmentAttempt.Answers.map(answer => ({
-        ...answer,
-        question_id: parseInt(answer.question_id.replace('Id', ''))
-      })),
-      submitted: true,
-      submitted_time: new Date().toISOString()
-    };
-    
-    console.log("Submitted! ", finalAttempt);
-    // Here we would send the attempt to backend API
-    
-    // Redirect to main assessment page with success message
-    navigate('/', { 
-      state: { 
-        message: timeExpired 
-          ? "Time has expired! Your assessment has been automatically submitted." 
-          : "Assessment submitted successfully!" 
-      } 
-    });
-  };
+  const handleSubmitAssessment = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-  useEffect(() => {
-    console.log("Assessment Attempt: ", assessmentAttempt);
-  }, [assessmentAttempt]);
+    try {
+      const finalAttempt = {
+        assessment_id: parseInt(assessment.id.replace('Ass-', '')),
+        user_id: 13, // Static user ID
+        Answers: assessmentAttempt.Answers.map(answer => ({
+          question_id: parseInt(answer.question_id.toString().replace('Id', '')),
+          contributor_answer: answer.contributor_answer,
+          question_type: answer.question_type
+        })),
+        submitted: true,
+        started_time: assessmentAttempt.started_time,
+        submitted_time: new Date().toISOString()
+      };
+
+      // Submit to backend
+      const response = await submitAssessment(finalAttempt);
+      
+      console.log("Submission successful:", response.data);
+      
+      navigate('/', { 
+        state: { 
+          message: timeExpired 
+            ? "Time has expired! Your assessment has been automatically submitted." 
+            : "Assessment submitted successfully!",
+          success: true
+        } 
+      });
+    } catch (error) {
+      console.error("Submission failed:", error);
+      setSubmitError(error.response?.data?.message || "Failed to submit assessment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const currentQuestion = questions[currentQuestionIndex];
   const currentQuestionId = currentQuestion.id;
@@ -133,6 +140,12 @@ const AssessmentQuestions = ({
       {timeExpired && (
         <div className="alert alert-warning text-center">
           Time has expired! Your assessment is being submitted...
+        </div>
+      )}
+      
+      {submitError && (
+        <div className="alert alert-danger text-center">
+          {submitError}
         </div>
       )}
       
@@ -198,7 +211,7 @@ const AssessmentQuestions = ({
             style={{ width: "6rem" }}
             className={`btn ${darkMode ? "btn-light" : "btn-dark"}`}
             onClick={handlePrevious}
-            disabled={currentQuestionIndex === 0}
+            disabled={currentQuestionIndex === 0 || isSubmitting}
           >
             Previous
           </button>
@@ -207,16 +220,23 @@ const AssessmentQuestions = ({
               style={{ width: "6rem" }}
               className="btn btn-success"
               onClick={handleSubmitAssessment}
-              disabled={timeExpired}
+              disabled={timeExpired || isSubmitting}
             >
-              Submit
+              {isSubmitting ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Submitting...
+                </>
+              ) : (
+                "Submit"
+              )}
             </button>
           ) : (
             <button
               style={{ width: "6rem" }}
               className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
               onClick={handleNext}
-              disabled={timeExpired}
+              disabled={timeExpired || isSubmitting}
             >
               Next
             </button>
