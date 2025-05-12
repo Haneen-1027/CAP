@@ -54,27 +54,56 @@ const AssessmentQuestions = ({
     }
   }, [timeExpired]);
 
-  const addQuestionAnswer = (answer, question_id) => {
-    let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
-    const index = updatedQuestionsAnswers.findIndex(
-      (answer) => answer.question_id === question_id
-    );
+const addQuestionAnswer = (answer, question_id) => {
+  let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
+  const index = updatedQuestionsAnswers.findIndex(
+    (answer) => answer.question_id === question_id
+  );
 
+  const questionType = questions.find(q => q.id === question_id)?.type || 'essay';
+  
+  // For coding questions with test results
+  if (typeof answer === 'object' && answer.code !== undefined) {
+    const { code, passedCount, totalTests } = answer;
+    
+    if (index === -1) {
+      updatedQuestionsAnswers.push({ 
+        question_id, 
+        contributor_answer: code,
+        question_type: questionType,
+        test_pass: passedCount,
+        total_test_case: totalTests
+      });
+    } else {
+      updatedQuestionsAnswers[index] = {
+        ...updatedQuestionsAnswers[index],
+        contributor_answer: code,
+        test_pass: passedCount,
+        total_test_case: totalTests
+      };
+    }
+  } 
+  // For other question types
+  else {
     if (index === -1) {
       updatedQuestionsAnswers.push({ 
         question_id, 
         contributor_answer: answer,
-        question_type: questions.find(q => q.id === question_id)?.type || 'essay'
+        question_type: questionType
       });
     } else {
-      updatedQuestionsAnswers[index].contributor_answer = answer;
+      updatedQuestionsAnswers[index] = {
+        ...updatedQuestionsAnswers[index],
+        contributor_answer: answer
+      };
     }
+  }
 
-    setAssessmentAttempt((prevAttempt) => ({
-      ...prevAttempt,
-      Answers: updatedQuestionsAnswers,
-    }));
-  };
+  setAssessmentAttempt((prevAttempt) => ({
+    ...prevAttempt,
+    Answers: updatedQuestionsAnswers,
+  }));
+};
 
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
@@ -93,20 +122,26 @@ const AssessmentQuestions = ({
     setSubmitError(null);
 
     try {
-      const finalAttempt = {
-        assessment_id: parseInt(assessment.id.replace('Ass-', '')),
-        user_id: 13, // Static user ID
-        Answers: assessmentAttempt.Answers.map(answer => ({
-          question_id: parseInt(answer.question_id.toString().replace('Id', '')),
-          contributor_answer: answer.contributor_answer,
-          question_type: answer.question_type
-        })),
-        submitted: true,
-        started_time: assessmentAttempt.started_time,
-        submitted_time: new Date().toISOString()
-      };
+    const finalAttempt = {
+      assessment_id: parseInt(assessment.id.replace('Ass-', '')),
+      user_id: 13, // Static user ID
+      Answers: assessmentAttempt.Answers.map(answer => ({
+        question_id: parseInt(answer.question_id.toString().replace('Id', '')),
+        contributor_answer: answer.contributor_answer,
+        question_type: answer.question_type,
+        ...(answer.question_type === 'coding' && {
+          test_pass: answer.test_pass || 0,
+          total_test_case: answer.total_test_case || 
+            questions.find(q => q.id === answer.question_id)?.detailes?.testCases?.length || 0
+        })
+      })),
+      submitted: true,
+      started_time: assessmentAttempt.started_time,
+      submitted_time: new Date().toISOString()
+    };
 
       // Submit to backend
+      console.log(finalAttempt)
       const response = await submitAssessment(finalAttempt);
       
       console.log("Submission successful:", response.data);
@@ -184,11 +219,24 @@ const AssessmentQuestions = ({
             />
           ) : currentQuestion.type === "coding" ? (
             <CodingQuestion
-              question={currentQuestion}
-              darkMode={darkMode}
-              addQuestionAnswer={addQuestionAnswer}
-              userAnswer={userAnswer}
-            />
+  question={currentQuestion}
+  darkMode={darkMode}
+  addQuestionAnswer={(result) => {
+    // This will handle both regular answers and coding test results
+    if (typeof result === 'object' && result.code !== undefined) {
+      // Coding question with test results
+      addQuestionAnswer({
+        code: result.code,
+        passedCount: result.passedCount,
+        totalTests: result.totalTests
+      }, currentQuestionId);
+    } else {
+      // Regular answer
+      addQuestionAnswer(result, currentQuestionId);
+    }
+  }}
+  userAnswer={userAnswer}
+/>
           ) : (
             <textarea
               className={`form-control ${darkMode ? "bg-dark text-light" : ""}`}

@@ -20,4 +20,5 @@ public class Submission
     public DateTime StartedAt { get; init; }
     public DateTime SubmittedAt { get; init; }
     
+    public decimal? Mark { get; set; } // Nullable decimal for the mark
 }

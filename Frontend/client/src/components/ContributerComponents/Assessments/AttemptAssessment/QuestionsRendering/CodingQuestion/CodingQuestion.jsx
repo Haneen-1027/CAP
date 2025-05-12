@@ -31,60 +31,60 @@ export default function CodingQuestion({
     setCode(newValue);
   }
 
-  async function handleRunAndSave() {
-    if (!code.trim()) {
-      Swal.fire("Error", "Please write some code before running", "error");
-      return;
-    }
-
-    setIsRunning(true);
-    try {
-      // Extract numeric ID from question.id (remove "Id" prefix if present)
-      const questionId = question.id.replace(/^Id/, '');
-      
-      // Execute the code
-      const response = await executeCode(
-        questionId,  // Use the cleaned ID
-        code, 
-        languageIds[language]
-      );
-      
-      const results = response.data;
-      setTestResults(results);
-      
-      // Rest of the function remains the same...
-      const allPassed = results.every(
-        test => test.actualOutput === test.expectedOutput && !test.error
-      );
-      
-      if (allPassed) {
-        Swal.fire("Success", "All test cases passed!", "success");
-      } else {
-        const passedCount = results.filter(
-          test => test.actualOutput === test.expectedOutput && !test.error
-        ).length;
-        
-        Swal.fire(
-          "Test Results", 
-          `Passed ${passedCount} of ${results.length} test cases`, 
-          passedCount > 0 ? "warning" : "error"
-        );
-      }
-      
-      addQuestionAnswer(code, question.id);
-      setIsCodeEditting(false);
-      
-    } catch (error) {
-      console.error("Error executing code:", error);
-      Swal.fire(
-        "Error", 
-        error.response?.data?.message || "Failed to execute code", 
-        "error"
-      );
-    } finally {
-      setIsRunning(false);
-    }
+async function handleRunAndSave() {
+  if (!code.trim()) {
+    Swal.fire("Error", "Please write some code before running", "error");
+    return;
   }
+
+  setIsRunning(true);
+  try {
+    const questionId = question.id.replace(/^Id/, '');
+    const response = await executeCode(questionId, code, languageIds[language]);
+    const results = response.data;
+    setTestResults(results);
+    
+    // Calculate passed test cases
+    const passedCount = results.filter(
+      test => test.actualOutput === test.expectedOutput && !test.error
+    ).length;
+    const totalTests = results.length;
+    
+    if (passedCount === totalTests) {
+      Swal.fire("Success", "All test cases passed!", "success");
+    } else {
+      Swal.fire(
+        "Test Results", 
+        `Passed ${passedCount} of ${totalTests} test cases`, 
+        passedCount > 0 ? "warning" : "error"
+      );
+    }
+    
+    // Call addQuestionAnswer with the test results
+    addQuestionAnswer({
+      code,
+      passedCount,
+      totalTests
+    });
+    
+  } catch (error) {
+    console.error("Error executing code:", error);
+    Swal.fire(
+      "Error", 
+      error.response?.data?.message || "Failed to execute code", 
+      "error"
+    );
+    
+    // Call addQuestionAnswer with default values if there's an error
+    addQuestionAnswer({
+      code,
+      passedCount: 0,
+      totalTests: question.detailes.testCases.length
+    });
+  } finally {
+    setIsRunning(false);
+  }
+}
 
   function handleProgrammingLanguage(e) {
     const selectedLanguage = e.target.value;
