@@ -146,7 +146,11 @@ export default function PreviewUsers({ darkMode }) {
         <td className="text-start">{user.createdAt?.split("T")[0]}</td>
         <td>
           <div className="d-flex gap-2 justify-content-center">
-            <Link className="btn btn-sm btn-success" title="View">
+            <Link
+              to={`/admin/users/preview_user/${user.id}`}
+              className="btn btn-sm btn-success"
+              title="View"
+            >
               <i className="fas fa-eye"></i>
             </Link>
             <Link className="btn btn-sm btn-outline-success" title="Edit">

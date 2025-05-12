@@ -115,6 +115,13 @@ export const getUsers = async () => {
     },
   });
 };
+export const getUserByID = async (id) => {
+  return await axios.get(`${BASE_URL}/users/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 export const addUser = async (user) => {
   return await axios.post(`${BASE_URL}/users`, user, {
     headers: {

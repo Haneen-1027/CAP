@@ -172,6 +172,12 @@ export const UpdateAssessment = lazy(() =>
     "../components/CompanyComponents/Assessment/UpdateAssessment/UpdateAssessment.jsx"
   )
 );
+//AttemptsPreview
+export const AttemptsPreview = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsPreview.jsx"
+  )
+);
 ///////////////////////////////////////////////////////////
 //// Contributer Page Components:
 export const ContDashboard = lazy(() =>

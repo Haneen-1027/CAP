@@ -4,7 +4,10 @@ import {
   AssessmentsTableHeaders,
   RenderVisibleAssessments,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { getAllAssessments, deleteAssessment as deleteAssessmentAPI } from "../../../../APIs/ApisHandaler";
+import {
+  getAllAssessments,
+  deleteAssessment as deleteAssessmentAPI,
+} from "../../../../APIs/ApisHandaler";
 
 export default function CompAssessment({ user, darkMode }) {
   const [assessments, setAssessments] = useState([]);
@@ -15,7 +18,9 @@ export default function CompAssessment({ user, darkMode }) {
   const [assessmentsListCount, setAssessmentsListCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [curDate, setCurDate] = useState(new Date().toISOString().split("T")[0]);
+  const [curDate, setCurDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [timeFilteration, setTimeFilteration] = useState({
     start_date: "2024-01-01",
     end_date: "2025-12-08",
@@ -71,7 +76,9 @@ export default function CompAssessment({ user, darkMode }) {
   const handleDeleteAssessment = async (id) => {
     try {
       await deleteAssessmentAPI(id);
-      setAssessments(prev => prev.filter(assessment => assessment.id !== id));
+      setAssessments((prev) =>
+        prev.filter((assessment) => assessment.id !== id)
+      );
       console.log("Assessment deleted successfully");
     } catch (error) {
       console.error("Failed to delete assessment:", error);

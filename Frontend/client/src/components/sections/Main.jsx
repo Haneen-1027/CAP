@@ -34,6 +34,8 @@ import {
   InviteContributors,
   AddUser,
   PreviewUsers,
+  PreviewUser,
+  AttemptsPreview,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -401,6 +403,25 @@ function Main({
                 </Suspense>
               }
             />
+            <Route
+              path="/admin/users/preview_user/:id"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <PreviewUser darkMode={darkMode} />
+                </Suspense>
+              }
+            />
           </Route>
         </Route>
         {/* Contributer Page */}
@@ -687,6 +708,23 @@ function Main({
             </Suspense>
           }
         />{" "}
+        {/** Tests */}
+        <Route
+          path="/test"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <AttemptsPreview darkMode={darkMode} />
+            </Suspense>
+          }
+        ></Route>
       </Routes>
     </main>
   );
