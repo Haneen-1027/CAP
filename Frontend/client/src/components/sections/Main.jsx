@@ -36,6 +36,7 @@ import {
   PreviewUsers,
   PreviewUser,
   AttemptsPreview,
+  AttemptDetails,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -710,7 +711,7 @@ function Main({
         />{" "}
         {/** Tests */}
         <Route
-          path="/test"
+          path="/attempts"
           element={
             <Suspense
               fallback={
@@ -722,6 +723,22 @@ function Main({
               }
             >
               <AttemptsPreview darkMode={darkMode} />
+            </Suspense>
+          }
+        ></Route>
+        <Route
+          path="/attempts/details"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <AttemptDetails darkMode={darkMode} />
             </Suspense>
           }
         ></Route>

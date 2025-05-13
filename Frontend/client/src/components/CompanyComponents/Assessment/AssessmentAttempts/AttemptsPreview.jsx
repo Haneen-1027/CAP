@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router";
 import {
   BackBtn,
@@ -8,8 +8,21 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 
 export default function AttemptsPreview({ darkMode }) {
+  // Component States
+  const [attempts, setAttempts] = useState([]);
+
+  // Searching
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   // Filteration
-  const items = [{ name: "Type1", value: 1 }];
+  const items = [
+    { name: "All", value: -999 },
+    { name: "Completed", value: 1 },
+    { name: "In Review", value: 99 },
+    { name: "Not Started", value: -1 },
+  ];
+  const [status, setStatus] = useState(0);
 
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
@@ -40,6 +53,27 @@ export default function AttemptsPreview({ darkMode }) {
       </div>
     </div>
   );
+
+  ////////////////////////
+
+  const handleStatus = (e) => {
+    setStatus(e.target.value);
+  };
+
+  const handleSearchValue = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  // Search => Filteration
+  const visiblList = useMemo(() => {
+    return attempts;
+  }, [attempts, searchValue, status]);
+  // Render Final Attempts List
+  const renderList = () => {
+    return visiblList.map(() => {
+      <div></div>;
+    });
+  };
 
   ////////////////////////
 
@@ -80,10 +114,18 @@ export default function AttemptsPreview({ darkMode }) {
             }`}
           >
             <div className="col-12 col-md-6 col-lg-4">
-              <SearchBar />
+              <SearchBar
+                handleSearchValue={handleSearchValue}
+                val={searchValue}
+              />
             </div>
             <div className="col-12 col-md-3 col-lg-2">
-              <FilterableDropdown items={items} />
+              <FilterableDropdown
+                items={items}
+                handleFunction={handleStatus}
+                selectedValue={status}
+                filterType={"Select Status:"}
+              />
             </div>
           </div>
           <div
@@ -131,7 +173,25 @@ export default function AttemptsPreview({ darkMode }) {
                   <td>14:03 PM</td>
                   <td>15:25 PM</td>
                   <td className="text-success">Completed</td>
-                  <td>1</td>
+                  <td>
+                    <div className="d-flex gap-2 justify-content-center">
+                      <Link
+                        to={"/attempts/details"}
+                        className="btn btn-sm btn-success"
+                        title="Invite Contributors"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </Link>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        title="Delete"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>{" "}
                 </tr>
                 <tr>
                   <td>1</td>
@@ -140,7 +200,24 @@ export default function AttemptsPreview({ darkMode }) {
                   <td>14:03 PM</td>
                   <td>15:25 PM</td>
                   <td style={{ color: "#FFA500" }}>In Review</td>
-                  <td>1</td>
+                  <td>
+                    <div className="d-flex gap-2 justify-content-center">
+                      <Link
+                        className="btn btn-sm btn-success"
+                        title="Invite Contributors"
+                      >
+                        <i className="fas fa-hourglass-start"></i>
+                      </Link>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        title="Delete"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>{" "}
                 </tr>
                 <tr>
                   <td>1</td>
@@ -149,7 +226,24 @@ export default function AttemptsPreview({ darkMode }) {
                   <td>14:03 PM</td>
                   <td>15:25 PM</td>
                   <td style={{ color: "#A0A0A0" }}>Not Started</td>
-                  <td>1</td>
+                  <td>
+                    <div className="d-flex gap-2 justify-content-center">
+                      <Link
+                        className="btn btn-sm btn-success"
+                        title="Invite Contributors"
+                      >
+                        <i className="fas fa-list-check"></i>
+                      </Link>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        title="Delete"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>{" "}
                 </tr>
               </tbody>
             </table>

@@ -5,7 +5,10 @@ import {
   AssessmentQuestions,
   BackBtn,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { getAssessmentById, getQuestionById } from "../../../../APIs/ApisHandaler";
+import {
+  getAssessmentById,
+  getQuestionById,
+} from "../../../../APIs/ApisHandaler";
 
 export default function AttemptAssessment({ user, darkMode }) {
   const { id } = useParams();
@@ -30,7 +33,7 @@ export default function AttemptAssessment({ user, darkMode }) {
       try {
         const response = await getAssessmentById(id);
         const apiData = response.data;
-        
+
         // Fetch details for all questions
         const questionsWithDetails = await Promise.all(
           apiData.questions.map(async (q) => {
@@ -41,11 +44,11 @@ export default function AttemptAssessment({ user, darkMode }) {
               mark: q.mark,
               prompt: q.prompt,
               category: questionDetails?.category || "General",
-              detailes: transformQuestionDetails(questionDetails)
+              detailes: transformQuestionDetails(questionDetails),
             };
           })
         );
-        
+
         const transformedAssessment = {
           id: `Ass-${apiData.id}`,
           createdBy: "unknown",
@@ -56,9 +59,9 @@ export default function AttemptAssessment({ user, darkMode }) {
           end_time: apiData.endTime.substring(0, 5),
           total_mark: apiData.totalMark,
           questions_count: apiData.questionsCount,
-          questions: questionsWithDetails
+          questions: questionsWithDetails,
         };
-        
+
         setAssessment(transformedAssessment);
         checkTimeRange(apiData.time, apiData.startTime, apiData.endTime);
       } catch (err) {
@@ -71,12 +74,12 @@ export default function AttemptAssessment({ user, darkMode }) {
     fetchAssessment();
   }, [id]);
 
-  // Transform question details from API to your component's expected format
+  // Transform question details from API to component's expected format
   const transformQuestionDetails = (questionDetails) => {
     if (!questionDetails || !questionDetails.details) return {};
-    
+
     const details = questionDetails.details;
-    
+
     if (questionDetails.type === "mc") {
       // Handle True/False questions specially
       if (details.isTrueFalse) {
@@ -84,25 +87,27 @@ export default function AttemptAssessment({ user, darkMode }) {
           isTrueFalse: true,
           correctAnswer: details.correctAnswer || [],
           wrongOptions: ["true", "false"].filter(
-            opt => !details.correctAnswer?.includes(opt)
+            (opt) => !details.correctAnswer?.includes(opt)
           ),
-          options_count: 2 // Always 2 for True/False
+          options_count: 2, // Always 2 for True/False
         };
       }
-      
+
       // Regular multiple choice
       return {
         isTrueFalse: false,
         correctAnswer: details.correctAnswer || [],
         wrongOptions: details.wrongOptions || [],
-        options_count: details.optionsCount || 
-          (details.correctAnswer?.length + details.wrongOptions?.length || 0)
+        options_count:
+          details.optionsCount ||
+          details.correctAnswer?.length + details.wrongOptions?.length ||
+          0,
       };
     } else if (questionDetails.type === "coding") {
       return {
         inputsCount: details.inputsCount || 0,
         testCases: details.testCases || [],
-        description: details.description || ""
+        description: details.description || "",
       };
     } else {
       return {};

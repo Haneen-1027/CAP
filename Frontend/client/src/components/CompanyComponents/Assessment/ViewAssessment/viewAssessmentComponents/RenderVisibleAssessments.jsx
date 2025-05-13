@@ -58,10 +58,16 @@ export default function RenderVisibleAssessments({
             <div className="d-flex gap-2 justify-content-center">
               <Link
                 className="btn btn-sm btn-success"
-                to={`/InviteContributors/${assess.id}`}
+                to={
+                  isUpComing ? `/InviteContributors/${assess.id}` : `/attempts`
+                }
                 title="Invite Contributors"
               >
-                <i className="fas fa-user-plus"></i>
+                <i
+                  className={`text-light fas ${
+                    isUpComing ? "fa-user-plus" : "fa-circle-info"
+                  }`}
+                ></i>
               </Link>
               <Link
                 to={`/assessment/${assess.id}`}

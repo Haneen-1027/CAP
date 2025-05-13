@@ -12,7 +12,9 @@ export default function AssessmentDetails({
   const [timeLeft, setTimeLeft] = useState(null);
 
   // Convert assessment times to Date objects
-  const startDateTime = new Date(`${assessment.time}T${assessment.start_time}:00`);
+  const startDateTime = new Date(
+    `${assessment.time}T${assessment.start_time}:00`
+  );
   const endDateTime = new Date(`${assessment.time}T${assessment.end_time}:00`);
 
   // Calculate time left until start or time remaining
@@ -48,18 +50,21 @@ export default function AssessmentDetails({
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
     return [
-      hours.toString().padStart(2, '0'),
-      minutes.toString().padStart(2, '0'),
-      seconds.toString().padStart(2, '0')
-    ].join(':');
+      hours.toString().padStart(2, "0"),
+      minutes.toString().padStart(2, "0"),
+      seconds.toString().padStart(2, "0"),
+    ].join(":");
   };
 
   // Format duration for display (from "01:00:00" to "1 hour")
   const formatDuration = (duration) => {
-    const [hours, minutes] = duration.split(':');
-    if (hours === '00') return `${minutes} minutes`;
-    if (minutes === '00') return `${parseInt(hours)} hour${hours !== '01' ? 's' : ''}`;
-    return `${parseInt(hours)} hour${hours !== '01' ? 's' : ''} ${parseInt(minutes)} minutes`;
+    const [hours, minutes] = duration.split(":");
+    if (hours === "00") return `${minutes} minutes`;
+    if (minutes === "00")
+      return `${parseInt(hours)} hour${hours !== "01" ? "s" : ""}`;
+    return `${parseInt(hours)} hour${hours !== "01" ? "s" : ""} ${parseInt(
+      minutes
+    )} minutes`;
   };
 
   return (
@@ -70,7 +75,11 @@ export default function AssessmentDetails({
         </h4>
       </div>
 
-      <div className={`p-4 card-header ${darkMode ? "spic-dark-mode border-light" : ""}`}>
+      <div
+        className={`p-4 card-header ${
+          darkMode ? "spic-dark-mode border-light" : ""
+        }`}
+      >
         <div className="table-responsive">
           <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
             <thead>
@@ -93,13 +102,20 @@ export default function AssessmentDetails({
                 <td>{assessment.total_mark}</td>
                 <td>{assessment.questions_count}</td>
                 <td>
-                  <span className={`badge ${isWithinRange === "yet" ? "bg-secondary" :
-                      isWithinRange === "now" ? "bg-success" :
-                        "bg-danger"
-                    }`}>
-                    {isWithinRange === "yet" ? "Not Started" :
-                      isWithinRange === "now" ? "Available" :
-                        "Closed"}
+                  <span
+                    className={`badge ${
+                      isWithinRange === "yet"
+                        ? "bg-secondary"
+                        : isWithinRange === "now"
+                        ? "bg-success"
+                        : "bg-danger"
+                    }`}
+                  >
+                    {isWithinRange === "yet"
+                      ? "Not Started"
+                      : isWithinRange === "now"
+                      ? "Available"
+                      : "Closed"}
                   </span>
                 </td>
               </tr>
@@ -129,13 +145,19 @@ export default function AssessmentDetails({
           <button
             onClick={() => setIsStarted(true)}
             disabled={isWithinRange !== "now"}
-            className={`btn btn-lg ${isWithinRange === "now" ? "btn-success" :
-                isWithinRange === "yet" ? "btn-secondary" : "btn-danger"
-              }`}
+            className={`btn btn-lg ${
+              isWithinRange === "now"
+                ? "btn-success"
+                : isWithinRange === "yet"
+                ? "btn-secondary"
+                : "btn-danger"
+            }`}
           >
-            {isWithinRange === "yet" ? "Assessment Not Started Yet" :
-              isWithinRange === "now" ? "Start Assessment Now" :
-                "Assessment Closed"}
+            {isWithinRange === "yet"
+              ? "Assessment Not Started Yet"
+              : isWithinRange === "now"
+              ? "Start Assessment Now"
+              : "Assessment Closed"}
           </button>
         </div>
       </div>
