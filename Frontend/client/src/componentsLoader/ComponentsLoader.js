@@ -184,6 +184,12 @@ export const AttemptDetails = lazy(() =>
     "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/AttemptDetails.jsx"
   )
 );
+//AttemptEvaluation
+export const AttemptEvaluation = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/AttemptEvaluation.jsx"
+  )
+);
 ///////////////////////////////////////////////////////////
 //// Contributer Page Components:
 export const ContDashboard = lazy(() =>

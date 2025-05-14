@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useDarkMode } from "../../Context/DarkMode";
 import { ModeButton } from "../../componentsLoader/ComponentsLoader";
 
-export default function Navbar({ values, userDetailes }) {
+export default function Navbar({ values, userDetailes, logout }) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const { darkMode, toggleDarkMode } = useDarkMode();
   let [clickOnProfile, setClickOnProfile] = useState(false);
@@ -134,11 +134,14 @@ export default function Navbar({ values, userDetailes }) {
                   className={`position-relative nav-item nav-link mt-1 text-truncate `}
                   to={`/profile/${userDetailes.id}`}
                 >
-                  You Profile
+                  My Profile
                 </Link>
                 <a
                   style={{ cursor: "pointer" }}
                   className={`position-relative nav-item nav-link mb-3 text-truncate `}
+                  onClick={() => {
+                    logout();
+                  }}
                 >
                   LogOut
                 </a>

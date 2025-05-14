@@ -32,10 +32,11 @@ export default function Login({
       await loginUser(user.email, user.password)
         .then((response) => {
           // Handle the response data
-          console.log("Resssponse: ", response);
+          console.log("Resssponse From Login: ", response);
           setApiError(false);
           if (response.status === 200) {
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("details", JSON.stringify(response.data.user));
             console.log("Done!");
             setUserData();
           }
@@ -76,7 +77,7 @@ export default function Login({
   /* Validation Function */
   function validateForm() {
     const schema = Joi.object({
-      email: Joi.string().trim().min(2).max(15).required(),
+      email: Joi.string().trim().min(5).max(100).required(),
       password: Joi.string().trim().min(8).required(),
     });
 

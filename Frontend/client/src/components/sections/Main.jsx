@@ -37,6 +37,7 @@ import {
   PreviewUser,
   AttemptsPreview,
   AttemptDetails,
+  AttemptEvaluation,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -181,24 +182,6 @@ function Main({
                 }
               >
                 <LpSignup darkMode={darkMode} />
-              </Suspense>
-            }
-          ></Route>
-
-          {/* User Profile Componenet path: '/profile/:id' */}
-          <Route
-            path="/profile/:id"
-            element={
-              <Suspense
-                fallback={
-                  <div className="center-container">
-                    <div className="spinner-border text-success" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </div>
-                }
-              >
-                <UserProfile userDetailes={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           ></Route>
@@ -710,6 +693,23 @@ function Main({
           }
         />{" "}
         {/** Tests */}
+        {/* User Profile Componenet path: '/profile/:id' */}
+        <Route
+          path="/profile/:id"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <UserProfile userDetailes={userDetailes} darkMode={darkMode} />
+            </Suspense>
+          }
+        ></Route>
         <Route
           path="/attempts"
           element={
@@ -739,6 +739,22 @@ function Main({
               }
             >
               <AttemptDetails darkMode={darkMode} />
+            </Suspense>
+          }
+        ></Route>
+        <Route
+          path="/attempts/details/evaluation"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <AttemptEvaluation darkMode={darkMode} />
             </Suspense>
           }
         ></Route>

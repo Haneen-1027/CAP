@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Navbar } from "../../componentsLoader/ComponentsLoader";
 
-function Header({ darkMode, userDetailes }) {
+function Header({ darkMode, userDetailes, logout }) {
   //NavBars
   const defaultNavBarValues = [
     { id: 1, text: "Home", path: "/home" },
@@ -38,7 +38,7 @@ function Header({ darkMode, userDetailes }) {
   ];
 
   useEffect(() => {
-    console.log("Header.jsx: ", userDetailes.role);
+    console.log("Header.jsx: ", userDetailes?.role);
   }, []);
 
   /////////////////////////
@@ -60,6 +60,7 @@ function Header({ darkMode, userDetailes }) {
         }
         userDetailes={userDetailes}
         darkMode={darkMode}
+        logout={logout}
       />
     </header>
   );

@@ -12,16 +12,17 @@ function App() {
 
   //login user details
   let [userDetailes, setUserDetails] = useState({});
-  /* get user token and decode it */
+
   function setUserData() {
-    let token = localStorage.getItem("token");
-    let decodeData = jwtDecode(token);
-    setUserDetails(decodeData);
+    let detailsString = localStorage.getItem("details");
+    const details = JSON.parse(detailsString);
+    setUserDetails(details);
   }
 
   /* log out: clear toke local storage, clear userDetails. */
   function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("details");
     setUserDetails({});
     navigate({
       pathname: "/Login",
@@ -60,13 +61,16 @@ function App() {
         }
       >
         {/* Header */}
-        <Header userDetailes={userDetailes} darkMode={darkMode} />
+        <Header
+          userDetailes={userDetailes}
+          darkMode={darkMode}
+          logout={logout}
+        />
         {/* Main */}
         <Main
           userDetailes={userDetailes}
           setUserData={setUserData}
           goToPage={goToPage}
-          logout={logout}
           setActiveId={setActiveId}
           darkMode={darkMode}
         />

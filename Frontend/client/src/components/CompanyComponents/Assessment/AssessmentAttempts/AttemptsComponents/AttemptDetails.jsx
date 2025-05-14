@@ -39,16 +39,21 @@ export default function AttemptDetails({ darkMode }) {
             </thead>
             <tbody className="table-border-bottom-0">
               <tr>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
+                <td>@SomeCont</td>
+                <td>Some Contributor</td>
+                <td>136 Min</td>
+                <td>16:01 - 18:17</td>
+                <td>4</td>
               </tr>
             </tbody>
           </table>
           <div className="my-4 d-flex justify-content-center">
-            <Link className="btn btn-success btn-sm">Start Evaluation</Link>
+            <Link
+              to={"/attempts/details/evaluation"}
+              className="btn btn-success btn-sm"
+            >
+              Start Evaluation
+            </Link>
           </div>
         </div>
       </div>
