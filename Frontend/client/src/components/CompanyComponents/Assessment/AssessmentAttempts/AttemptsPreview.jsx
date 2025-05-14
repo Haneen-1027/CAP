@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
 import {
   BackBtn,
   FilterableDropdown,
@@ -7,9 +7,12 @@ import {
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 
+import attempts from "./Attempts.json";
+
 export default function AttemptsPreview({ darkMode }) {
   // Component States
-  const [attempts, setAttempts] = useState([]);
+  // const [attempts, setAttempts] = useState([]);
+  const { assessment_id } = useParams();
 
   // Searching
   const [searchValue, setSearchValue] = useState("");
@@ -70,10 +73,45 @@ export default function AttemptsPreview({ darkMode }) {
   }, [attempts, searchValue, status]);
   // Render Final Attempts List
   const renderList = () => {
-    return visiblList.map(() => {
-      <div></div>;
+    return visiblList.map((attempt, index) => {
+      if (attempt.assessment_id == assessment_id) {
+        return (
+          <tr key={index}>
+            <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
+            <td>@{attempt.username}</td>
+            <td>{attempt.first_name + " " + attempt.last_name}</td>
+            <td>14:03 PM</td>
+            <td>15:25 PM</td>
+            <td className="text-success">Completed</td>
+            <td>
+              <div className="d-flex gap-2 justify-content-center">
+                <Link
+                  to={"/attempts/details"}
+                  className="btn btn-sm btn-success"
+                  title="Invite Contributors"
+                >
+                  <i className="fas fa-edit"></i>
+                </Link>
+
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-danger"
+                  title="Delete"
+                >
+                  <i className="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>{" "}
+          </tr>
+        );
+      }
     });
   };
+
+  ////////////////////////
+  useEffect(() => {
+    console.log("Attempts visible list: ", visiblList);
+  }, [visiblList]);
 
   ////////////////////////
 
@@ -166,6 +204,7 @@ export default function AttemptsPreview({ darkMode }) {
                 </tr>
               </thead>
               <tbody className="table-border-bottom-0">
+                {renderList()}
                 <tr>
                   <td>1</td>
                   <td>@exampleUserName</td>

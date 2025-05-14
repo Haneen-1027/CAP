@@ -11,14 +11,16 @@ export default function AttemptDetails({ darkMode }) {
           darkMode ? " spic-dark-mode" : ""
         }`}
       >
-        <div className="card-header d-flex justify-content-center">
+        <div className="card-header p-3 d-flex justify-content-center">
           <h1 className="h5">
             <strong>Details:</strong>
           </h1>
         </div>
         <div className="table-responsive">
           {" "}
-          <table className="table">
+          <table
+            className={`table ${darkMode ? "table-dark " : "table-light"}`}
+          >
             <thead className={darkMode ? "spic-dark-mode" : "table-light"}>
               <tr>
                 <th className="" title="Contributor's Username">

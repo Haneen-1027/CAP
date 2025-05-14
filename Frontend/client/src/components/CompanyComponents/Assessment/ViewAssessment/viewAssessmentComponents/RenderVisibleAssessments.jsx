@@ -59,7 +59,9 @@ export default function RenderVisibleAssessments({
               <Link
                 className="btn btn-sm btn-success"
                 to={
-                  isUpComing ? `/InviteContributors/${assess.id}` : `/attempts`
+                  isUpComing
+                    ? `/InviteContributors/${assess.id}`
+                    : `/attempts/${assess.id}`
                 }
                 title="Invite Contributors"
               >

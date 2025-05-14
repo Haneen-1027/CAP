@@ -711,7 +711,7 @@ function Main({
           }
         ></Route>
         <Route
-          path="/attempts"
+          path="/attempts/:assessment_id"
           element={
             <Suspense
               fallback={

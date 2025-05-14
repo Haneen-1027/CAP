@@ -115,6 +115,18 @@ canvas {
   max-height: inherit;
 }
 
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  z-index: 99;
+  background-color: var(--bg-dark-color) !important;
+}
+
+.table-responsive {
+  max-height: 15rem !important;
+}
+
 .form-input,
 textarea {
   border-radius: 5px;
