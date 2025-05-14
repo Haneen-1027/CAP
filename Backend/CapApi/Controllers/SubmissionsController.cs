@@ -26,6 +26,69 @@ namespace CapApi.Controllers
             _logger = logger;
         }
 
+ 
+[HttpGet("assessment/{assessmentId}")]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponse>>> GetSubmissionsByAssessment(int assessmentId)
+{
+    try
+    {
+        // Validate assessment exists
+        var assessmentExists = await _context.Assessments.AnyAsync(a => a.Id == assessmentId);
+        if (!assessmentExists)
+        {
+            _logger.LogWarning("Assessment with ID {AssessmentId} not found", assessmentId);
+            return NotFound(new { error = $"Assessment with ID {assessmentId} does not exist" });
+        }
+
+        // First get all assessment questions for this assessment
+        var assessmentQuestions = await _context.AssessmentQuestions
+            .Where(aq => aq.AssessmentId == assessmentId)
+            .ToDictionaryAsync(aq => aq.QuestionId);
+
+        // Get all submissions with related data
+        var submissionsQuery = _context.Submissions
+            .Where(s => s.AssessmentId == assessmentId)
+            .Include(s => s.User)
+            .Include(s => s.Question);
+
+        // Execute the query and do the grouping in memory
+        var submissions = (await submissionsQuery.ToListAsync())
+            .GroupBy(s => s.UserId)
+            .Select(g => new AssessmentSubmissionResponse
+            {
+                UserId = g.Key,
+                UserName = $"{g.First().User?.FirstName ?? ""} {g.First().User?.LastName ?? ""}".Trim(),
+                TotalMarks = (int)g.Sum(s => s.Mark ?? 0),
+                SubmissionCount = g.Count(),
+                LastSubmittedAt = g.Max(s => s.SubmittedAt),
+                Submissions = g.Select(s => new SubmissionDto
+                {
+                    SubmissionId = s.Id,
+                    QuestionId = s.QuestionId,
+                    QuestionText = s.Question?.Prompt ?? "Unknown question",
+                    Answer = s.Answer ?? string.Empty,
+                    Mark = (int)(s.Mark ?? 0),
+                    MaxMark = assessmentQuestions.TryGetValue(s.QuestionId, out var aq) ? (int)aq.Mark : 0,
+                    SubmittedAt = s.SubmittedAt
+                }).ToList()
+            })
+            .ToList();
+
+        _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", 
+            submissions.Count, assessmentId);
+
+        return Ok(submissions);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
+        return StatusCode(StatusCodes.Status500InternalServerError, 
+            new { error = "An error occurred while retrieving submissions" });
+    }
+}        
         /// <summary>
         /// Submits an assessment with all answers
         /// </summary>
