@@ -27,7 +27,7 @@ namespace CapApi.Controllers
         }
 
  
-[HttpGet("assessment/{assessmentId}")]
+ [HttpGet("assessment/{assessmentId}")]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,7 +43,12 @@ public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponse>>> GetSu
             return NotFound(new { error = $"Assessment with ID {assessmentId} does not exist" });
         }
 
-        // First get all assessment questions for this assessment
+        // Get all questions with their MCQ data
+        var questions = await _context.Questions
+            .Include(q => q.McqQuestion)
+            .ToDictionaryAsync(q => q.Id);
+
+        // Get all assessment questions for this assessment
         var assessmentQuestions = await _context.AssessmentQuestions
             .Where(aq => aq.AssessmentId == assessmentId)
             .ToDictionaryAsync(aq => aq.QuestionId);
@@ -60,35 +65,51 @@ public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponse>>> GetSu
             .Select(g => new AssessmentSubmissionResponse
             {
                 UserId = g.Key,
-                UserName = $"{g.First().User?.FirstName ?? ""} {g.First().User?.LastName ?? ""}".Trim(),
+                FirstName = g.First().User?.FirstName ?? "Unknown",
+                LastName = g.First().User?.LastName ?? "User",
                 TotalMarks = (int)g.Sum(s => s.Mark ?? 0),
                 SubmissionCount = g.Count(),
                 LastSubmittedAt = g.Max(s => s.SubmittedAt),
-                Submissions = g.Select(s => new SubmissionDto
+                Submissions = g.Select(s => 
                 {
-                    SubmissionId = s.Id,
-                    QuestionId = s.QuestionId,
-                    QuestionText = s.Question?.Prompt ?? "Unknown question",
-                    Answer = s.Answer ?? string.Empty,
-                    Mark = (int)(s.Mark ?? 0),
-                    MaxMark = assessmentQuestions.TryGetValue(s.QuestionId, out var aq) ? (int)aq.Mark : 0,
-                    SubmittedAt = s.SubmittedAt
+                    var question = questions.GetValueOrDefault(s.QuestionId);
+                    var isMcq = question?.Type?.ToLower() == "mc";
+                    var wrongOptions = new List<string>();
+    
+                    if (isMcq && question?.McqQuestion != null)
+                    {
+                        // For MCQ questions, always show wrong options
+                        wrongOptions = question.McqQuestion.WrongOptions?.ToList() ?? new List<string>();
+                    }
+                    // For non-MCQ questions, wrongOptions remains empty
+
+                    return new SubmissionDto
+                    {
+                        SubmissionId = s.Id,
+                        QuestionId = s.QuestionId,
+                        QuestionText = question?.Prompt ?? "Unknown question",
+                        QuestionType = question?.Type ?? "unknown",
+                        Answer = s.Answer ?? string.Empty,
+                        Mark = (int)(s.Mark ?? 0),
+                        MaxMark = assessmentQuestions.TryGetValue(s.QuestionId, out var aq) ? (int)aq.Mark : 0,
+                        SubmittedAt = s.SubmittedAt,
+                        WrongOptions = wrongOptions
+                    };
                 }).ToList()
             })
             .ToList();
 
-        _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", 
-            submissions.Count, assessmentId);
+        _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", submissions.Count, assessmentId);
 
         return Ok(submissions);
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
+        _logger.LogError(0, ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
         return StatusCode(StatusCodes.Status500InternalServerError, 
             new { error = "An error occurred while retrieving submissions" });
     }
-}        
+}       
         /// <summary>
         /// Submits an assessment with all answers
         /// </summary>
