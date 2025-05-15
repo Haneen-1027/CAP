@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using CapApi.Data;
 using CapApi.Dtos.Question;
 using CapApi.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace CapApi.Services.Question;
 

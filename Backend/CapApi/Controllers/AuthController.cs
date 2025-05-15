@@ -51,7 +51,7 @@ public class AuthController(JwtTokenGenerator jwtTokenGenerator, CapDbContext co
                 Username = dto.Username,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Role = "User",
+                Role = "Contributor",
                 Email = dto.Email,
                 Password = hashedPassword,
                 DateOfBirth = dto.DateOfBirth,
