@@ -15,54 +15,61 @@ export default function Login({
     password: "",
   });
   let [errorList, setErrorList] = useState([]);
-  let [apiError, setApiError] = useState(false);
-  let [notFoundMessage, setNotFoundMessage] = useState(false);
+  let [apiError, setApiError] = useState(null); // Changed to store error message
 
   /* Submite Function */
   async function onFormSubmit(e) {
     e.preventDefault();
+    // Reset errors
+    setErrorList([]);
+    setApiError(null);
+    
     // Call Validation Function
     let validateResult = validateForm();
     if (validateResult.error) {
       setErrorList(validateResult.error.details);
+      return; // Don't proceed with API call if validation fails
     }
 
     try {
       console.log("user", user);
-      await loginUser(user.email, user.password)
-        .then((response) => {
-          // Handle the response data
-          console.log("Resssponse From Login: ", response);
-          setApiError(false);
-          if (response.status === 200) {
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("details", JSON.stringify(response.data.user));
-            console.log("Done!");
-            setUserData();
-          }
-        })
-        .catch((error) => {
-          // Handle errors
-          if (error.response) {
-            setApiError(true);
-            if (
-              error.response.status === 400 &&
-              error.response.data.message === "invaild email or Password"
-            ) {
-              setNotFoundMessage(true);
-            }
-          }
-          console.error("Axios error:", error);
-        });
+      const response = await loginUser(user.email, user.password);
+      console.log("Response From Login: ", response);
+      
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("details", JSON.stringify(response.data.user));
+        console.log("Done!");
+        setUserData();
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
+      
+      if (error.response) {
+        // Handle different error scenarios
+        if (error.response.status === 400 || error.response.status === 401) {
+          setApiError("Invalid email or password");
+        } else if (error.response.status === 404) {
+          setApiError("User not found");
+        } else if (error.response.status >= 500) {
+          setApiError("Server error. Please try again later.");
+        } else {
+          setApiError("An error occurred. Please try again.");
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        setApiError("Network error. Please check your connection.");
+      } else {
+        // Something happened in setting up the request
+        setApiError("An unexpected error occurred.");
+      }
     }
   }
 
   /* Get New Data Function */
   function getData(e) {
     setErrorList([]);
-    setNotFoundMessage(false);
+    setApiError(null);
     let newUser = { ...user };
     newUser[e.target.name] = e.target.value;
     setUser(newUser);
@@ -77,13 +84,27 @@ export default function Login({
   /* Validation Function */
   function validateForm() {
     const schema = Joi.object({
-      email: Joi.string().trim().min(5).max(100).required(),
-      password: Joi.string().trim().min(8).required(),
+      email: Joi.string()
+        .trim()
+        .email({ tlds: { allow: false } }) // Validate email format
+        .required()
+        .messages({
+          "string.email": "Please enter a valid email address",
+          "string.empty": "Email is required",
+        }),
+      password: Joi.string()
+        .trim()
+        .min(8)
+        .required()
+        .messages({
+          "string.min": "Password must be at least 8 characters",
+          "string.empty": "Password is required",
+        }),
     });
 
     return schema.validate(user, { abortEarly: false });
   }
-  /////////////////
+
   useEffect(() => {
     setActiveId(7);
   }, []);
@@ -94,44 +115,47 @@ export default function Login({
         <h1 className="custom-form-header">Welcome Back!</h1>
       </div>
       <div className="w-50 position-relative my-4">
-        {" "}
         <hr className="bold-hr mid-aligment" />
       </div>
-      {notFoundMessage ? (
+      
+      {/* Display API errors */}
+      {apiError && (
         <div className="col-12">
-          <div className="alert alert-danger">"invaild email or Password"</div>
+          <div className="alert alert-danger">{apiError}</div>
         </div>
-      ) : (
-        ""
       )}
+      
+      {/* Display validation errors */}
       {errorList.map((error, index) => (
-        <div className="col-12">
-          <div key={index} className="alert alert-danger">
-            {" "}
-            {error.message}{" "}
+        <div className="col-12" key={index}>
+          <div className="alert alert-danger">
+            {error.message.replace(/"/g, '')} {/* Remove quotes from messages */}
           </div>
         </div>
       ))}
+      
       <div className="w-50 my-4 position-relative">
         <form className="mid-aligment" onSubmit={onFormSubmit}>
           <div className="form-group my-4">
             <input
               type="email"
-              className="form-control"
+              className={`form-control ${errorList.some(e => e.context.key === 'email') ? 'is-invalid' : ''}`}
               id="email"
               name="email"
               placeholder="Email..."
-              onChange={(e) => getData(e)}
+              onChange={getData}
+              value={user.email}
             />
           </div>
           <div className="form-group my-4">
             <input
               type="password"
-              className="form-control"
+              className={`form-control ${errorList.some(e => e.context.key === 'password') ? 'is-invalid' : ''}`}
               id="password"
               name="password"
               placeholder="Password..."
-              onChange={(e) => getData(e)}
+              onChange={getData}
+              value={user.password}
             />
           </div>
           <div className="d-flex flex-column flex-md-row justify-content-between my-4 mid-bold">
@@ -146,7 +170,6 @@ export default function Login({
         </form>
       </div>
       <div className="w-50 position-relative my-4">
-        {" "}
         <hr className="bold-hr mid-aligment" />
       </div>
     </div>

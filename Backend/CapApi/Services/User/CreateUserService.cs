@@ -2,6 +2,7 @@ using CapApi.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using CapApi.Controllers;
 
 namespace CapApi.Services.User;
 
@@ -77,7 +78,11 @@ public class CreateUserService(CapDbContext context)
             await transaction.CommitAsync();
 
             // Return success response
-            return new CreatedAtRouteResult("GetUserById", new { id = newUser.Id }, newUser);
+            return new CreatedAtActionResult(
+                nameof(UserController.GetUserById), // Action name
+                "User",                             // Controller name
+                new { id = newUser.Id },            // Route parameters
+                newUser);                           // Created object
         }
         catch (Exception ex)
         {
