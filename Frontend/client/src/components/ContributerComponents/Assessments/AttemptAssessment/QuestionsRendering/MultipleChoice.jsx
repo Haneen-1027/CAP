@@ -58,7 +58,9 @@ export default function MultipleChoice({
             className={`form-check-label ${darkMode ? "text-light" : ""}`}
             htmlFor={`option-${question.id}-${index}`}
           >
-            {question.detailes.isTrueFalse ? option.charAt(0).toUpperCase() + option.slice(1) : option}
+            {question.detailes.isTrueFalse
+              ? option.charAt(0).toUpperCase() + option.slice(1)
+              : option}
           </label>
         </div>
       ))}

@@ -121,6 +121,14 @@ footer {
 .table-responsive {
 }
 
+.custom-disabled-input {
+  cursor: not-allowed;
+}
+.custom-disabled-input:disabled ~ .form-check-label,
+.custom-disabled-input[disabled] ~ .form-check-label {
+  opacity: 1 !important;
+}
+
 .form-input,
 textarea {
   border-radius: 5px;

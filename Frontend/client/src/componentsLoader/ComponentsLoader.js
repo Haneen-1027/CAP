@@ -178,16 +178,24 @@ export const AttemptsPreview = lazy(() =>
     "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsPreview.jsx"
   )
 );
-//AttemptDetails
-export const AttemptDetails = lazy(() =>
-  import(
-    "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/AttemptDetails.jsx"
-  )
-);
+
 //AttemptEvaluation
 export const AttemptEvaluation = lazy(() =>
   import(
     "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/AttemptEvaluation.jsx"
+  )
+);
+
+// MultipleChoiceReview
+export const MultipleChoiceReview = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/QuestionsReview/MultipleChoiceReview.jsx"
+  )
+);
+// CodingReview
+export const CodingReview = lazy(() =>
+  import(
+    "../components/CompanyComponents/Assessment/AssessmentAttempts/AttemptsComponents/QuestionsReview/CodingReview.jsx"
   )
 );
 ///////////////////////////////////////////////////////////

@@ -79,14 +79,14 @@ export default function AttemptsPreview({ darkMode }) {
           <tr key={index}>
             <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
             <td>@{attempt.username}</td>
-            <td>{attempt.first_name + " " + attempt.last_name}</td>
+            <td>{attempt.firstName + " " + attempt.lastName}</td>
             <td>14:03 PM</td>
             <td>15:25 PM</td>
-            <td className="text-success">Completed</td>
+            <td>138 min</td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
                 <Link
-                  to={"/attempts/details"}
+                  to={`/attempts/${assessment_id}/${index}/evaluation`}
                   className="btn btn-sm btn-success"
                   title="Invite Contributors"
                 >
@@ -199,7 +199,7 @@ export default function AttemptsPreview({ darkMode }) {
                   <th>Full Name</th>
                   <th>Started At</th>
                   <th>Completed At</th>
-                  <th>Graded Status</th>
+                  <th title="in minutes">Total Time</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -215,7 +215,7 @@ export default function AttemptsPreview({ darkMode }) {
                   <td>
                     <div className="d-flex gap-2 justify-content-center">
                       <Link
-                        to={"/attempts/details"}
+                        to={`/attempts/${assessment_id}/evaluation`}
                         className="btn btn-sm btn-success"
                         title="Invite Contributors"
                       >

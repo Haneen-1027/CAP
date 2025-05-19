@@ -264,7 +264,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
           }`}
         >
           <button
-            style={{ width: "6rem" }}
+            style={{ width: "10rem" }}
             className={`btn ${darkMode ? "btn-light" : "btn-dark"}`}
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0 || isSubmitting}
@@ -273,7 +273,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
           </button>
           {currentQuestionIndex + 1 === questions.length ? (
             <button
-              style={{ width: "6rem" }}
+              style={{ width: "10rem" }}
               className="btn btn-success"
               onClick={handleSubmitAssessment}
               disabled={timeExpired || isSubmitting}
@@ -293,7 +293,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
             </button>
           ) : (
             <button
-              style={{ width: "6rem" }}
+              style={{ width: "10rem" }}
               className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
               onClick={handleNext}
               disabled={timeExpired || isSubmitting}
