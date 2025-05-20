@@ -35,10 +35,11 @@
         "prompt": "Example Prompt - for Q30",
         "contributor_answer": "This is Example Answer",
         "question_details": {
-          "question_type": "essay",
-          "new_mark": -9999,
-          "total_mark": 10
-        }
+          "question_type": "essay"
+        },
+
+        "new_mark": -99,
+        "total_mark": 10
       },
       {
         "question_id": "40",

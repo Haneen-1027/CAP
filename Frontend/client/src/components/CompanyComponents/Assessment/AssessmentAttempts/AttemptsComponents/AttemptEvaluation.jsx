@@ -50,6 +50,11 @@ export default function AttemptEvaluation({ darkMode }) {
     }));
   };
 
+  // Handle Save the new Evaluation
+  const handleNewEvaluation = () => {
+    console.log("New Attempt befor Submitting is: ", attempt);
+  };
+
   //////////////////////////////
   useEffect(() => {
     const user_attempt = attempts[attempt_id];
@@ -77,7 +82,13 @@ export default function AttemptEvaluation({ darkMode }) {
             <div className="d-flex flex-column flex-md-row align-items-md-center gap-3">
               <div>
                 <p className={`${darkMode ? "text-light" : "text-muted"} m-0`}>
-                  <strong className="">Question #1:</strong>
+                  <strong className="">
+                    Question #
+                    {currentQuestionIndex < 10
+                      ? "0" + (currentQuestionIndex + 1)
+                      : currentQuestionIndex}
+                    :
+                  </strong>
                 </p>
               </div>
               <div style={{ maxWidth: "36rem" }} className="mt-2 mb-4 m-md-0">
@@ -91,7 +102,7 @@ export default function AttemptEvaluation({ darkMode }) {
             <div className="d-flex flex-column flex-md-row align-items-center">
               <div className="form-floating" style={{ width: "" }}>
                 <input
-                  className="form-control"
+                  className={`form-control ${darkMode ? "spic-dark-mode" : ""}`}
                   type="number"
                   value={attempt.Answers[currentQuestionIndex].new_mark}
                   onChange={(e) =>
@@ -165,14 +176,18 @@ export default function AttemptEvaluation({ darkMode }) {
           >
             <button
               style={{ width: "10rem" }}
-              className={`btn  ${darkMode ? "btn-light" : "btn-dark"}`}
+              className={`btn btn-dark`}
               disabled={currentQuestionIndex === 0}
               onClick={() => handlePrevious()}
             >
               Previous
             </button>
-            {currentQuestionIndex + 1 === 10 ? (
-              <button style={{ width: "10rem" }} className="btn btn-success">
+            {currentQuestionIndex + 1 === attempt.Answers.length ? (
+              <button
+                style={{ width: "10rem" }}
+                className="btn btn-success"
+                onClick={() => handleNewEvaluation()}
+              >
                 {isSubmitting ? (
                   <>
                     <span
@@ -189,7 +204,7 @@ export default function AttemptEvaluation({ darkMode }) {
             ) : (
               <button
                 style={{ width: "10rem" }}
-                className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
+                className={`btn ${darkMode ? "btn-light" : "btn-success"}`}
                 onClick={() => handleNext()}
               >
                 Next
