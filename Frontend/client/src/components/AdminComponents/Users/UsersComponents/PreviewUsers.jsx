@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { getUsers } from "../../../../APIs/ApisHandaler";
 import {
@@ -9,16 +9,17 @@ import {
 
 export default function PreviewUsers({ darkMode }) {
   const [users, setUsers] = useState([]);
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: "ascending",
-  });
-  const [searchValue, setSearchValue] = useState("");
-  const [roleFilter, setRoleFilter] = useState(-999);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [countPerPage, setCountPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
 
   const apiErrorMessage = (
     <div className="w-100 h-100 d-flex flex-column align-items-center">
@@ -40,7 +41,7 @@ export default function PreviewUsers({ darkMode }) {
   );
 
   const roles = [
-    { name: "All", value: -999 },
+    { name: "All", value: "" },
     { name: "Admin", value: "Admin" },
     { name: "Company", value: "Company" },
     { name: "Contributor", value: "Contributor" },
@@ -50,68 +51,51 @@ export default function PreviewUsers({ darkMode }) {
 
   const handleCountPerPageMenu = (e) => {
     setCountPerPage(Number(e.target.value));
+    setPageNo(1);
   };
 
-  // Fetch users on mount
   useEffect(() => {
-    async function fetchUsers() {
+    const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        const response = await getUsers();
-        setUsers(response.data || []);
+        const response = await getUsers(
+          pageNo,
+          countPerPage,
+          searchValue,
+          roleFilter
+        );
+        setUsers(response.data.data || []);
+        setTotalCount(response.data.pagination.totalCount || 0);
       } catch (err) {
         console.error("Fetching users failed", err);
         setApiError(true);
       } finally {
         setIsLoading(false);
       }
-    }
-    fetchUsers();
-  }, []);
+    };
 
-  // Apply Search -> Filter -> Sort
-  const finalUsers = useMemo(() => {
-    let filteredUsers = [...users];
+    const debounceTimer = setTimeout(() => {
+      fetchUsers();
+    }, searchValue ? 500 : 0);
 
-    // Search
-    if (searchValue.trim() !== "") {
-      filteredUsers = filteredUsers.filter(
-        (user) =>
-          (user.firstName + " " + user.lastName)
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          user.username.toLowerCase().includes(searchValue.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchValue.toLowerCase())
-      );
-    }
+    return () => clearTimeout(debounceTimer);
+  }, [pageNo, countPerPage, searchValue, roleFilter]);
 
-    // Role Filter
-    if (roleFilter !== -999) {
-      filteredUsers = filteredUsers.filter((user) => user.role === roleFilter);
-    }
+  const handleSearchValue = (value) => {
+    setSearchValue(value);
+    setPageNo(1);
+  };
 
-    // Sort
-    if (sortConfig.key) {
-      filteredUsers.sort((a, b) => {
-        let aKey = a[sortConfig.key];
-        let bKey = b[sortConfig.key];
+  const handleRoleFilter = (e) => {
+    setRoleFilter(e.target.value);
+    setPageNo(1);
+  };
 
-        if (sortConfig.key === "createdAt") {
-          aKey = new Date(aKey);
-          bKey = new Date(bKey);
-        } else {
-          aKey = (aKey || "").toString().toLowerCase();
-          bKey = (bKey || "").toString().toLowerCase();
-        }
-
-        if (aKey < bKey) return sortConfig.direction === "ascending" ? -1 : 1;
-        if (aKey > bKey) return sortConfig.direction === "ascending" ? 1 : -1;
-        return 0;
-      });
-    }
-
-    return filteredUsers;
-  }, [users, searchValue, roleFilter, sortConfig]);
+  const resetFilters = () => {
+    setSearchValue("");
+    setRoleFilter("");
+    setPageNo(1);
+  };
 
   const requestSort = (key) => {
     let direction = "ascending";
@@ -121,18 +105,10 @@ export default function PreviewUsers({ darkMode }) {
     setSortConfig({ key, direction });
   };
 
-  const handleSearchValue = (value) => {
-    setSearchValue(value);
-  };
-
-  const handleRoleFilter = (e) => {
-    setRoleFilter(e.target.value);
-  };
-
   function renderUsers() {
-    return finalUsers.map((user, index) => (
+    return users.map((user, index) => (
       <tr key={user.id || index}>
-        <td>{index + 1}.</td>
+        <td>{(pageNo - 1) * countPerPage + index + 1}.</td>
         <td className="text-start">{user.firstName + " " + user.lastName}</td>
         <td className="text-start">{user.username}</td>
         <td className="text-start">{user.email}</td>
@@ -182,15 +158,28 @@ export default function PreviewUsers({ darkMode }) {
         <h5 className="text-center mb-0">
           <strong>Users:</strong>
         </h5>
-        <Link
-          to="/admin/users/add_user"
-          className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
-            darkMode ? "spic-dark-mode" : ""
-          }`}
-        >
-          <i className="fas fa-plus me-2"></i>
-          Add New User
-        </Link>
+        <div>
+          <Link
+            to="/admin/users/add_user"
+            className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
+              darkMode ? "spic-dark-mode" : ""
+            }`}
+          >
+            <i className="fas fa-plus me-2"></i>
+            Add New User
+          </Link>
+          {(searchValue || roleFilter) && (
+            <button
+              onClick={resetFilters}
+              className={`btn btn-sm btn-outline-secondary ms-2 ${
+                darkMode ? "spic-dark-mode" : ""
+              }`}
+            >
+              <i className="fas fa-filter-circle-xmark me-2"></i>
+              Reset Filters
+            </button>
+          )}
+        </div>
       </div>
 
       <div
@@ -202,12 +191,12 @@ export default function PreviewUsers({ darkMode }) {
           <SearchBar
             darkMode={darkMode}
             handleSearchValue={handleSearchValue}
+            value={searchValue}
           />
         </div>
         <div className="col-12 col-md-4 row justify-content-between p-0">
           <div className="col-12 col-md-5 p-0">
             <div className="form-floating" style={{ width: "100%" }}>
-              {" "}
               <select
                 className={`form-select ${
                   darkMode ? " spic-dark-mode" : ""
@@ -221,12 +210,12 @@ export default function PreviewUsers({ darkMode }) {
                     {value}
                   </option>
                 ))}
-              </select>{" "}
+              </select>
               <label
                 style={{ color: `${darkMode ? "#ccc" : ""}` }}
                 htmlFor="floatingSelectGrid"
               >
-                Users per Page:{" "}
+                Users per Page:
               </label>
             </div>
           </div>
@@ -245,7 +234,7 @@ export default function PreviewUsers({ darkMode }) {
       <div className="my-4 d-flex justify-content-center">
         <PaginationNav
           darkMode={darkMode}
-          counts={users.length}
+          counts={totalCount}
           pageNo={pageNo}
           setPageNo={setPageNo}
           countPerPage={countPerPage}
@@ -297,26 +286,19 @@ export default function PreviewUsers({ darkMode }) {
             </tr>
           </thead>
           <tbody>
-            {finalUsers.length > 0 ? (
+            {users.length > 0 ? (
               renderUsers()
             ) : (
               <tr>
                 <td colSpan="7" className="text-center">
-                  No users found!
+                  {searchValue || roleFilter
+                    ? "No users match your search/filters"
+                    : "No users found in the system"}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-        <div className="my-4 d-flex justify-content-center">
-          <PaginationNav
-            darkMode={darkMode}
-            counts={users.length}
-            pageNo={pageNo}
-            setPageNo={setPageNo}
-            countPerPage={countPerPage}
-          />
-        </div>
       </div>
     </div>
   );
