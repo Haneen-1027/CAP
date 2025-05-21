@@ -51,7 +51,9 @@ export default function MultipleChoice({
             name={`multipleChoice-${question.id}`}
             id={`option-${question.id}-${index}`}
             value={option}
-            onChange={() => addQuestionAnswer(option, question.id)}
+            onChange={() =>
+              addQuestionAnswer(option, question.id, shuffledOptions)
+            }
             checked={userAnswer === option}
           />
           <label

@@ -12,7 +12,6 @@
         "contributor_answer": "const",
         "question_details": {
           "question_type": "mc",
-          "is_true_false": false,
           "visible_options": ["ss", "ss", "ss", "const"]
         },
         "new_mark": 10,
@@ -24,7 +23,6 @@
         "contributor_answer": "True",
         "question_details": {
           "question_type": "mc",
-          "is_true_false": true,
           "visible_options": ["True", "False"]
         },
         "new_mark": 10,
@@ -49,13 +47,13 @@
           "question_type": "coding",
           "used_langauage": 71,
           "test_cases": {
+            "question_description": "From questions table",
             "tests_parameters": [],
             "excpected_output": [],
             "tests_count": 15,
             "test_passed": 7
           }
         },
-
         "new_mark": 7,
         "total_mark": 10
       }
