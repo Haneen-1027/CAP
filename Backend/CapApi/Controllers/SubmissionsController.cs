@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CapApi.Models;
 using CapApi.Dtos.Submission;
+using Microsoft.Extensions.Logging;
 
 namespace CapApi.Controllers
 {
@@ -19,96 +20,135 @@ namespace CapApi.Controllers
             _logger = logger;
         }
 
- 
- [HttpGet("assessment/{assessmentId}")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponse>>> GetSubmissionsByAssessment(int assessmentId)
-{
-    try
-    {
-        // Validate assessment exists
-        var assessmentExists = await _context.Assessments.AnyAsync(a => a.Id == assessmentId);
-        if (!assessmentExists)
+
+        [HttpGet("assessment/{assessmentId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponseDto>>> GetSubmissionsByAssessment(int assessmentId)
         {
-            _logger.LogWarning("Assessment with ID {AssessmentId} not found", assessmentId);
-            return NotFound(new { error = $"Assessment with ID {assessmentId} does not exist" });
+            try
+            {
+                // Validate assessment exists
+                var assessmentExists = await _context.Assessments.AnyAsync(a => a.Id == assessmentId);
+                if (!assessmentExists)
+                {
+                    _logger.LogWarning("Assessment with ID {AssessmentId} not found", assessmentId);
+                    return NotFound(new { error = $"Assessment with ID {assessmentId} does not exist" });
+                }
+
+                // Get all submissions for this assessment with related data
+                var submissions = await _context.Submissions
+                    .Where(s => s.AssessmentId == assessmentId)
+                    .Include(s => s.User)
+                    .Include(s => s.Question)
+                        .ThenInclude(q => q.McqQuestion)
+                    .Include(s => s.Question)
+                        .ThenInclude(q => q.CodingQuestion)
+                    .ToListAsync();
+
+                if (!submissions.Any())
+                {
+                    return Ok(new List<AssessmentSubmissionResponseDto>());
+                }
+
+                // Get all assessment questions to get the total marks for each question
+                var assessmentQuestions = await _context.AssessmentQuestions
+                    .Where(aq => aq.AssessmentId == assessmentId)
+                    .ToDictionaryAsync(aq => aq.QuestionId);
+
+                // Group submissions by user
+                var groupedSubmissions = submissions
+                    .GroupBy(s => s.UserId)
+                    .Select(g => new AssessmentSubmissionResponseDto
+                    {
+                        user_id = g.Key,
+                        username = g.First().User?.Username ?? "unknown",
+                        firstName = g.First().User?.FirstName ?? "Unknown",
+                        lastName = g.First().User?.LastName ?? "User",
+                        assessment_id = assessmentId,
+                        Answers = g.Select(s =>
+                        {
+                            var question = s.Question;
+                            var assessmentQuestion = assessmentQuestions.GetValueOrDefault(s.QuestionId);
+                            var totalMark = assessmentQuestion?.Mark ?? 0;
+
+                            // Build question details based on type
+                            object questionDetails = null;
+                            if (question?.Type?.ToLower() == "mc" && question.McqQuestion != null)
+                            {
+                                var visibleOptions = new List<string>();
+                                if (question.McqQuestion.CorrectAnswer != null)
+                                {
+                                    visibleOptions.AddRange(question.McqQuestion.CorrectAnswer);
+                                }
+                                if (question.McqQuestion.WrongOptions != null)
+                                {
+                                    visibleOptions.AddRange(question.McqQuestion.WrongOptions);
+                                }
+
+                                questionDetails = new
+                                {
+                                    question_type = "mc",
+                                    visible_options = visibleOptions
+                                };
+                            }
+                            else if (question?.Type?.ToLower() == "coding" && question.CodingQuestion != null)
+                            {
+                                questionDetails = new
+                                {
+                                    question_type = "coding",
+                                    used_langauage = 71, // Assuming a default language ID
+                                    test_cases = new
+                                    {
+                                        tests_parameters = new List<string>(),
+                                        excpected_output = new List<string>(),
+                                        tests_count = question.CodingQuestion.TestCases?.Count ?? 0,
+                                        test_passed = 0 // This would need to come from submission data
+                                    }
+                                };
+                            }
+                            else if (question?.Type?.ToLower() == "essay")
+                            {
+                                questionDetails = new
+                                {
+                                    question_type = "essay"
+                                };
+                            }
+
+                            return new AnswerDto
+                            {
+                                question_id = s.QuestionId,
+                                prompt = question?.Prompt ?? "Unknown question",
+                                contributor_answer = s.Answer ?? string.Empty,
+                                question_details = questionDetails,
+                                new_mark = (int)(s.Mark ?? -99), // -99 indicates not graded
+                                total_mark = totalMark
+                            };
+                        }).ToList(),
+                        started_time = g.Min(s => s.StartedAt),
+                        submitted_time = g.Max(s => s.SubmittedAt)
+                    })
+                    .ToList();
+
+                _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", groupedSubmissions.Count, assessmentId);
+
+                return Ok(groupedSubmissions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(0, ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { error = "An error occurred while retrieving submissions" });
+            }
         }
 
-        // Get all questions with their MCQ data
-        var questions = await _context.Questions
-            .Include(q => q.McqQuestion)
-            .ToDictionaryAsync(q => q.Id);
-
-        // Get all assessment questions for this assessment
-        var assessmentQuestions = await _context.AssessmentQuestions
-            .Where(aq => aq.AssessmentId == assessmentId)
-            .ToDictionaryAsync(aq => aq.QuestionId);
-
-        // Get all submissions with related data
-        var submissionsQuery = _context.Submissions
-            .Where(s => s.AssessmentId == assessmentId)
-            .Include(s => s.User)
-            .Include(s => s.Question);
-
-        // Execute the query and do the grouping in memory
-        var submissions = (await submissionsQuery.ToListAsync())
-            .GroupBy(s => s.UserId)
-            .Select(g => new AssessmentSubmissionResponse
-            {
-                UserId = g.Key,
-                FirstName = g.First().User?.FirstName ?? "Unknown",
-                LastName = g.First().User?.LastName ?? "User",
-                TotalMarks = (int)g.Sum(s => s.Mark ?? 0),
-                SubmissionCount = g.Count(),
-                LastSubmittedAt = g.Max(s => s.SubmittedAt),
-                Submissions = g.Select(s => 
-                {
-                    var question = questions.GetValueOrDefault(s.QuestionId);
-                    var isMcq = question?.Type?.ToLower() == "mc";
-                    var wrongOptions = new List<string>();
-    
-                    if (isMcq && question?.McqQuestion != null)
-                    {
-                        // For MCQ questions, always show wrong options
-                        wrongOptions = question.McqQuestion.WrongOptions?.ToList() ?? new List<string>();
-                    }
-                    // For non-MCQ questions, wrongOptions remains empty
-
-                    return new SubmissionDto
-                    {
-                        SubmissionId = s.Id,
-                        QuestionId = s.QuestionId,
-                        QuestionText = question?.Prompt ?? "Unknown question",
-                        QuestionType = question?.Type ?? "unknown",
-                        Answer = s.Answer ?? string.Empty,
-                        Mark = (int)(s.Mark ?? 0),
-                        MaxMark = assessmentQuestions.TryGetValue(s.QuestionId, out var aq) ? (int)aq.Mark : 0,
-                        SubmittedAt = s.SubmittedAt,
-                        WrongOptions = wrongOptions
-                    };
-                }).ToList()
-            })
-            .ToList();
-
-        _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", submissions.Count, assessmentId);
-
-        return Ok(submissions);
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(0, ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
-        return StatusCode(StatusCodes.Status500InternalServerError, 
-            new { error = "An error occurred while retrieving submissions" });
-    }
-}       
         /// <summary>
         /// Submits an assessment with all answers
         /// </summary>
         /// <param name="submissionDto">Assessment submission data</param>
         /// <returns>Result of the submission operation</returns>
-[HttpPost]
+        [HttpPost]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -296,6 +336,29 @@ public async Task<ActionResult<SubmissionResponse>> SubmitAssessment(
             return null;
         }
     }
+
+
+    public class AssessmentSubmissionResponseDto
+    {
+        public int user_id { get; set; }
+        public string username { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public int assessment_id { get; set; }
+        public List<AnswerDto> Answers { get; set; }
+        public DateTime started_time { get; set; }
+        public DateTime submitted_time { get; set; }
+    }
+
+    //public class Answer1Dto
+    //{
+    //    public int question_id { get; set; }
+    //    public string prompt { get; set; }
+    //    public string contributor_answer { get; set; }
+    //    public object question_details { get; set; }
+    //    public int new_mark { get; set; }
+    //    public int total_mark { get; set; }
+    //}
 
     public class SubmissionResponse
     {

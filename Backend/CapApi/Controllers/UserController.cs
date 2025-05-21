@@ -18,11 +18,23 @@ public class UserController(
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllUsers(
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string searchTerm = "",
+        [FromQuery] string roleFilter = "",
+        [FromQuery] string sortBy = "Id",
+        [FromQuery] bool ascending = true)
     {
         try
         {
-            return await getAllUsersService.Handle();
+            return await getAllUsersService.Handle(
+                page, 
+                pageSize, 
+                searchTerm, 
+                roleFilter,
+                sortBy,
+                ascending);
         }
         catch (Exception ex)
         {

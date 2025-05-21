@@ -21,6 +21,21 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
   const [timeExpired, setTimeExpired] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+
+  // Check if assessment was already submitted on component mount
+  useEffect(() => {
+    const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
+    if (submittedAssessments.includes(assessment.id)) {
+      setAlreadySubmitted(true);
+      navigate("/", {
+        state: {
+          message: "You have already submitted this assessment and cannot submit again.",
+          success: false,
+        },
+      });
+    }
+  }, [assessment.id, navigate]);
 
   // Calculate end time based on assessment duration
   const calculateEndTime = () => {
@@ -34,25 +49,30 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
   // Check if time has expired
   useEffect(() => {
+    if (alreadySubmitted) return;
+
     const endTime = calculateEndTime();
     const timer = setInterval(() => {
-      if (Date.now() >= endTime) {
+      const currentTime = new Date();
+      if (currentTime >= endTime) {
         setTimeExpired(true);
         clearInterval(timer);
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [assessmentAttempt.started_time, assessment.duration]);
+  }, [assessmentAttempt.started_time, assessment.duration, alreadySubmitted]);
 
   // Handle time expiration
   useEffect(() => {
-    if (timeExpired) {
+    if (timeExpired && !alreadySubmitted) {
       handleSubmitAssessment();
     }
-  }, [timeExpired]);
+  }, [timeExpired, alreadySubmitted]);
 
   const addQuestionAnswer = (answer, question_id) => {
+    if (alreadySubmitted || timeExpired) return;
+
     let updatedQuestionsAnswers = [...assessmentAttempt.Answers];
     const index = updatedQuestionsAnswers.findIndex(
       (answer) => answer.question_id === question_id
@@ -105,25 +125,46 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
   };
 
   const handleNext = () => {
+    if (alreadySubmitted || timeExpired) return;
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
   };
 
   const handlePrevious = () => {
+    if (alreadySubmitted || timeExpired) return;
+    
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
   };
 
   const handleSubmitAssessment = async () => {
+    if (alreadySubmitted) {
+      navigate("/", {
+        state: {
+          message: "You have already submitted this assessment and cannot submit again.",
+          success: false,
+        },
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
+      const user = JSON.parse(localStorage.getItem("details")); // Get logged-in user
+      const userId = user?.id;
+
+      if (!userId) {
+        throw new Error("User not found in local storage.");
+      }
+
       const finalAttempt = {
         assessment_id: parseInt(assessment.id.replace("Ass-", "")),
-        user_id: 13, // Static user ID
+        user_id: userId, 
         Answers: assessmentAttempt.Answers.map((answer) => ({
           question_id: parseInt(
             answer.question_id.toString().replace("Id", "")
@@ -150,6 +191,13 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
       console.log("Submission successful:", response.data);
 
+      // Mark assessment as submitted in localStorage
+      const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
+      localStorage.setItem(
+        'submittedAssessments',
+        JSON.stringify([...submittedAssessments, assessment.id])
+      );
+
       navigate("/", {
         state: {
           message: timeExpired
@@ -168,6 +216,10 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
       setIsSubmitting(false);
     }
   };
+
+  if (alreadySubmitted) {
+    return null; // Or a loading spinner while redirecting
+  }
 
   const currentQuestion = questions[currentQuestionIndex];
   const currentQuestionId = currentQuestion.id;
@@ -221,12 +273,15 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               darkMode={darkMode}
               addQuestionAnswer={addQuestionAnswer}
               userAnswer={userAnswer}
+              disabled={timeExpired}
             />
           ) : currentQuestion.type === "coding" ? (
             <CodingQuestion
               question={currentQuestion}
               darkMode={darkMode}
               addQuestionAnswer={(result) => {
+                if (timeExpired) return;
+                
                 // This will handle both regular answers and coding test results
                 if (typeof result === "object" && result.code !== undefined) {
                   // Coding question with test results
@@ -244,6 +299,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
                 }
               }}
               userAnswer={userAnswer}
+              disabled={timeExpired}
             />
           ) : (
             <textarea
@@ -254,6 +310,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               onChange={(e) =>
                 addQuestionAnswer(e.target.value, currentQuestionId)
               }
+              disabled={timeExpired}
             />
           )}
         </div>
@@ -267,7 +324,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
             style={{ width: "10rem" }}
             className={`btn ${darkMode ? "btn-light" : "btn-dark"}`}
             onClick={handlePrevious}
-            disabled={currentQuestionIndex === 0 || isSubmitting}
+            disabled={currentQuestionIndex === 0 || isSubmitting || timeExpired}
           >
             Previous
           </button>
@@ -276,7 +333,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               style={{ width: "10rem" }}
               className="btn btn-success"
               onClick={handleSubmitAssessment}
-              disabled={timeExpired || isSubmitting}
+              disabled={timeExpired || isSubmitting || alreadySubmitted}
             >
               {isSubmitting ? (
                 <>
@@ -296,7 +353,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               style={{ width: "10rem" }}
               className={`btn ${darkMode ? "btn-light" : "btn-primary"}`}
               onClick={handleNext}
-              disabled={timeExpired || isSubmitting}
+              disabled={timeExpired || isSubmitting || alreadySubmitted}
             >
               Next
             </button>
