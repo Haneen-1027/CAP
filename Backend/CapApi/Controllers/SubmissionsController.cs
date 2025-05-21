@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CapApi.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using CapApi.Models;
-using CapApi.DTOs;
 using CapApi.Dtos.Submission;
-using System.ComponentModel.DataAnnotations;
 
 namespace CapApi.Controllers
 {

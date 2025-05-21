@@ -8,6 +8,7 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 
 import attempts from "./Attempts.json";
+import { CalculateTimeInMinutes } from "../../../../Utils/CalculateTimeInMinutes";
 
 export default function AttemptsPreview({ darkMode }) {
   // Component States
@@ -67,26 +68,64 @@ export default function AttemptsPreview({ darkMode }) {
     setSearchValue(e.target.value);
   };
 
+  const calculateTotalMark = (answers) => {
+    console.log(answers);
+    let new_mark = 0;
+    answers.forEach((answer, index) => {
+      console.log(
+        "answer.new_mark: ",
+        answer.new_mark,
+        " and it's type is: ",
+        typeof answer.new_mark
+      );
+      new_mark += parseInt(answer.new_mark);
+    });
+    return new_mark;
+  };
+
   // Search => Filteration
   const visiblList = useMemo(() => {
     return attempts;
   }, [attempts, searchValue, status]);
+
   // Render Final Attempts List
   const renderList = () => {
     return visiblList.map((attempt, index) => {
       if (attempt.assessment_id == assessment_id) {
+        const start_time = attempt.started_time.split("T")[1];
+        const submited_time = attempt.submitted_time.split("T")[1];
+
         return (
           <tr key={index}>
             <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
             <td>@{attempt.username}</td>
-            <td>{attempt.first_name + " " + attempt.last_name}</td>
-            <td>14:03 PM</td>
-            <td>15:25 PM</td>
-            <td className="text-success">Completed</td>
+            <td>{attempt.firstName + " " + attempt.lastName}</td>
+            <td>
+              {start_time.slice(0, start_time.lastIndexOf(":"))}
+              {start_time.slice(0, start_time.lastIndexOf(":")).split(":")[0] <
+              12
+                ? " AM"
+                : " PM"}
+            </td>
+            <td>
+              {" "}
+              {submited_time.slice(0, submited_time.lastIndexOf(":"))}{" "}
+              {submited_time
+                .slice(0, submited_time.lastIndexOf(":"))
+                .split(":")[0] < 12
+                ? " AM"
+                : " PM"}
+            </td>
+            <td>{CalculateTimeInMinutes(submited_time, start_time)} min</td>
+            <td>
+              {calculateTotalMark(attempt.Answers) < 0
+                ? "Incomplete"
+                : calculateTotalMark(attempt.Answers)}
+            </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
                 <Link
-                  to={"/attempts/details"}
+                  to={`/attempts/${assessment_id}/${index}/evaluation`}
                   className="btn btn-sm btn-success"
                   title="Invite Contributors"
                 >
@@ -199,7 +238,8 @@ export default function AttemptsPreview({ darkMode }) {
                   <th>Full Name</th>
                   <th>Started At</th>
                   <th>Completed At</th>
-                  <th>Graded Status</th>
+                  <th title="Total taken time - in minutes -">Total Time</th>
+                  <th title="">Mark Earned</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -215,7 +255,7 @@ export default function AttemptsPreview({ darkMode }) {
                   <td>
                     <div className="d-flex gap-2 justify-content-center">
                       <Link
-                        to={"/attempts/details"}
+                        to={`/attempts/${assessment_id}/evaluation`}
                         className="btn btn-sm btn-success"
                         title="Invite Contributors"
                       >

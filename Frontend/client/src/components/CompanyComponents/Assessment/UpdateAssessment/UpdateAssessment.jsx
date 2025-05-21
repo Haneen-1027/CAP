@@ -6,6 +6,7 @@ import {
   updateAssessment,
   getAllQuestions,
 } from "../../../../APIs/ApisHandaler";
+import Swal from "sweetalert2";
 
 export default function UpdateAssessment({ darkMode }) {
   const { id } = useParams();
@@ -67,8 +68,14 @@ export default function UpdateAssessment({ darkMode }) {
 
         setAssessment(transformed);
         setAllQuestions(questionsRes.data);
-      } catch {
+      } catch (error) {
         setApiError(true);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load assessment data',
+          confirmButtonColor: '#3085d6',
+        });
       } finally {
         setLoading(false);
       }
@@ -143,10 +150,26 @@ export default function UpdateAssessment({ darkMode }) {
       setError(
         "Selected question count or total marks do not match input limits."
       );
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Selected question count or total marks do not match input limits.',
+        confirmButtonColor: '#3085d6',
+      });
       return;
     }
 
-    if (window.confirm("Are you sure you want to update this assessment?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You are about to update this assessment!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, update it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         const payload = {
           name: assessment.name,
@@ -158,84 +181,108 @@ export default function UpdateAssessment({ darkMode }) {
           questionsCount: assessment.questionsCount,
           questionsIds: assessment.questionsIds,
         };
+        
         await updateAssessment(id, payload);
-        alert("Assessment updated successfully!");
-      } catch {
-        alert("Failed to update assessment.");
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Assessment updated successfully!',
+          confirmButtonColor: '#3085d6',
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to update assessment.',
+          confirmButtonColor: '#3085d6',
+        });
+        console.error('Update error:', error);
       }
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (apiError) return <div>Error loading assessment</div>;
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+  
+  if (apiError) {
+    return (
+      <div className="alert alert-danger mx-3 my-5">
+        Error loading assessment data. Please try again later.
+      </div>
+    );
+  }
 
   const renderQuestionTable = () => (
-      <div
-        className={`table-responsive text-nowrap mt-5 ${darkMode ? "spic-dark-mode" : ""
-          }`}
-      >
+    <div className={`table-responsive text-nowrap mt-5 ${darkMode ? "spic-dark-mode" : ""}`}>
+      <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Prompt</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Mark</th>
+            <th>Select</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentQuestions.map((q, i) => {
+            const isSelected = !!getSelectedQuestion(q.id);
+            const selected = getSelectedQuestion(q.id);
+            const markLimitReached =
+              totalSelectedMark >= assessment.totalMark && !isSelected;
+            const questionLimitReached =
+              assessment.questionsIds.length >= assessment.questionsCount &&
+              !isSelected;
 
-        <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Prompt</th>
-              <th>Category</th>
-              <th>Type</th>
-              <th>Mark</th>
-              <th>Select</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentQuestions.map((q, i) => {
-              const isSelected = !!getSelectedQuestion(q.id);
-              const selected = getSelectedQuestion(q.id);
-              const markLimitReached =
-                totalSelectedMark >= assessment.totalMark && !isSelected;
-              const questionLimitReached =
-                assessment.questionsIds.length >= assessment.questionsCount &&
-                !isSelected;
-
-              return (
-                <tr key={q.id}>
-                  <td>{indexOfFirstQuestion + i + 1}</td>
-                  <td>{q.prompt}</td>
-                  <td>{q.category}</td>
-                  <td>
-                    {q.type === "mc"
-                      ? q.details?.isTrueFalse
-                        ? "True/False"
-                        : "MCQ"
-                      : q.type}
-                  </td>
-                  <td>
-                    {isSelected ? (
-                      <input
-                        type="number"
-                        className="form-control"
-                        style={{ width: "80px" }}
-                        min={1}
-                        value={selected?.mark || ""}
-                        onChange={(e) => updateQuestionMark(q.id, e.target.value)}
-                      />
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td>
+            return (
+              <tr key={q.id}>
+                <td>{indexOfFirstQuestion + i + 1}</td>
+                <td>{q.prompt}</td>
+                <td>{q.category}</td>
+                <td>
+                  {q.type === "mc"
+                    ? q.details?.isTrueFalse
+                      ? "True/False"
+                      : "MCQ"
+                    : q.type}
+                </td>
+                <td>
+                  {isSelected ? (
                     <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => toggleQuestion(q)}
-                      disabled={questionLimitReached || markLimitReached}
+                      type="number"
+                      className="form-control"
+                      style={{ width: "80px" }}
+                      min={1}
+                      value={selected?.mark || ""}
+                      onChange={(e) => updateQuestionMark(q.id, e.target.value)}
                     />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleQuestion(q)}
+                    disabled={questionLimitReached || markLimitReached}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 
   return (
@@ -337,37 +384,41 @@ export default function UpdateAssessment({ darkMode }) {
           </div>
 
           <div className="row mt-3 align-items-center">
-        <div className="my-4 m-lg-0 col-12 col-lg-5 d-flex justify-content-center">
-          <PaginationNav
-            darkMode={darkMode}
-            counts={totalQuestionsCount}
-            pageNo={currentPage}
-            setPageNo={setCurrentPage}
-            countPerPage={questionsPerPage}
-          />
-        </div>
+            <div className="my-4 m-lg-0 col-12 col-lg-5 d-flex justify-content-center">
+              <PaginationNav
+                darkMode={darkMode}
+                counts={totalQuestionsCount}
+                pageNo={currentPage}
+                setPageNo={setCurrentPage}
+                countPerPage={questionsPerPage}
+              />
+            </div>
 
-        <div className="count-per-page col-12 col-lg-3 d-flex flex-column flex-lg-row align-items-center gap-2">
-          <label className="m-0" style={{ fontSize: "0.95rem" }}>
-            Questions per Page:
-          </label>
-          <select
-            className="form-select"
-            aria-label="Questions per page"
-            value={questionsPerPage}
-            onChange={handleCountPerPageChange}
-            style={{ width: "80px" }}
-          >
-            {countPerPageOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+            <div className="count-per-page col-12 col-lg-3 d-flex flex-column flex-lg-row align-items-center gap-2">
+              <label className="m-0" style={{ fontSize: "0.95rem" }}>
+                Questions per Page:
+              </label>
+              <select
+                className="form-select"
+                aria-label="Questions per page"
+                value={questionsPerPage}
+                onChange={handleCountPerPageChange}
+                style={{ width: "80px" }}
+              >
+                {countPerPageOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-          {error && <div className="alert alert-danger">{error}</div>}
+          {error && (
+            <div className="alert alert-danger">
+              {error}
+            </div>
+          )}
 
           {renderQuestionTable()}
 

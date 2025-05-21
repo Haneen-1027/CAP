@@ -1,291 +1,66 @@
 [
   {
     "user_id": 1,
-    "username": "user1",
-    "first_name": "First1",
-    "last_name": "Last1",
+    "username": "someUser",
+    "firstName": "first name",
+    "lastName": "last name",
     "assessment_id": "4",
     "Answers": [
       {
         "question_id": "10",
+        "prompt": "Example Prompt - for Q10",
         "contributor_answer": "const",
-        "question_type": "mc",
-        "new_mark": 0,
+        "question_details": {
+          "question_type": "mc",
+          "is_true_false": false,
+          "visible_options": ["ss", "ss", "ss", "const"]
+        },
+        "new_mark": 10,
+        "total_mark": 10
+      },
+      {
+        "question_id": "20",
+        "prompt": "Example Prompt - for Q20",
+        "contributor_answer": "True",
+        "question_details": {
+          "question_type": "mc",
+          "is_true_false": true,
+          "visible_options": ["True", "False"]
+        },
+        "new_mark": 10,
+        "total_mark": 10
+      },
+      {
+        "question_id": "30",
+        "prompt": "Example Prompt - for Q30",
+        "contributor_answer": "This is Example Answer",
+        "question_details": {
+          "question_type": "essay"
+        },
+
+        "new_mark": -99,
+        "total_mark": 10
+      },
+      {
+        "question_id": "40",
+        "prompt": "Example Prompt - for Q40",
+        "contributor_answer": "function some()\n .... pass",
+        "question_details": {
+          "question_type": "coding",
+          "used_langauage": 71,
+          "test_cases": {
+            "tests_parameters": [],
+            "excpected_output": [],
+            "tests_count": 15,
+            "test_passed": 7
+          }
+        },
+
+        "new_mark": 7,
         "total_mark": 10
       }
     ],
     "started_time": "2025-04-23T08:06:22.885Z",
     "submitted_time": "2025-04-23T08:07:17.205Z"
-  },
-  {
-    "user_id": 2,
-    "username": "user2",
-    "first_name": "First2",
-    "last_name": "Last2",
-    "assessment_id": "4",
-    "Answers": [
-      {
-        "question_id": "11",
-        "contributor_answer": "let",
-        "question_type": "mc",
-        "new_mark": 6,
-        "total_mark": 10
-      },
-      {
-        "question_id": "12",
-        "contributor_answer": "function sum(a,b){ return a+b; }",
-        "question_type": "coding",
-        "new_mark": 8,
-        "total_mark": 10
-      },
-      {
-        "question_id": "13",
-        "contributor_answer": "In my opinion, JavaScript should...",
-        "question_type": "essay",
-        "new_mark": 7,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T09:00:00.000Z",
-    "submitted_time": "2025-04-23T09:08:12.300Z"
-  },
-  {
-    "user_id": 3,
-    "username": "user3",
-    "first_name": "First3",
-    "last_name": "Last3",
-    "assessment_id": "5",
-    "Answers": [
-      {
-        "question_id": "14",
-        "contributor_answer": "===",
-        "question_type": "mc",
-        "new_mark": 10,
-        "total_mark": 10
-      },
-      {
-        "question_id": "15",
-        "contributor_answer": "function greet() { console.log('hi'); }",
-        "question_type": "coding",
-        "new_mark": 9,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T10:10:00.000Z",
-    "submitted_time": "2025-04-23T10:15:30.000Z"
-  },
-  {
-    "user_id": 4,
-    "username": "user4",
-    "first_name": "First4",
-    "last_name": "Last4",
-    "assessment_id": "4",
-    "Answers": [
-      {
-        "question_id": "16",
-        "contributor_answer": "No, because const is block scoped.",
-        "question_type": "essay",
-        "new_mark": 8,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T11:20:00.000Z",
-    "submitted_time": "2025-04-23T11:23:12.000Z"
-  },
-  {
-    "user_id": 5,
-    "username": "user5",
-    "first_name": "First5",
-    "last_name": "Last5",
-    "assessment_id": "6",
-    "Answers": [
-      {
-        "question_id": "17",
-        "contributor_answer": "function",
-        "question_type": "mc",
-        "new_mark": 8,
-        "total_mark": 10
-      },
-      {
-        "question_id": "18",
-        "contributor_answer": "() => {}",
-        "question_type": "coding",
-        "new_mark": 7,
-        "total_mark": 10
-      },
-      {
-        "question_id": "19",
-        "contributor_answer": "Arrow functions have no this binding.",
-        "question_type": "essay",
-        "new_mark": 10,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T12:00:00.000Z",
-    "submitted_time": "2025-04-23T12:09:45.000Z"
-  },
-  {
-    "user_id": 6,
-    "username": "user6",
-    "first_name": "First6",
-    "last_name": "Last6",
-    "assessment_id": "4",
-    "Answers": [
-      {
-        "question_id": "20",
-        "contributor_answer": "false",
-        "question_type": "mc",
-        "new_mark": 9,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T12:15:00.000Z",
-    "submitted_time": "2025-04-23T12:17:10.000Z"
-  },
-  {
-    "user_id": 7,
-    "username": "user7",
-    "first_name": "First7",
-    "last_name": "Last7",
-    "assessment_id": "5",
-    "Answers": [
-      {
-        "question_id": "21",
-        "contributor_answer": "console.log(a)",
-        "question_type": "coding",
-        "new_mark": 4,
-        "total_mark": 10
-      },
-      {
-        "question_id": "22",
-        "contributor_answer": "Because hoisting happens...",
-        "question_type": "essay",
-        "new_mark": 6,
-        "total_mark": 10
-      },
-      {
-        "question_id": "23",
-        "contributor_answer": "true",
-        "question_type": "mc",
-        "new_mark": 10,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T12:30:00.000Z",
-    "submitted_time": "2025-04-23T12:39:01.000Z"
-  },
-  {
-    "user_id": 8,
-    "username": "user8",
-    "first_name": "First8",
-    "last_name": "Last8",
-    "assessment_id": "6",
-    "Answers": [
-      {
-        "question_id": "24",
-        "contributor_answer": "It affects scope visibility.",
-        "question_type": "essay",
-        "new_mark": 7,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T13:00:00.000Z",
-    "submitted_time": "2025-04-23T13:04:22.000Z"
-  },
-  {
-    "user_id": 9,
-    "username": "user9",
-    "first_name": "First9",
-    "last_name": "Last9",
-    "assessment_id": "4",
-    "Answers": [
-      {
-        "question_id": "25",
-        "contributor_answer": "class MyClass {}",
-        "question_type": "coding",
-        "new_mark": 9,
-        "total_mark": 10
-      },
-      {
-        "question_id": "26",
-        "contributor_answer": "true",
-        "question_type": "mc",
-        "new_mark": 10,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T13:30:00.000Z",
-    "submitted_time": "2025-04-23T13:36:45.000Z"
-  },
-  {
-    "user_id": 10,
-    "username": "user10",
-    "first_name": "First10",
-    "last_name": "Last10",
-    "assessment_id": "5",
-    "Answers": [
-      {
-        "question_id": "27",
-        "contributor_answer": "return a + b;",
-        "question_type": "coding",
-        "new_mark": 10,
-        "total_mark": 10
-      },
-      {
-        "question_id": "28",
-        "contributor_answer": "Functions can be anonymous.",
-        "question_type": "essay",
-        "new_mark": 9,
-        "total_mark": 10
-      },
-      {
-        "question_id": "29",
-        "contributor_answer": "false",
-        "question_type": "mc",
-        "new_mark": 5,
-        "total_mark": 10
-      },
-      {
-        "question_id": "30",
-        "contributor_answer": "yes",
-        "question_type": "mc",
-        "new_mark": 10,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T14:00:00.000Z",
-    "submitted_time": "2025-04-23T14:12:10.000Z"
-  },
-  {
-    "user_id": 25,
-    "username": "user25",
-    "first_name": "First25",
-    "last_name": "Last25",
-    "assessment_id": "6",
-    "Answers": [
-      {
-        "question_id": "45",
-        "contributor_answer": "Closures capture outer variables.",
-        "question_type": "essay",
-        "new_mark": 8,
-        "total_mark": 10
-      },
-      {
-        "question_id": "46",
-        "contributor_answer": "function outer() { return function inner() {}; }",
-        "question_type": "coding",
-        "new_mark": 7,
-        "total_mark": 10
-      },
-      {
-        "question_id": "47",
-        "contributor_answer": "true",
-        "question_type": "mc",
-        "new_mark": 9,
-        "total_mark": 10
-      }
-    ],
-    "started_time": "2025-04-23T18:00:00.000Z",
-    "submitted_time": "2025-04-23T18:10:43.000Z"
   }
 ]

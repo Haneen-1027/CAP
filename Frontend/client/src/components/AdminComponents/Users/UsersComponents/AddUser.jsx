@@ -314,6 +314,7 @@ export default function AddUser({ darkMode }) {
                   filterType={"Select Role:"}
                   handleFunction={handleChanges}
                   error={errors.role}
+                  selectedValue={user.role}
                 />
               </div>
             </div>

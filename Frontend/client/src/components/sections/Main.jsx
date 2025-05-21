@@ -727,23 +727,7 @@ function Main({
           }
         ></Route>
         <Route
-          path="/attempts/details"
-          element={
-            <Suspense
-              fallback={
-                <div className="center-container">
-                  <div className="spinner-border text-success" role="status">
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                </div>
-              }
-            >
-              <AttemptDetails darkMode={darkMode} />
-            </Suspense>
-          }
-        ></Route>
-        <Route
-          path="/attempts/details/evaluation"
+          path="/attempts/:assessment_id/:attempt_id/evaluation"
           element={
             <Suspense
               fallback={
