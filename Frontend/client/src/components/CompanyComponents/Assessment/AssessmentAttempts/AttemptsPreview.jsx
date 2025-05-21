@@ -68,10 +68,26 @@ export default function AttemptsPreview({ darkMode }) {
     setSearchValue(e.target.value);
   };
 
+  const calculateTotalMark = (answers) => {
+    console.log(answers);
+    let new_mark = 0;
+    answers.forEach((answer, index) => {
+      console.log(
+        "answer.new_mark: ",
+        answer.new_mark,
+        " and it's type is: ",
+        typeof answer.new_mark
+      );
+      new_mark += parseInt(answer.new_mark);
+    });
+    return new_mark;
+  };
+
   // Search => Filteration
   const visiblList = useMemo(() => {
     return attempts;
   }, [attempts, searchValue, status]);
+
   // Render Final Attempts List
   const renderList = () => {
     return visiblList.map((attempt, index) => {
@@ -101,6 +117,11 @@ export default function AttemptsPreview({ darkMode }) {
                 : " PM"}
             </td>
             <td>{CalculateTimeInMinutes(submited_time, start_time)} min</td>
+            <td>
+              {calculateTotalMark(attempt.Answers) < 0
+                ? "Incomplete"
+                : calculateTotalMark(attempt.Answers)}
+            </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
                 <Link
@@ -217,7 +238,8 @@ export default function AttemptsPreview({ darkMode }) {
                   <th>Full Name</th>
                   <th>Started At</th>
                   <th>Completed At</th>
-                  <th title="in minutes">Total Time</th>
+                  <th title="Total taken time - in minutes -">Total Time</th>
+                  <th title="">Mark Earned</th>
                   <th>Actions</th>
                 </tr>
               </thead>

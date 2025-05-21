@@ -53,10 +53,11 @@
             "excpected_output": [],
             "tests_count": 15,
             "test_passed": 7
-          },
-          "new_mark": 7,
-          "total_mark": 10
-        }
+          }
+        },
+
+        "new_mark": 7,
+        "total_mark": 10
       }
     ],
     "started_time": "2025-04-23T08:06:22.885Z",
