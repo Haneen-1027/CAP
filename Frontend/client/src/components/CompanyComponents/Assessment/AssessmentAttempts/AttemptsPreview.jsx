@@ -8,6 +8,7 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 
 import attempts from "./Attempts.json";
+import { CalculateTimeInMinutes } from "../../../../Utils/CalculateTimeInMinutes";
 
 export default function AttemptsPreview({ darkMode }) {
   // Component States
@@ -75,14 +76,31 @@ export default function AttemptsPreview({ darkMode }) {
   const renderList = () => {
     return visiblList.map((attempt, index) => {
       if (attempt.assessment_id == assessment_id) {
+        const start_time = attempt.started_time.split("T")[1];
+        const submited_time = attempt.submitted_time.split("T")[1];
+
         return (
           <tr key={index}>
             <td>{index < 10 ? "0" + (index + 1) : index + 1}</td>
             <td>@{attempt.username}</td>
             <td>{attempt.firstName + " " + attempt.lastName}</td>
-            <td>14:03 PM</td>
-            <td>15:25 PM</td>
-            <td>138 min</td>
+            <td>
+              {start_time.slice(0, start_time.lastIndexOf(":"))}
+              {start_time.slice(0, start_time.lastIndexOf(":")).split(":")[0] <
+              12
+                ? " AM"
+                : " PM"}
+            </td>
+            <td>
+              {" "}
+              {submited_time.slice(0, submited_time.lastIndexOf(":"))}{" "}
+              {submited_time
+                .slice(0, submited_time.lastIndexOf(":"))
+                .split(":")[0] < 12
+                ? " AM"
+                : " PM"}
+            </td>
+            <td>{CalculateTimeInMinutes(submited_time, start_time)} min</td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
                 <Link
