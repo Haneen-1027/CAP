@@ -108,13 +108,20 @@ export const deleteAssessment = async (id) => {
 };
 
 /** Users' APIs */
-export const getUsers = async () => {
+export const getUsers = async (page = 1, pageSize = 10, searchTerm = "", roleFilter = "") => {
   return await axios.get(`${BASE_URL}/users`, {
+    params: {
+      page,
+      pageSize,
+      searchTerm,
+      roleFilter: roleFilter !== -999 ? roleFilter : "" // Send empty string for "All"
+    },
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
+
 export const getUserByID = async (id) => {
   return await axios.get(`${BASE_URL}/users/${id}`, {
     headers: {
