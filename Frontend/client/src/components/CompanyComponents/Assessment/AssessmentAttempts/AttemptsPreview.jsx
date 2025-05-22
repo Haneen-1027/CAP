@@ -9,10 +9,11 @@ import {
 
 import attempts from "./Attempts.json";
 import { CalculateTimeInMinutes } from "../../../../Utils/CalculateTimeInMinutes";
+import { getAttempts } from "../../../../APIs/ApisHandaler";
 
 export default function AttemptsPreview({ darkMode }) {
   // Component States
-  // const [attempts, setAttempts] = useState([]);
+  const [apiAttempts, setApiAttempts] = useState([]);
   const { assessment_id } = useParams();
 
   // Searching
@@ -83,10 +84,25 @@ export default function AttemptsPreview({ darkMode }) {
     return new_mark;
   };
 
+  // getUsersAttempts
+  const getUsersAttempts = async () => {
+    try {
+      const response = await getAttempts(assessment_id);
+      console.log("Api Response: ", response);
+      if (response.status === 200 && Array.isArray(response.data)) {
+        setApiAttempts(response.data);
+      } else {
+        console.error("API did not return an array:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching assessments:", error);
+    }
+  };
+
   // Search => Filteration
   const visiblList = useMemo(() => {
-    return attempts;
-  }, [attempts, searchValue, status]);
+    return apiAttempts;
+  }, [apiAttempts, searchValue, status]);
 
   // Render Final Attempts List
   const renderList = () => {
@@ -118,9 +134,9 @@ export default function AttemptsPreview({ darkMode }) {
             </td>
             <td>{CalculateTimeInMinutes(submited_time, start_time)} min</td>
             <td>
-              {calculateTotalMark(attempt.Answers) < 0
+              {calculateTotalMark(attempt.answers) < 0
                 ? "Incomplete"
-                : calculateTotalMark(attempt.Answers)}
+                : calculateTotalMark(attempt.answers)}
             </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">
@@ -151,6 +167,10 @@ export default function AttemptsPreview({ darkMode }) {
   useEffect(() => {
     console.log("Attempts visible list: ", visiblList);
   }, [visiblList]);
+
+  useEffect(() => {
+    getUsersAttempts();
+  }, []);
 
   ////////////////////////
 

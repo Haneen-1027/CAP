@@ -108,13 +108,18 @@ export const deleteAssessment = async (id) => {
 };
 
 /** Users' APIs */
-export const getUsers = async (page = 1, pageSize = 10, searchTerm = "", roleFilter = "") => {
+export const getUsers = async (
+  page = 1,
+  pageSize = 10,
+  searchTerm = "",
+  roleFilter = ""
+) => {
   return await axios.get(`${BASE_URL}/users`, {
     params: {
       page,
       pageSize,
       searchTerm,
-      roleFilter: roleFilter !== -999 ? roleFilter : "" // Send empty string for "All"
+      roleFilter: roleFilter !== -999 ? roleFilter : "", // Send empty string for "All"
     },
     headers: {
       "Content-Type": "application/json",
@@ -160,18 +165,34 @@ export const executeCode = async (questionId, sourceCode, languageId) => {
 /** submision api */
 export const submitAssessment = async (assessmentData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/submissions`, assessmentData, {
-      headers: {
-        'Content-Type': 'application/json',
-        // Add authorization header if needed
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const response = await axios.post(
+      `${BASE_URL}/api/submissions`,
+      assessmentData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Add authorization header if needed
+          // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
       }
-    });
+    );
     return response;
   } catch (error) {
-    console.error('Error submitting assessment:', error);
+    console.error("Error submitting assessment:", error);
     throw error;
   }
+};
+
+export const getAttempts = async (id) => {
+  console.log(
+    "Fetching from URL: ",
+    `${BASE_URL}/Submissions/assessment/${id}`
+  );
+  return await axios.get(`${BASE_URL}/api/Submissions/assessment/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 /////////
 const ApisHandale = () => {
