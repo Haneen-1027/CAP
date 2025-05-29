@@ -46,6 +46,26 @@ export const getAllQuestions = async () => {
   });
 };
 
+export const getAllQuestionsByFilter = async (page = 1, pageSize = 10, category = "", questionType = "") => {
+  try {
+    const response = await axios.get(`${BASE_URL}/questions/filter`, {
+      params: {
+        page,           
+        limit: pageSize,
+        category,     
+        type: questionType      
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error; 
+  }
+};
+
 //
 export const deleteQuestion = async (id) => {
   return await axios.delete(`${BASE_URL}/questions/${id}`, {

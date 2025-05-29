@@ -52,7 +52,7 @@ export default function MultipleChoice({
             id={`option-${question.id}-${index}`}
             value={option}
             onChange={() =>
-              addQuestionAnswer(option, question.id, shuffledOptions)
+              addQuestionAnswer(option, question.id)
             }
             checked={userAnswer === option}
           />
