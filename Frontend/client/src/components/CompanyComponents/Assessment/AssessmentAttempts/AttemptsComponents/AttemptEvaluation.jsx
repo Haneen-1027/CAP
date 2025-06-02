@@ -4,7 +4,7 @@ import {
   BackBtn,
   MultipleChoiceReview,
 } from "../../../../../componentsLoader/ComponentsLoader";
-import { useParams } from "react-router";
+import { useParams, useNavigate  } from "react-router";
 import { getAttempts, executeCode, updateSubmissionMark } from "../../../../../APIs/ApisHandaler";
 import Swal from "sweetalert2";
 
@@ -18,6 +18,8 @@ export default function AttemptEvaluation({ darkMode }) {
   const [isRunning, setIsRunning] = useState(false);
   const [testResults, setTestResults] = useState([]);
   const [code, setCode] = useState("");
+
+  const navigate = useNavigate();
 
   // Language mapping
   const languageMap = {
@@ -159,7 +161,10 @@ const handleNewEvaluation = async () => {
   
   if (saved) {
     // Optional: You could add additional logic here for final submission
-    Swal.fire("Submitted!", "Evaluation has been submitted successfully.", "success");
+    Swal.fire("Submitted!", "Evaluation has been submitted successfully.", "success").then(()=>{
+      window.location.href = `/attempts/${assessment_id}`;
+      navigate(`/attempts/${assessment_id}`)
+    });
   }
 };
   const handleRunCode = async () => {
