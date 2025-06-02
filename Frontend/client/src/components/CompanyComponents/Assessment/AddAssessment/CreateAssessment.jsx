@@ -8,7 +8,7 @@ import SearchBarContainer from "../../../SearchBar";
 import { useLocation, useParams } from "react-router-dom";
 import {
   addNewAssessment,
-  getAllQuestions,
+  getAllQuestionsByFilter,
 } from "../../../../APIs/ApisHandaler";
 
 export default function CreateAssessment({ darkMode }) {
@@ -32,9 +32,8 @@ export default function CreateAssessment({ darkMode }) {
   // State variables
   const [selectedTotalMark, setSelectedTotalMark] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [questionsIds, setquestionsIds] = useState([]);
-  const [questionsIdsListCount, setquestionsIdsListCount] = useState(0);
-  const [visibleList, setVisibleList] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [apiError, setApiError] = useState(false);
 
   // For Editing
@@ -45,32 +44,30 @@ export default function CreateAssessment({ darkMode }) {
 
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
-  const [countPerPage, setCounPerPage] = useState(25);
+  const [countPerPage, setCountPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
 
   // Searching
   const [searchValue, setSearchValue] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
 
-  // Filtiration
-  const [questionType, setQuestionType] = useState(0);
-  const [category, setCategory] = useState(0);
-  const [noResults, setNoResults] = useState(false);
+  // Filtration
+  const [questionType, setQuestionType] = useState("");
+  const [category, setCategory] = useState("");
 
   // Assessment Attributes
   const [assessment, setAssessment] = useState(
     data
       ? data
       : {
-          name: "",
-          duration: "",
-          time: "",
-          startTime: "",
-          endTime: "",
-          totalMark: 0,
-          questionsCount: 0,
-          questionsIds: [],
-        }
+        name: "",
+        duration: "",
+        time: "",
+        startTime: "",
+        endTime: "",
+        totalMark: 0,
+        questionsCount: 0,
+        questionsIds: [],
+      }
   );
 
   // Error messages
@@ -93,25 +90,39 @@ export default function CreateAssessment({ darkMode }) {
     </div>
   );
 
-  // Fetch questionsIds from API on component mount
-  useEffect(() => {
-    const fetchquestionsIds = async () => {
-      try {
-        setIsLoading(true);
-        setApiError(false);
-        const response = await getAllQuestions();
-        setquestionsIds(response.data);
-        setVisibleList(response.data);
-        setquestionsIdsListCount(response.data.length);
-      } catch (error) {
-        console.error("Error fetching questionsIds:", error);
-        setApiError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch questions from API with filters
+  const fetchQuestions = async () => {
+    try {
+      setIsLoading(true);
+      setApiError(false);
 
-    fetchquestionsIds();
+      const response = await getAllQuestionsByFilter(
+        pageNo,
+        countPerPage,
+        category,
+        questionType
+      );
+
+      if (response && response.questions) {
+        setQuestions(response.questions);
+        // Use totalCategoryQuestions or totalTypeQuestions depending on your needs
+        setTotalQuestionsCount(response.totalCategoryQuestions || response.questions.length);
+      } else {
+        setQuestions([]);
+        setTotalQuestionsCount(0);
+      }
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      setApiError(true);
+      setQuestions([]);
+      setTotalQuestionsCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
 
     // Set editing state if ID exists
     if (id) {
@@ -121,7 +132,7 @@ export default function CreateAssessment({ darkMode }) {
         data.questionsIds.reduce((total, question) => total + question.mark, 0)
       );
     }
-  }, [id, data]);
+  }, [id, data, pageNo, countPerPage, category, questionType]);
 
   const addAssessment = async () => {
     try {
@@ -156,77 +167,44 @@ export default function CreateAssessment({ darkMode }) {
     }
   };
 
-  function clearResults() {
-    setVisibleList([...questionsIds]);
-  }
-
   function handleSearchValue(value) {
-    if (value.trim() === "") {
-      clearResults();
-      setSearchValue(value);
-    } else {
-      setSearchValue(value);
-    }
+    setSearchValue(value);
   }
 
   function handleSearching() {
-    if (searchValue.trim() === "") {
-      return;
-    }
-    let srchResultsArray = questionsIds.filter((question) =>
-      question.prompt.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    if (srchResultsArray.length === 0) {
-      setVisibleList([]);
-      setNoResults(true);
-    } else {
-      setSearchResults(srchResultsArray);
-    }
+    // Since we're now using server-side filtering, we'll implement search as a filter
+    fetchQuestions();
   }
 
   function handleCategory(e) {
     setCategory(e.target.value);
+    setPageNo(1); // Reset to first page when changing category
   }
 
   function handleType(e) {
     setQuestionType(e.target.value);
+    setPageNo(1); // Reset to first page when changing type
   }
 
-  function handleFiltiration(type, category) {
-    const typeOptions = questionTypes.map((type) => type.value);
-    const categoryOptions = categories.map((category) => category.value);
+  function renderQuestions() {
+    // Filter questions by search value if it exists
+    const filteredQuestions = searchValue
+      ? questions.filter((question) =>
+        question.prompt.toLowerCase().includes(searchValue.toLowerCase())
+      )
+      : questions;
 
-    let filteredquestionsIds = [];
-
-    if (searchResults.length > 0 && searchValue.trim() !== "") {
-      filteredquestionsIds = [...searchResults];
-    } else {
-      filteredquestionsIds = [...questionsIds];
-    }
-
-    if (type !== 0 && typeOptions.includes(type)) {
-      filteredquestionsIds = filteredquestionsIds.filter(
-        (question) => question.type.toLowerCase() === type.toLowerCase()
+    if (filteredQuestions.length === 0) {
+      return (
+        <tr>
+          <td colSpan="7" className="text-center">
+            No questions found matching your criteria.
+          </td>
+        </tr>
       );
     }
 
-    if (category !== 0 && categoryOptions.includes(category)) {
-      filteredquestionsIds = filteredquestionsIds.filter(
-        (question) => question.category.toLowerCase() === category.toLowerCase()
-      );
-    }
-
-    setVisibleList(filteredquestionsIds);
-
-    if (filteredquestionsIds.length === 0) {
-      setNoResults(true);
-    } else {
-      setNoResults(false);
-    }
-  }
-
-  function renderquestionsIds() {
-    return visibleList.map((question, index) => {
+    return filteredQuestions.map((question, index) => {
       const isChecked = assessment.questionsIds.some(
         (q) => q.id === question.id
       );
@@ -240,7 +218,9 @@ export default function CreateAssessment({ darkMode }) {
 
       return (
         <tr key={index}>
-          <td>{index < 9 ? "0" + (index + 1) : index + 1}.</td>
+          <td>{(pageNo - 1) * countPerPage + index + 1 < 10
+            ? "0" + ((pageNo - 1) * countPerPage + index + 1)
+            : (pageNo - 1) * countPerPage + index + 1}.</td>
           <td className="text-start">{question.category}</td>
           <td
             className="text-start text-truncate"
@@ -251,14 +231,14 @@ export default function CreateAssessment({ darkMode }) {
           </td>
           <td className="text-start">
             {question.type === "mc"
-              ? question.detailes?.isTrueFalse === true
+              ? question.details?.isTrueFalse === true
                 ? "True/False"
                 : "Multiple Choice"
               : question.type === "essay"
-              ? "Essay"
-              : question.type === "coding"
-              ? "Coding"
-              : "Not-valid type"}
+                ? "Essay"
+                : question.type === "coding"
+                  ? "Coding"
+                  : "Not-valid type"}
           </td>
           <td className="text-start">
             <input
@@ -272,7 +252,7 @@ export default function CreateAssessment({ darkMode }) {
               value={
                 isChecked
                   ? assessment.questionsIds.find((q) => q.id === question.id)
-                      ?.mark || 0
+                    ?.mark || 0
                   : ""
               }
             />
@@ -290,14 +270,14 @@ export default function CreateAssessment({ darkMode }) {
                   selectQuestion(
                     e,
                     question.id,
-                    question.detailes,
+                    question.details,
                     question.type
                   )
                 }
                 value={
                   isChecked
                     ? assessment.questionsIds.find((q) => q.id === question.id)
-                        ?.options_count || 0
+                      ?.options_count || 0
                     : ""
                 }
               />
@@ -311,7 +291,7 @@ export default function CreateAssessment({ darkMode }) {
               type="checkbox"
               id={`question-${question.id}`}
               onChange={(e) =>
-                selectQuestion(e, question.id, question.detailes, question.type)
+                selectQuestion(e, question.id, question.details, question.type)
               }
               checked={isChecked}
               disabled={isDisabled}
@@ -416,12 +396,9 @@ export default function CreateAssessment({ darkMode }) {
   }
 
   function handleCountPerPageMenu(e) {
-    setCounPerPage(e.target.value);
+    setCountPerPage(e.target.value);
+    setPageNo(1); // Reset to first page when changing items per page
   }
-
-  useEffect(() => {
-    handleFiltiration(questionType, category);
-  }, [questionType, category, searchResults]);
 
   useEffect(() => {
     handleSearching();
@@ -443,11 +420,11 @@ export default function CreateAssessment({ darkMode }) {
   if (apiError) {
     return (
       <div className="alert alert-danger">
-        Error loading questionsIds. Please try again later.
+        Error loading questions. Please try again later.
       </div>
     );
   }
-  //////////////////////
+
   return (
     <>
       <BackBtn />
@@ -458,7 +435,7 @@ export default function CreateAssessment({ darkMode }) {
               <strong>Create a New Assessment</strong>
             </h5>
           </div>
-          {/** Assesment Title & Duration & Time  */}
+          {/** Assessment Title & Duration & Time  */}
           <div className="card-header p-4 row m-0 d-flex justify-content-between align-items-md-center">
             <div className="form-group col-12 col-lg-4 d-flex flex-column">
               <label htmlFor="name">Title:</label>
@@ -521,7 +498,7 @@ export default function CreateAssessment({ darkMode }) {
               </div>
             </div>
           </div>
-          {/** Filtiration & Total Mark & questionsIds Count  */}
+          {/** Filtration & Total Mark & Questions Count  */}
           <div className="card-header p-4 row gap-1 m-0 d-flex justify-content-between align-items-md-center">
             <div className="col-12 col-md-6 row">
               <div className="category col-12 my-1 m-md-0 col-md-6">
@@ -556,7 +533,7 @@ export default function CreateAssessment({ darkMode }) {
                 />
               </div>
               <div className="form-group col-6 d-flex flex-column ">
-                <label htmlFor="questionsCount">questionsIds Count:</label>
+                <label htmlFor="questionsCount">Questions Count:</label>
                 <input
                   type="number"
                   className="form-control"
@@ -581,7 +558,7 @@ export default function CreateAssessment({ darkMode }) {
             <div className="p-0 my-4 m-md-0 col-12 col-md-8 col-lg-6 d-flex justify-content-md-center align-items-center">
               <PaginationNav
                 darkMode={darkMode}
-                counts={questionsIdsListCount}
+                counts={totalQuestionsCount}
                 pageNo={pageNo}
                 setPageNo={setPageNo}
                 countPerPage={countPerPage}
@@ -589,7 +566,7 @@ export default function CreateAssessment({ darkMode }) {
             </div>
             <div className="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-end">
               <label className="" style={{ fontSize: "0.95rem" }}>
-                questionsIds per Page:
+                Questions per Page:
               </label>
               <select
                 className="form-select"
@@ -605,12 +582,11 @@ export default function CreateAssessment({ darkMode }) {
               </select>
             </div>
           </div>
-          {/** questionsIds to choose  */}
+          {/** Questions to choose  */}
           <div className="table-responsive text-nowrap">
             <table
-              className={`table ${
-                darkMode ? "table-dark " : "table-light"
-              } m-0`}
+              className={`table ${darkMode ? "table-dark " : "table-light"
+                } m-0`}
             >
               <thead className={``}>
                 <tr>
@@ -632,19 +608,9 @@ export default function CreateAssessment({ darkMode }) {
                   <th className="text-start">Actions</th>
                 </tr>
               </thead>
-              {Array.isArray(visibleList) && visibleList.length > 0 ? (
-                <tbody className="table-border-bottom-0">
-                  {renderquestionsIds()}
-                </tbody>
-              ) : noResults ? (
-                <div className="my-4 mid-bold d-flex justify-content-center">
-                  No results Found.
-                </div>
-              ) : apiError ? (
-                apiErrorMessage
-              ) : (
-                loadingMessage
-              )}
+              <tbody className="table-border-bottom-0">
+                {renderQuestions()}
+              </tbody>
             </table>
           </div>
           {/** Button to Submit */}

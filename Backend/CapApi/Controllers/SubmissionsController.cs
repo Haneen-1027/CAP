@@ -1,4 +1,5 @@
 using CapApi.Data;
+using CapApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CapApi.Models;
@@ -335,6 +336,44 @@ public async Task<ActionResult<SubmissionResponse>> SubmitAssessment(
 
             return null;
         }
+        [HttpPut("update-mark")]
+        public async Task<IActionResult> UpdateMark([FromBody] UpdateMarkDto updateMarkDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Find the submission
+            var submission = await _context.Submissions
+                .FirstOrDefaultAsync(s => 
+                    s.UserId == updateMarkDto.UserId &&
+                    s.AssessmentId == updateMarkDto.AssessmentId &&
+                    s.QuestionId == updateMarkDto.QuestionId);
+
+            if (submission == null)
+            {
+                return NotFound("Submission not found");
+            }
+
+            // Update the mark
+            submission.Mark = updateMarkDto.Mark;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { 
+                    success = true, 
+                    message = "Mark updated successfully",
+                    updatedMark = submission.Mark
+                });
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, $"An error occurred while updating the mark: {ex.Message}");
+            }
+        }
+        
     }
 
 

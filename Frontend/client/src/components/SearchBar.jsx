@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 
 function SearchBarContainer({ darkMode, handleSearchValue, val, placeHolder }) {
+  const [inputValue, setInputValue] = useState(val || "");
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSearchValue(e.target.value);
+      handleSearchValue(inputValue); // Only update search value on Enter
     }
+  };
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value); // Update local state only
   };
 
   return (
@@ -32,8 +38,8 @@ function SearchBarContainer({ darkMode, handleSearchValue, val, placeHolder }) {
                 type="search"
                 placeholder={placeHolder ? placeHolder : "Search ..."}
                 aria-label="Search"
-                value={val}
-                onChange={() => {}}
+                value={inputValue}
+                onChange={handleChange}
               />
             </div>
           </div>
