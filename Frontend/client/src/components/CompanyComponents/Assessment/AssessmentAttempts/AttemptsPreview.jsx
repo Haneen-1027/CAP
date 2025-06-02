@@ -147,14 +147,6 @@ export default function AttemptsPreview({ darkMode }) {
                 >
                   <i className="fas fa-edit"></i>
                 </Link>
-
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-danger"
-                  title="Delete"
-                >
-                  <i className="fas fa-trash"></i>
-                </button>
               </div>
             </td>{" "}
           </tr>
@@ -194,7 +186,7 @@ export default function AttemptsPreview({ darkMode }) {
               <strong>Completed Attempts:</strong>
             </h1>
             <Link
-              to={`/assessment/123`}
+              to={`/assessment/${assessment_id}`}
               type="button"
               className={`btn btn-light btn-sm d-flex my-2 m-md-0 align-items-center ${
                 darkMode ? " spic-dark-mode" : ""

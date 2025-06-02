@@ -214,6 +214,26 @@ export const getAttempts = async (id) => {
     },
   });
 };
+
+export const updateSubmissionMark = async (userId, assessmentId, questionId, mark) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/api/submissions/update-mark`, {
+      UserId: userId,
+      AssessmentId: assessmentId,
+      QuestionId: questionId,
+      Mark: mark
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating mark:', error);
+    throw error;
+  }
+};
 /////////
 const ApisHandale = () => {
   return <div>ApisHandle Component</div>;

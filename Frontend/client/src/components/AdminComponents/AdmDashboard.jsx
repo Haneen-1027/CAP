@@ -32,9 +32,8 @@ export default function AdmDashboard({ user, darkMode }) {
         <div className="col-lg-4">
           <div className="card shadow-sm h-100 text-center">
             <div
-              className={`card-body ${
-                darkMode ? "spic-dark-mode text-white" : ""
-              }`}
+              className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
+                }`}
             >
               <h5>
                 Welcome,{" "}
@@ -59,9 +58,8 @@ export default function AdmDashboard({ user, darkMode }) {
         <div className="col-lg-8">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body ${
-                darkMode ? "spic-dark-mode text-white" : ""
-              }`}
+              className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
+                }`}
             >
               <h5>Platform Overview</h5>
               <div className="row text-center mt-4">
@@ -90,9 +88,8 @@ export default function AdmDashboard({ user, darkMode }) {
         <div className="col-lg-7">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body ${
-                darkMode ? "spic-dark-mode text-white" : ""
-              }`}
+              className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
+                }`}
             >
               <div className="d-flex justify-content-between">
                 <h5>Active Assessments</h5>
@@ -104,9 +101,8 @@ export default function AdmDashboard({ user, darkMode }) {
                 {assessments.slice(0, visibleCount).map((a, i) => (
                   <li
                     key={i}
-                    className={`list-group-item d-flex justify-content-between ${
-                      darkMode ? "spic-dark-mode text-white" : ""
-                    }`}
+                    className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""
+                      }`}
                   >
                     {a.title} <span>{a.date}</span>
                   </li>
@@ -121,9 +117,8 @@ export default function AdmDashboard({ user, darkMode }) {
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body ${
-                darkMode ? "spic-dark-mode text-light" : ""
-              }`}
+              className={`card-body ${darkMode ? "spic-dark-mode text-light" : ""
+                }`}
             >
               <h5 className="card-title">Question Management</h5>
               <div className="mt-3">
@@ -138,27 +133,27 @@ export default function AdmDashboard({ user, darkMode }) {
                 </p>
                 <ul className="list-group">
                   <li
-                    className={`list-group-item ${
-                      darkMode ? "spic-dark-mode text-white" : ""
-                    }`}
+                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
+                      }`}
                   >
                     Coding: <span className="text-success">20</span>
                   </li>
                   <li
-                    className={`list-group-item ${
-                      darkMode ? "spic-dark-mode text-white" : ""
-                    }`}
+                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
+                      }`}
                   >
                     Multiple-Choice: <span className="text-success">15</span>
                   </li>
                   <li
-                    className={`list-group-item ${
-                      darkMode ? "spic-dark-mode text-white" : ""
-                    }`}
+                    className={`list-group-item ${darkMode ? "spic-dark-mode text-white" : ""
+                      }`}
                   >
                     Theoretical: <span className="text-success">15</span>
                   </li>
                 </ul>
+                <Link className="btn btn-success btn-sm mt-3" to="/admin/questions_bank/preview">
+                  Manage Question
+                </Link>
               </div>
             </div>
           </div>
@@ -168,18 +163,16 @@ export default function AdmDashboard({ user, darkMode }) {
         <div className="col-lg-5">
           <div className="card shadow-sm h-100">
             <div
-              className={`card-body ${
-                darkMode ? "spic-dark-mode text-white" : ""
-              }`}
+              className={`card-body ${darkMode ? "spic-dark-mode text-white" : ""
+                }`}
             >
               <h5>Users</h5>
               <ul className="list-group mt-3">
                 {users.map((user, i) => (
                   <li
                     key={i}
-                    className={`list-group-item d-flex justify-content-between ${
-                      darkMode ? "spic-dark-mode text-white" : ""
-                    }`}
+                    className={`list-group-item d-flex justify-content-between ${darkMode ? "spic-dark-mode text-white" : ""
+                      }`}
                   >
                     {user.name} <span>{user.role}</span>
                   </li>
