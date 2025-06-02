@@ -69,8 +69,7 @@ export default function AttemptsPreview({ darkMode }) {
     setSearchValue(e.target.value);
   };
 
-  const calculateTotalMark = (answers) => {
-    console.log(answers);
+  const calculateTotalEarnedMark = (answers) => {
     let new_mark = 0;
     answers.forEach((answer, index) => {
       console.log(
@@ -82,6 +81,14 @@ export default function AttemptsPreview({ darkMode }) {
       new_mark += parseInt(answer.new_mark);
     });
     return new_mark;
+  };
+
+  const calculateTotalMark = (answers) => {
+    let tot_mark = 0;
+    answers.forEach((answer, index) => {
+      tot_mark += parseInt(answer.total_mark);
+    });
+    return tot_mark;
   };
 
   // getUsersAttempts
@@ -134,9 +141,15 @@ export default function AttemptsPreview({ darkMode }) {
             </td>
             <td>{CalculateTimeInMinutes(submited_time, start_time)} min</td>
             <td>
-              {calculateTotalMark(attempt.answers) < 0
+              {calculateTotalEarnedMark(attempt.answers) < 0
                 ? "Incomplete"
-                : calculateTotalMark(attempt.answers)}
+                : calculateTotalEarnedMark(attempt.answers)}{" "}
+              <span
+                className={`${darkMode ? "#ccc" : "text-muted"}`}
+                style={{ fontSize: "0.85rem" }}
+              >
+                / {calculateTotalMark(attempt.answers)}
+              </span>
             </td>
             <td>
               <div className="d-flex gap-2 justify-content-center">

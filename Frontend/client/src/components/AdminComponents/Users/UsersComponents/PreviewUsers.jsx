@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { getUsers } from "../../../../APIs/ApisHandaler";
+import { getUsers, deleteUser } from "../../../../APIs/ApisHandaler";
 import {
   FilterableDropdown,
   SearchBar,
@@ -74,9 +74,12 @@ export default function PreviewUsers({ darkMode }) {
       }
     };
 
-    const debounceTimer = setTimeout(() => {
-      fetchUsers();
-    }, searchValue ? 500 : 0);
+    const debounceTimer = setTimeout(
+      () => {
+        fetchUsers();
+      },
+      searchValue ? 500 : 0
+    );
 
     return () => clearTimeout(debounceTimer);
   }, [pageNo, countPerPage, searchValue, roleFilter]);

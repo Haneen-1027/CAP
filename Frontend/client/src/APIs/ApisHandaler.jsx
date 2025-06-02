@@ -46,14 +46,19 @@ export const getAllQuestions = async () => {
   });
 };
 
-export const getAllQuestionsByFilter = async (page = 1, pageSize = 10, category = "", questionType = "") => {
+export const getAllQuestionsByFilter = async (
+  page = 1,
+  pageSize = 10,
+  category = "",
+  questionType = ""
+) => {
   try {
     const response = await axios.get(`${BASE_URL}/questions/filter`, {
       params: {
-        page,           
+        page,
         limit: pageSize,
-        category,     
-        type: questionType      
+        category,
+        type: questionType,
       },
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +67,7 @@ export const getAllQuestionsByFilter = async (page = 1, pageSize = 10, category 
     return response.data;
   } catch (error) {
     console.error("API Error:", error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -168,7 +173,12 @@ export const deleteUser = async (id) => {
     },
   });
 };
-
+export const updateUser = async (id) => {
+  return (
+    await axios.put(`${BASE_URL}/users/${id}`),
+    { headers: { "Content-Type": "application/json" } }
+  );
+};
 /** Code Execution API */
 export const executeCode = async (questionId, sourceCode, languageId) => {
   return await axios.post(

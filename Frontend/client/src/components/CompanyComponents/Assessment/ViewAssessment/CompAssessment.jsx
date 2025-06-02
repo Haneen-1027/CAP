@@ -52,6 +52,7 @@ export default function CompAssessment({ user, darkMode }) {
     const filtered = assessmentsToFilter.filter((asses) =>
       showUpcoming ? asses.time >= currentDate : asses.time < currentDate
     );
+
     setVisibleList(filtered);
   };
 

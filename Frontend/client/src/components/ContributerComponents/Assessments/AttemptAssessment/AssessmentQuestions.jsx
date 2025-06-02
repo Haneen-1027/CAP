@@ -25,12 +25,15 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
   // Check if assessment was already submitted on component mount
   useEffect(() => {
-    const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
+    const submittedAssessments = JSON.parse(
+      localStorage.getItem("submittedAssessments") || "[]"
+    );
     if (submittedAssessments.includes(assessment.id)) {
       setAlreadySubmitted(true);
       navigate("/", {
         state: {
-          message: "You have already submitted this assessment and cannot submit again.",
+          message:
+            "You have already submitted this assessment and cannot submit again.",
           success: false,
         },
       });
@@ -126,7 +129,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
   const handleNext = () => {
     if (alreadySubmitted || timeExpired) return;
-    
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
@@ -134,7 +137,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
   const handlePrevious = () => {
     if (alreadySubmitted || timeExpired) return;
-    
+
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
@@ -144,7 +147,8 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
     if (alreadySubmitted) {
       navigate("/", {
         state: {
-          message: "You have already submitted this assessment and cannot submit again.",
+          message:
+            "You have already submitted this assessment and cannot submit again.",
           success: false,
         },
       });
@@ -164,7 +168,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
 
       const finalAttempt = {
         assessment_id: parseInt(assessment.id.replace("Ass-", "")),
-        user_id: userId, 
+        user_id: userId,
         Answers: assessmentAttempt.Answers.map((answer) => ({
           question_id: parseInt(
             answer.question_id.toString().replace("Id", "")
@@ -192,9 +196,11 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
       console.log("Submission successful:", response.data);
 
       // Mark assessment as submitted in localStorage
-      const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
+      const submittedAssessments = JSON.parse(
+        localStorage.getItem("submittedAssessments") || "[]"
+      );
       localStorage.setItem(
-        'submittedAssessments',
+        "submittedAssessments",
         JSON.stringify([...submittedAssessments, assessment.id])
       );
 
@@ -281,7 +287,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               darkMode={darkMode}
               addQuestionAnswer={(result) => {
                 if (timeExpired) return;
-                
+
                 // This will handle both regular answers and coding test results
                 if (typeof result === "object" && result.code !== undefined) {
                   // Coding question with test results
