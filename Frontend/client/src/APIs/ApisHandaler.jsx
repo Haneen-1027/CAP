@@ -183,22 +183,21 @@ export const executeCode = async (questionId, sourceCode, languageId) => {
 };
 
 /** submision api */
-export const submitAssessment = async (assessmentData) => {
+export const submitAssessment = async (submissionData) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}/api/submissions`,
-      assessmentData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          // Add authorization header if needed
-          // 'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+    const response = await axios.post(`${BASE_URL}/api/submissions`, submissionData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
-    );
+    });
     return response;
   } catch (error) {
-    console.error("Error submitting assessment:", error);
+    // Specifically handle 409 Conflict
+    if (error.response?.status === 409) {
+      throw error; // Let the component handle this specially
+    }
+    console.error('Error submitting assessment:', error);
     throw error;
   }
 };
@@ -231,6 +230,24 @@ export const updateSubmissionMark = async (userId, assessmentId, questionId, mar
     return response.data;
   } catch (error) {
     console.error('Error updating mark:', error);
+    throw error;
+  }
+};
+
+export const checkExistingSubmission = async (userId, assessmentId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/submissions/check-submission`,
+      {
+        params: { userId, assessmentId },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error checking submission:', error);
     throw error;
   }
 };

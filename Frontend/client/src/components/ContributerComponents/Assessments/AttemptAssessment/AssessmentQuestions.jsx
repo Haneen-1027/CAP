@@ -4,13 +4,13 @@ import {
   CodingQuestion,
   MultipleChoiceQuestion,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { submitAssessment } from "../../../../APIs/ApisHandaler";
+import { submitAssessment, checkExistingSubmission } from "../../../../APIs/ApisHandaler";
 
 const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
   const navigate = useNavigate();
   const [assessmentAttempt, setAssessmentAttempt] = useState({
     assessment_id: assessment.id,
-    user_id: 13, // Static user ID
+    user_id: user?.id || 0,
     Answers: [],
     submitted: false,
     started_time: new Date().toISOString(),
@@ -20,22 +20,57 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeExpired, setTimeExpired] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingSubmission, setIsCheckingSubmission] = useState(true);
   const [submitError, setSubmitError] = useState(null);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
 
-  // Check if assessment was already submitted on component mount
+  // Check for existing submission on server and client
   useEffect(() => {
-    const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
-    if (submittedAssessments.includes(assessment.id)) {
-      setAlreadySubmitted(true);
-      navigate("/", {
-        state: {
-          message: "You have already submitted this assessment and cannot submit again.",
-          success: false,
-        },
-      });
-    }
-  }, [assessment.id, navigate]);
+    const checkSubmission = async () => {
+      if (!user?.id) return;
+
+      try {
+        // First check server
+        const serverResponse = await checkExistingSubmission(
+          user.id,
+          assessment.id
+        );
+        
+        if (serverResponse.data?.submitted) {
+          setAlreadySubmitted(true);
+          navigate("/", {
+            state: {
+              message: "You have already submitted this assessment.",
+              success: false,
+            },
+          });
+          return;
+        }
+
+        // Then check localStorage as fallback
+        const clientSubmitted = JSON.parse(
+          localStorage.getItem(`user_${user.id}_submittedAssessments`) || '[]'
+        ).includes(assessment.id);
+
+        if (clientSubmitted) {
+          setAlreadySubmitted(true);
+          navigate("/", {
+            state: {
+              message: "You have already submitted this assessment.",
+              success: false,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error checking submission:", error);
+        // Continue with assessment if check fails
+      } finally {
+        setIsCheckingSubmission(false);
+      }
+    };
+
+    checkSubmission();
+  }, [assessment.id, navigate, user?.id]);
 
   // Calculate end time based on assessment duration
   const calculateEndTime = () => {
@@ -140,44 +175,27 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
     }
   };
 
-  const handleSubmitAssessment = async () => {
-    if (alreadySubmitted) {
-      navigate("/", {
-        state: {
-          message: "You have already submitted this assessment and cannot submit again.",
-          success: false,
-        },
-      });
-      return;
-    }
+const handleSubmitAssessment = async () => {
+    if (alreadySubmitted) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      const user = JSON.parse(localStorage.getItem("details")); // Get logged-in user
       const userId = user?.id;
-
-      if (!userId) {
-        throw new Error("User not found in local storage.");
-      }
+      if (!userId) throw new Error("User not found.");
 
       const finalAttempt = {
         assessment_id: parseInt(assessment.id.replace("Ass-", "")),
-        user_id: userId, 
+        user_id: userId,
         Answers: assessmentAttempt.Answers.map((answer) => ({
-          question_id: parseInt(
-            answer.question_id.toString().replace("Id", "")
-          ),
+          question_id: parseInt(answer.question_id.toString().replace("Id", "")),
           contributor_answer: answer.contributor_answer,
           question_type: answer.question_type,
           ...(answer.question_type === "coding" && {
             test_pass: answer.test_pass || 0,
-            total_test_case:
-              answer.total_test_case ||
-              questions.find((q) => q.id === answer.question_id)?.detailes
-                ?.testCases?.length ||
-              0,
+            total_test_case: answer.total_test_case ||
+              questions.find((q) => q.id === answer.question_id)?.detailes?.testCases?.length || 0,
           }),
         })),
         submitted: true,
@@ -185,38 +203,68 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
         submitted_time: new Date().toISOString(),
       };
 
-      // Submit to backend
-      console.log(finalAttempt);
+      // Server-side submission
       const response = await submitAssessment(finalAttempt);
 
-      console.log("Submission successful:", response.data);
+      // Handle duplicate submission error
+      if (response.status === 409) {
+        setAlreadySubmitted(true);
+        navigate("/", {
+          state: {
+            message: "You have already submitted this assessment.",
+            success: false,
+          },
+        });
+        return;
+      }
 
-      // Mark assessment as submitted in localStorage
-      const submittedAssessments = JSON.parse(localStorage.getItem('submittedAssessments') || '[]');
+      // Update client-side only after successful server submission
+      const userSubmittedAssessments = JSON.parse(
+        localStorage.getItem(`user_${userId}_submittedAssessments`) || '[]'
+      );
       localStorage.setItem(
-        'submittedAssessments',
-        JSON.stringify([...submittedAssessments, assessment.id])
+        `user_${userId}_submittedAssessments`,
+        JSON.stringify([...userSubmittedAssessments, assessment.id])
       );
 
       navigate("/", {
         state: {
           message: timeExpired
-            ? "Time has expired! Your assessment has been automatically submitted."
+            ? "Time has expired! Your assessment has been submitted."
             : "Assessment submitted successfully!",
           success: true,
         },
       });
     } catch (error) {
       console.error("Submission failed:", error);
-      setSubmitError(
-        error.response?.data?.message ||
-          "Failed to submit assessment. Please try again."
-      );
+      
+      if (error.response?.status === 409) {
+        setAlreadySubmitted(true);
+        navigate("/", {
+          state: {
+            message: "You have already submitted this assessment.",
+            success: false,
+          },
+        });
+      } else {
+        setSubmitError(
+          error.response?.data?.message || "Failed to submit assessment. Please try again."
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isCheckingSubmission) {
+    return (
+      <div className="d-flex justify-content-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
   if (alreadySubmitted) {
     return null; // Or a loading spinner while redirecting
   }
@@ -282,9 +330,7 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
               addQuestionAnswer={(result) => {
                 if (timeExpired) return;
                 
-                // This will handle both regular answers and coding test results
                 if (typeof result === "object" && result.code !== undefined) {
-                  // Coding question with test results
                   addQuestionAnswer(
                     {
                       code: result.code,
@@ -294,7 +340,6 @@ const AssessmentQuestions = ({ user, darkMode, assessment, questions }) => {
                     currentQuestionId
                   );
                 } else {
-                  // Regular answer
                   addQuestionAnswer(result, currentQuestionId);
                 }
               }}

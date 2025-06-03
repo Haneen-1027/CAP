@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using CapApi.Models;
 using CapApi.Dtos.Submission;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace CapApi.Controllers
 {
@@ -20,7 +21,6 @@ namespace CapApi.Controllers
             _context = context;
             _logger = logger;
         }
-
 
         [HttpGet("assessment/{assessmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -96,10 +96,13 @@ namespace CapApi.Controllers
                             }
                             else if (question?.Type?.ToLower() == "coding" && question.CodingQuestion != null)
                             {
+                                // Detect language from answer content
+                                int detectedLanguageId = DetectProgrammingLanguage(s.Answer);
+
                                 questionDetails = new
                                 {
                                     question_type = "coding",
-                                    used_langauage = 71, // Assuming a default language ID
+                                    used_langauage = detectedLanguageId,
                                     test_cases = new
                                     {
                                         tests_parameters = new List<string>(),
@@ -144,14 +147,85 @@ namespace CapApi.Controllers
             }
         }
 
+        // Helper method to detect programming language from code
+        private int DetectProgrammingLanguage(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return 71; // Default to Python if empty
+            }
+
+            // Trim whitespace and normalize line endings
+            var normalizedCode = Regex.Replace(code.Trim(), @"\r\n|\n\r|\n|\r", "\n");
+
+            // Check for JavaScript patterns
+            var jsPatterns = new[]
+            {
+                @"\bfunction\b",   // function keyword
+                @"=>",             // arrow function
+                @"\bconsole\.",    // console.log
+                @"\bconst\b",      // const declaration
+                @"\blet\b",        // let declaration
+                @"\bvar\b",        // var declaration
+                @"/\*.*\*/",       // multi-line comment
+                @"//.*"            // single-line comment
+            };
+
+            // Check for Python patterns
+            var pythonPatterns = new[]
+            {
+                @"\bdef\b",        // def keyword
+                @"\bclass\b",      // class keyword
+                @"\blambda\b",    // lambda keyword
+                @"\bimport\b",    // import statement
+                @"\bfrom\b",       // from statement
+                @"#.*",            // Python comment
+                @"\bprint\s*\(",   // print function
+                @"\bwith\b"        // with statement
+            };
+
+            var jsMatches = jsPatterns.Count(pattern => Regex.IsMatch(normalizedCode, pattern));
+            var pythonMatches = pythonPatterns.Count(pattern => Regex.IsMatch(normalizedCode, pattern));
+
+            // More matches for JavaScript patterns
+            if (jsMatches > pythonMatches)
+            {
+                return 63; // JavaScript
+            }
+            // More matches for Python patterns or equal matches
+            return 71; // Python
+        }
+
+        [HttpGet("check-submission")]
+        public async Task<IActionResult> CheckExistingSubmission(
+            [FromQuery] int userId, 
+            [FromQuery] int assessmentId)
+        {
+            try
+            {
+                var existingSubmission = await _context.Submissions
+                    .AnyAsync(s => 
+                        s.UserId == userId && 
+                        s.AssessmentId == assessmentId &&
+                        s.SubmittedAt != null);
+
+                return Ok(new { submitted = existingSubmission });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking existing submission");
+                return StatusCode(500, new { error = "Error checking submission status" });
+            }
+        }
         /// <summary>
         /// Submits an assessment with all answers
         /// </summary>
         /// <param name="submissionDto">Assessment submission data</param>
         /// <returns>Result of the submission operation</returns>
-        [HttpPost]
+[HttpPost]
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status409Conflict)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public async Task<ActionResult<SubmissionResponse>> SubmitAssessment(
     [FromBody] AssessmentSubmissionDto submissionDto)
@@ -165,30 +239,28 @@ public async Task<ActionResult<SubmissionResponse>> SubmitAssessment(
     {
         // Validate the request
         var validationResult = ValidateSubmission(submissionDto);
-        if (validationResult != null)
-        {
-            return validationResult;
-        }
+        if (validationResult != null) return validationResult;
 
         var userId = submissionDto.user_id;
         var assessmentId = submissionDto.assessment_id;
 
-        // Verify user exists
-        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-        if (!userExists)
+        // Check for existing submission first
+        var existingSubmission = await _context.Submissions
+            .AnyAsync(s => 
+                s.UserId == userId && 
+                s.AssessmentId == assessmentId &&
+                s.SubmittedAt != null);
+
+        if (existingSubmission)
         {
-            _logger.LogWarning("User with ID {UserId} not found", userId);
-            return BadRequest(new { error = "User does not exist" });
+            _logger.LogWarning("User {UserId} already submitted assessment {AssessmentId}", userId, assessmentId);
+            return Conflict(new { 
+                success = false,
+                message = "You have already submitted this assessment"
+            });
         }
 
-        // Verify assessment exists
-        var assessmentExists = await _context.Assessments.AnyAsync(a => a.Id == assessmentId);
-        if (!assessmentExists)
-        {
-            _logger.LogWarning("Assessment with ID {AssessmentId} not found", assessmentId);
-            return BadRequest(new { error = "Assessment does not exist" });
-        }
-
+        // Initialize submissions list
         var submissions = new List<Submission>();
         var questionIds = submissionDto.Answers.Select(a => a.question_id).ToList();
 
@@ -298,7 +370,6 @@ public async Task<ActionResult<SubmissionResponse>> SubmitAssessment(
         return StatusCode(500, new { error = "An unexpected error occurred while processing your submission" });
     }
 }
-
         private ActionResult? ValidateSubmission(AssessmentSubmissionDto submissionDto)
         {
             if (submissionDto == null)
