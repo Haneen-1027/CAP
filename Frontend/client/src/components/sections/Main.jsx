@@ -38,6 +38,7 @@ import {
   AttemptsPreview,
   AttemptDetails,
   AttemptEvaluation,
+  EditUser,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -403,6 +404,25 @@ function Main({
                   }
                 >
                   <PreviewUser darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/users/update_user/:id"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <EditUser darkMode={darkMode} />
                 </Suspense>
               }
             />

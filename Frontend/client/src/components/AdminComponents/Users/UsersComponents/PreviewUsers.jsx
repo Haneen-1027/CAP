@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { getUsers, deleteUser } from "../../../../APIs/ApisHandaler";
+import Swal from "sweetalert2";
+
 import {
   FilterableDropdown,
   SearchBar,
@@ -21,6 +23,7 @@ export default function PreviewUsers({ darkMode }) {
     direction: "ascending",
   });
 
+  //
   const apiErrorMessage = (
     <div className="w-100 h-100 d-flex flex-column align-items-center">
       <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
@@ -132,13 +135,18 @@ export default function PreviewUsers({ darkMode }) {
             >
               <i className="fas fa-eye"></i>
             </Link>
-            <Link className="btn btn-sm btn-outline-success" title="Edit">
+            <Link
+              to={`/admin/users/update_user/${user.id}`}
+              className="btn btn-sm btn-outline-success"
+              title="Edit"
+            >
               <i className="fas fa-edit"></i>
             </Link>
             <button
               type="button"
               className="btn btn-sm btn-outline-danger"
               title="Delete"
+              onClick={() => deleteUserById(user.id)}
             >
               <i className="fas fa-trash"></i>
             </button>
@@ -146,6 +154,42 @@ export default function PreviewUsers({ darkMode }) {
         </td>
       </tr>
     ));
+  }
+
+  async function deleteUserById(id) {
+    const confirmation = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to delete a user and there is no way to retrive his data!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete user!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (!confirmation.isConfirmed) {
+      await Swal.fire({
+        title: "Cancelled",
+        text: "User deletion was cancelled.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    try {
+      const res = await deleteUser(id);
+      console.log("Result from deletion: ", res);
+      await Swal.fire({
+        title: "Success!",
+        text: "User has been added successfully.",
+        icon: "success",
+        confirmButtonText: "Great!",
+      });
+    } catch (error) {
+      setApiError(true);
+    }
   }
 
   if (isLoading) return loadingMessage;

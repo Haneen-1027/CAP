@@ -167,15 +167,16 @@ export const addUser = async (user) => {
   });
 };
 export const deleteUser = async (id) => {
-  return await axios.delete(`${BASE_URL}/users`, {
+  return await axios.delete(`${BASE_URL}/users/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
-export const updateUser = async (id) => {
+export const updateUser = async (id, data) => {
   return (
     await axios.put(`${BASE_URL}/users/${id}`),
+    data,
     { headers: { "Content-Type": "application/json" } }
   );
 };
@@ -225,22 +226,31 @@ export const getAttempts = async (id) => {
   });
 };
 
-export const updateSubmissionMark = async (userId, assessmentId, questionId, mark) => {
+export const updateSubmissionMark = async (
+  userId,
+  assessmentId,
+  questionId,
+  mark
+) => {
   try {
-    const response = await axios.put(`${BASE_URL}/api/submissions/update-mark`, {
-      UserId: userId,
-      AssessmentId: assessmentId,
-      QuestionId: questionId,
-      Mark: mark
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    const response = await axios.put(
+      `${BASE_URL}/api/submissions/update-mark`,
+      {
+        UserId: userId,
+        AssessmentId: assessmentId,
+        QuestionId: questionId,
+        Mark: mark,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    });
+    );
     return response.data;
   } catch (error) {
-    console.error('Error updating mark:', error);
+    console.error("Error updating mark:", error);
     throw error;
   }
 };
