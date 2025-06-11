@@ -2,60 +2,11 @@ import React, { useEffect, useState } from "react";
 
 function Footer({ darkMode }) {
   return (
-    <footer className={`p-1`}>
-      <ul className="nav justify-content-center border-bottom pb-3 mb-3">
-        <li className="nav-item">
-          <a
-            href="#"
-            className={` ${
-              darkMode ? "text-light" : "text-body-secondary"
-            } nav-link px-2 `}
-          >
-            Home
-          </a>
-        </li>
-        <li className="nav-item">
-          <a
-            href="#"
-            className={` ${
-              darkMode ? "text-light" : "text-body-secondary"
-            } nav-link px-2 `}
-          >
-            Features
-          </a>
-        </li>
-        <li className="nav-item">
-          <a
-            href="#"
-            className={` ${
-              darkMode ? "text-light" : "text-body-secondary"
-            } nav-link px-2 `}
-          >
-            Pricing
-          </a>
-        </li>
-        <li className="nav-item">
-          <a
-            href="#"
-            className={` ${
-              darkMode ? "text-light" : "text-body-secondary"
-            } nav-link px-2 `}
-          >
-            FAQs
-          </a>
-        </li>
-        <li className="nav-item">
-          <a
-            href="#"
-            className={` ${
-              darkMode ? "text-light" : "text-body-secondary"
-            } nav-link px-2 `}
-          >
-            About
-          </a>
-        </li>
-      </ul>
-      <p className="text-center ">© 2024 Company, Inc</p>
+    <footer className={`p-3`}>
+      <p className="text-center m-0">
+        © 2025 <span className="mid-bold text-success">MENA</span>, Test &
+        Assessment. All rights reserved.
+      </p>
     </footer>
   );
 }

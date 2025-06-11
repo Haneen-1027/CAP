@@ -115,7 +115,18 @@ canvas {
   max-height: inherit;
 }
 
+main {
+  overflow-y: auto;
+}
+
 footer {
+  position: fixed;
+  bottom: 0;
+  background-color: var(--main-bg);
+  width: 100%;
+  z-index: 5 !important;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 .table-responsive {

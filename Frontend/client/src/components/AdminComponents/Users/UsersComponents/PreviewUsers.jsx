@@ -10,6 +10,7 @@ import {
 } from "../../../../componentsLoader/ComponentsLoader";
 
 export default function PreviewUsers({ darkMode }) {
+  const [deletionState, setDeletionState] = useState(false);
   const [users, setUsers] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +86,7 @@ export default function PreviewUsers({ darkMode }) {
     );
 
     return () => clearTimeout(debounceTimer);
-  }, [pageNo, countPerPage, searchValue, roleFilter]);
+  }, [pageNo, countPerPage, searchValue, roleFilter, deletionState]);
 
   const handleSearchValue = (value) => {
     setSearchValue(value);
@@ -187,6 +188,7 @@ export default function PreviewUsers({ darkMode }) {
         icon: "success",
         confirmButtonText: "Great!",
       });
+      setDeletionState(!deletionState);
     } catch (error) {
       setApiError(true);
     }

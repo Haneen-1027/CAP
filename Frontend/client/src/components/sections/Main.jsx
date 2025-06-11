@@ -21,14 +21,12 @@ import {
   AddQuestion,
   ViewQuestions,
   QuestionAssessment,
-  UserAssessmentResults,
   PreviewQuestion,
   CompAssessment,
   CreateAssessment,
   UpdateAssessment,
   AssessmentOutlet,
   AttemptAssessment,
-  SubmittedAssessment,
   NotFoundPath,
   AuthorizeError,
   InviteContributors,
@@ -55,7 +53,7 @@ function Main({
     console.log("Main.jsx: ", userDetailes);
   }, []);
   return (
-    <main className="container my-5">
+    <main className="container mt-5">
       <Routes>
         {/*** General Path - "..domain.../your_path" ***/}
         <Route
@@ -500,26 +498,6 @@ function Main({
               </Suspense>
             }
           />
-          {/* Contributer Result */}
-          <Route
-            path="/contributer/result"
-            element={
-              <Suspense
-                fallback={
-                  <div className="center-container">
-                    <div className="spinner-border text-success" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </div>
-                }
-              >
-                <UserAssessmentResults
-                  user={userDetailes}
-                  darkMode={darkMode}
-                />
-              </Suspense>
-            }
-          />
         </Route>
         {/* Company Page */}
         <Route
@@ -552,23 +530,6 @@ function Main({
                 }
               >
                 <CompDashboard user={userDetailes} darkMode={darkMode} />
-              </Suspense>
-            }
-          />
-          {/* Company Correction Assessment */}
-          <Route
-            path="/company/submitted"
-            element={
-              <Suspense
-                fallback={
-                  <div className="center-container">
-                    <div className="spinner-border text-success" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </div>
-                }
-              >
-                <SubmittedAssessment user={userDetailes} darkMode={darkMode} />
               </Suspense>
             }
           />

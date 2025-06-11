@@ -136,11 +136,7 @@ export const EditUser = lazy(() =>
 export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
-export const SubmittedAssessment = lazy(() =>
-  import(
-    "../components/CompanyComponents/CorrectionAssessment/SubmittedAssessment.jsx"
-  )
-);
+
 ///////////////////////////////////////////////////////////
 //// Assessments Components:
 // Outlet
@@ -246,9 +242,3 @@ export const CodingQuestion = lazy(() =>
 );
 
 /////////
-// User Assessment Results
-export const UserAssessmentResults = lazy(() =>
-  import(
-    "../components/ContributerComponents/Results/UserAssessmentResults .jsx"
-  )
-);

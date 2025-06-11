@@ -25,7 +25,7 @@ function App() {
     localStorage.removeItem("details");
     setUserDetails({});
     navigate({
-      pathname: "/Login",
+      pathname: "/login",
     });
   }
 
@@ -60,22 +60,24 @@ function App() {
           </div>
         }
       >
-        {/* Header */}
-        <Header
-          userDetailes={userDetailes}
-          darkMode={darkMode}
-          logout={logout}
-        />
-        {/* Main */}
-        <Main
-          userDetailes={userDetailes}
-          setUserData={setUserData}
-          goToPage={goToPage}
-          setActiveId={setActiveId}
-          darkMode={darkMode}
-        />
-        {/* Footer */}
-        <Footer darkMode={darkMode} />
+        <div className="position-relative">
+          {/* Header */}
+          <Header
+            userDetailes={userDetailes}
+            darkMode={darkMode}
+            logout={logout}
+          />
+          {/* Main */}
+          <Main
+            userDetailes={userDetailes}
+            setUserData={setUserData}
+            goToPage={goToPage}
+            setActiveId={setActiveId}
+            darkMode={darkMode}
+          />
+          {/* Footer */}
+          <Footer darkMode={darkMode} />
+        </div>
       </Suspense>
     </>
   );

@@ -8,18 +8,76 @@ export default function Home({ darkMode }) {
         darkMode ? "spic-dark-mode text-white" : ""
       }`}
     >
-      <div className="container text-center">
+      <div className="text-center">
         {/* Header Section */}
         <h1 className="display-4 fw-bold">
-          Welcome to Code Execution Platform
+          Join <span className="text-success">MENA’s</span> Engineering Team
         </h1>
+        <p className={`lead ${darkMode ? "text-white" : "text-muted"} fw-bold`}>
+          Show Us Your Skills — Not Just Your CV
+        </p>
         <p className={`lead ${darkMode ? "text-white" : "text-muted"}`}>
-          Test your coding skills, run code instantly, and take coding
-          assessments with ease.
+          We believe talent should be measured by ability, not credentials.
+          That’s why we use our in-house coding assessment platform to evaluate
+          real-world skills in a fair, challenge-based environment.
         </p>
 
+        <hr className="my-5" />
+        {/* Features Section */}
+        <div className="row">
+          <h1 className="h2 fw-bold mb-4">
+            💡 Why <span className="text-success">MENA’s</span> Does It
+            Differently
+          </h1>
+          <div className="col-md-4">
+            <div
+              className={`card shadow-sm p-4 ${
+                darkMode ? "dark-theme text-white" : ""
+              }`}
+            >
+              <h5 className="fw-bold">✅ Skill-Based Evaluation</h5>
+              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
+                Tackle problems similar to what we solve every day at MENA.
+              </p>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div
+              className={`card shadow-sm p-4 ${
+                darkMode ? "dark-theme text-white" : ""
+              }`}
+            >
+              <h5 className="fw-bold">🔒 Fair & Secure Evaluation</h5>
+              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
+                We focus on what you solve, not how fast you type! We care how
+                you think and build.
+              </p>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div
+              className={`card shadow-sm p-4 ${
+                darkMode ? "dark-theme text-white" : ""
+              }`}
+            >
+              <h5 className="fw-bold">📈 Quick Feedback</h5>
+              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
+                Get notified fast. No ghosting. If you pass, you move on to
+                interviews quickly.
+              </p>
+            </div>
+          </div>
+        </div>
+        <hr className="my-5" />
+        <div>
+          <p
+            className={`lead ${darkMode ? "text-white" : "text-muted"} fw-bold`}
+          >
+            🧠 Put Your Skills to the Test! We can’t wait to meet you.
+          </p>
+        </div>
         {/* Call to Actions */}
-        <div className="mt-4">
+        <div className="">
           <Link to="/login" className="btn btn-success btn-lg mx-2">
             Login
           </Link>
@@ -27,55 +85,6 @@ export default function Home({ darkMode }) {
             Sign Up
           </Link>
         </div>
-
-        {/* Features Section */}
-        <div className="row mt-5">
-          <div className="col-md-4">
-            <div
-              className={`card shadow-sm p-4 ${
-                darkMode ? "dark-theme text-white" : ""
-              }`}
-            >
-              <h5 className="fw-bold">Live Code Execution</h5>
-              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
-                Run your code instantly in multiple programming languages.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div
-              className={`card shadow-sm p-4 ${
-                darkMode ? "dark-theme text-white" : ""
-              }`}
-            >
-              <h5 className="fw-bold">Coding Assessments</h5>
-              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
-                Take coding challenges and improve your problem-solving skills.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div
-              className={`card shadow-sm p-4 ${
-                darkMode ? "dark-theme text-white" : ""
-              }`}
-            >
-              <h5 className="fw-bold">Leaderboard</h5>
-              <p className={`${darkMode ? "text-light" : "text-muted"}`}>
-                Compete with others and track your progress on our global
-                leaderboard.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <footer className={`mt-5 ${darkMode ? "text-white" : "text-muted"}`}>
-          <p>
-            &copy; {new Date().getFullYear()} Code Execution Platform. All
-            rights reserved.
-          </p>
-        </footer>
       </div>
     </div>
   );
