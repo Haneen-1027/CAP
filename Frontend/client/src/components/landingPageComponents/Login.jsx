@@ -16,14 +16,16 @@ export default function Login({
   });
   let [errorList, setErrorList] = useState([]);
   let [apiError, setApiError] = useState(null); // Changed to store error message
+  const [apiLoading, setApiLoading] = useState(false);
 
   /* Submite Function */
   async function onFormSubmit(e) {
     e.preventDefault();
+    setApiLoading(true);
     // Reset errors
     setErrorList([]);
     setApiError(null);
-    
+
     // Call Validation Function
     let validateResult = validateForm();
     if (validateResult.error) {
@@ -35,16 +37,17 @@ export default function Login({
       console.log("user", user);
       const response = await loginUser(user.email, user.password);
       console.log("Response From Login: ", response);
-      
+
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("details", JSON.stringify(response.data.user));
         console.log("Done!");
         setUserData();
+        setApiLoading(false);
       }
     } catch (error) {
       console.error("Login error:", error);
-      
+
       if (error.response) {
         // Handle different error scenarios
         if (error.response.status === 400 || error.response.status === 401) {
@@ -92,14 +95,10 @@ export default function Login({
           "string.email": "Please enter a valid email address",
           "string.empty": "Email is required",
         }),
-      password: Joi.string()
-        .trim()
-        .min(8)
-        .required()
-        .messages({
-          "string.min": "Password must be at least 8 characters",
-          "string.empty": "Password is required",
-        }),
+      password: Joi.string().trim().min(8).required().messages({
+        "string.min": "Password must be at least 8 characters",
+        "string.empty": "Password is required",
+      }),
     });
 
     return schema.validate(user, { abortEarly: false });
@@ -117,29 +116,34 @@ export default function Login({
       <div className="w-50 position-relative my-4">
         <hr className="bold-hr mid-aligment" />
       </div>
-      
+
       {/* Display API errors */}
       {apiError && (
         <div className="col-12">
           <div className="alert alert-danger">{apiError}</div>
         </div>
       )}
-      
+
       {/* Display validation errors */}
       {errorList.map((error, index) => (
         <div className="col-12" key={index}>
           <div className="alert alert-danger">
-            {error.message.replace(/"/g, '')} {/* Remove quotes from messages */}
+            {error.message.replace(/"/g, "")}{" "}
+            {/* Remove quotes from messages */}
           </div>
         </div>
       ))}
-      
+
       <div className="w-50 my-4 position-relative">
         <form className="mid-aligment" onSubmit={onFormSubmit}>
           <div className="form-group my-4">
             <input
               type="email"
-              className={`form-control ${errorList.some(e => e.context.key === 'email') ? 'is-invalid' : ''}`}
+              className={`form-control ${
+                errorList.some((e) => e.context.key === "email")
+                  ? "is-invalid"
+                  : ""
+              }`}
               id="email"
               name="email"
               placeholder="Email..."
@@ -150,7 +154,11 @@ export default function Login({
           <div className="form-group my-4">
             <input
               type="password"
-              className={`form-control ${errorList.some(e => e.context.key === 'password') ? 'is-invalid' : ''}`}
+              className={`form-control ${
+                errorList.some((e) => e.context.key === "password")
+                  ? "is-invalid"
+                  : ""
+              }`}
               id="password"
               name="password"
               placeholder="Password..."
@@ -164,8 +172,12 @@ export default function Login({
               Don't have an Account? <Link to={"/signup"}>Sign up</Link>
             </div>
           </div>
-          <button type="submit" className="btn btn-success w-100 high-bold p-2">
-            LogIn
+          <button
+            type="submit"
+            className="btn btn-success w-100 high-bold p-2"
+            disabled={apiLoading}
+          >
+            {apiLoading ? "Loading ..." : "LogIn"}
           </button>
         </form>
       </div>

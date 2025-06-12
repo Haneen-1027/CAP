@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { BackBtn, PaginationNav } from "../../../../componentsLoader/ComponentsLoader";
+import {
+  BackBtn,
+  PaginationNav,
+} from "../../../../componentsLoader/ComponentsLoader";
 import { useParams } from "react-router-dom";
 import {
   getAssessmentById,
@@ -22,6 +25,7 @@ export default function UpdateAssessment({ darkMode }) {
   });
   const [allQuestions, setAllQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [apiLoading, setApiLoading] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,7 +37,10 @@ export default function UpdateAssessment({ darkMode }) {
   // Calculate pagination values
   const indexOfLastQuestion = currentPage * questionsPerPage;
   const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
-  const currentQuestions = allQuestions.slice(indexOfFirstQuestion, indexOfLastQuestion);
+  const currentQuestions = allQuestions.slice(
+    indexOfFirstQuestion,
+    indexOfLastQuestion
+  );
   const totalQuestionsCount = allQuestions.length;
 
   const handleCountPerPageChange = (e) => {
@@ -71,10 +78,10 @@ export default function UpdateAssessment({ darkMode }) {
       } catch (error) {
         setApiError(true);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Failed to load assessment data',
-          confirmButtonColor: '#3085d6',
+          icon: "error",
+          title: "Error",
+          text: "Failed to load assessment data",
+          confirmButtonColor: "#3085d6",
         });
       } finally {
         setLoading(false);
@@ -151,26 +158,27 @@ export default function UpdateAssessment({ darkMode }) {
         "Selected question count or total marks do not match input limits."
       );
       Swal.fire({
-        icon: 'error',
-        title: 'Validation Error',
-        text: 'Selected question count or total marks do not match input limits.',
-        confirmButtonColor: '#3085d6',
+        icon: "error",
+        title: "Validation Error",
+        text: "Selected question count or total marks do not match input limits.",
+        confirmButtonColor: "#3085d6",
       });
       return;
     }
 
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You are about to update this assessment!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, update it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, update it!",
     });
 
     if (result.isConfirmed) {
       try {
+        setApiLoading(true);
         const payload = {
           name: assessment.name,
           duration: `${assessment.duration}:00`,
@@ -181,23 +189,25 @@ export default function UpdateAssessment({ darkMode }) {
           questionsCount: assessment.questionsCount,
           questionsIds: assessment.questionsIds,
         };
-        
+
         await updateAssessment(id, payload);
-        
+
         Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: 'Assessment updated successfully!',
-          confirmButtonColor: '#3085d6',
+          icon: "success",
+          title: "Success!",
+          text: "Assessment updated successfully!",
+          confirmButtonColor: "#3085d6",
         });
       } catch (error) {
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Failed to update assessment.',
-          confirmButtonColor: '#3085d6',
+          icon: "error",
+          title: "Error",
+          text: "Failed to update assessment.",
+          confirmButtonColor: "#3085d6",
         });
-        console.error('Update error:', error);
+        console.error("Update error:", error);
+      } finally {
+        setApiLoading(false);
       }
     }
   };
@@ -211,7 +221,7 @@ export default function UpdateAssessment({ darkMode }) {
       </div>
     );
   }
-  
+
   if (apiError) {
     return (
       <div className="alert alert-danger mx-3 my-5">
@@ -221,7 +231,11 @@ export default function UpdateAssessment({ darkMode }) {
   }
 
   const renderQuestionTable = () => (
-    <div className={`table-responsive text-nowrap mt-5 ${darkMode ? "spic-dark-mode" : ""}`}>
+    <div
+      className={`table-responsive text-nowrap mt-5 ${
+        darkMode ? "spic-dark-mode" : ""
+      }`}
+    >
       <table className={`table ${darkMode ? "table-dark" : "table-light"}`}>
         <thead>
           <tr>
@@ -414,17 +428,17 @@ export default function UpdateAssessment({ darkMode }) {
             </div>
           </div>
 
-          {error && (
-            <div className="alert alert-danger">
-              {error}
-            </div>
-          )}
+          {error && <div className="alert alert-danger">{error}</div>}
 
           {renderQuestionTable()}
 
           <div className="d-flex justify-content-center mt-4">
-            <button className="btn btn-success" onClick={handleUpdate}>
-              Update Assessment
+            <button
+              className="btn btn-success"
+              onClick={handleUpdate}
+              disabled={apiLoading}
+            >
+              {apiLoading ? "Updating ..." : "Update Assessment"}
             </button>
           </div>
         </div>
