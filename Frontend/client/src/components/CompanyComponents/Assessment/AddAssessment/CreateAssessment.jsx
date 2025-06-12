@@ -5,7 +5,6 @@ import {
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 import SearchBarContainer from "../../../SearchBar";
-import { useLocation, useParams } from "react-router-dom";
 import {
   addNewAssessment,
   getAllQuestionsByFilter,
@@ -32,15 +31,10 @@ export default function CreateAssessment({ darkMode }) {
   // State variables
   const [selectedTotalMark, setSelectedTotalMark] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [apiLoading, setAPIloading] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [apiError, setApiError] = useState(false);
-
-  // For Editing
-  const location = useLocation();
-  const { data } = location.state || {};
-  const { id } = useParams();
-  const [isEditing, setIsEditing] = useState(false);
 
   // Pagination
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
@@ -55,20 +49,16 @@ export default function CreateAssessment({ darkMode }) {
   const [category, setCategory] = useState("");
 
   // Assessment Attributes
-  const [assessment, setAssessment] = useState(
-    data
-      ? data
-      : {
-        name: "",
-        duration: "",
-        time: "",
-        startTime: "",
-        endTime: "",
-        totalMark: 0,
-        questionsCount: 0,
-        questionsIds: [],
-      }
-  );
+  const [assessment, setAssessment] = useState({
+    name: "",
+    duration: "",
+    time: "",
+    startTime: "",
+    endTime: "",
+    totalMark: 0,
+    questionsCount: 0,
+    questionsIds: [],
+  });
 
   // Error messages
   const apiErrorMessage = (
@@ -106,7 +96,9 @@ export default function CreateAssessment({ darkMode }) {
       if (response && response.questions) {
         setQuestions(response.questions);
         // Use totalCategoryQuestions or totalTypeQuestions depending on your needs
-        setTotalQuestionsCount(response.totalCategoryQuestions || response.questions.length);
+        setTotalQuestionsCount(
+          response.totalCategoryQuestions || response.questions.length
+        );
       } else {
         setQuestions([]);
         setTotalQuestionsCount(0);
@@ -123,19 +115,11 @@ export default function CreateAssessment({ darkMode }) {
 
   useEffect(() => {
     fetchQuestions();
-
-    // Set editing state if ID exists
-    if (id) {
-      setAssessment(data);
-      setIsEditing(true);
-      setSelectedTotalMark(
-        data.questionsIds.reduce((total, question) => total + question.mark, 0)
-      );
-    }
-  }, [id, data, pageNo, countPerPage, category, questionType]);
+  }, [pageNo, countPerPage, category, questionType]);
 
   const addAssessment = async () => {
     try {
+      setAPIloading(true);
       const formatTimeFields = (time) => {
         if (!time) return "00:00:00";
         return time.length === 5 ? `${time}:00` : time;
@@ -150,20 +134,18 @@ export default function CreateAssessment({ darkMode }) {
         duration: formatTimeFields(assessment.duration),
       };
 
-      if (isEditing) {
-        console.log("assessment before update:", preparedAssessment);
-      } else {
-        console.log("assessment before Adding:", preparedAssessment);
-        await addNewAssessment(preparedAssessment)
-          .then((response) => {
-            console.log(`The axios response is: ${response}`);
-          })
-          .catch((e) => {
-            console.error(e);
-          });
-      }
+      console.log("assessment before Adding:", preparedAssessment);
+      await addNewAssessment(preparedAssessment)
+        .then((response) => {
+          console.log(`The axios response is: ${response}`);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     } catch (e) {
       console.error(e);
+    } finally {
+      setAPIloading(false);
     }
   };
 
@@ -190,8 +172,8 @@ export default function CreateAssessment({ darkMode }) {
     // Filter questions by search value if it exists
     const filteredQuestions = searchValue
       ? questions.filter((question) =>
-        question.prompt.toLowerCase().includes(searchValue.toLowerCase())
-      )
+          question.prompt.toLowerCase().includes(searchValue.toLowerCase())
+        )
       : questions;
 
     if (filteredQuestions.length === 0) {
@@ -218,9 +200,12 @@ export default function CreateAssessment({ darkMode }) {
 
       return (
         <tr key={index}>
-          <td>{(pageNo - 1) * countPerPage + index + 1 < 10
-            ? "0" + ((pageNo - 1) * countPerPage + index + 1)
-            : (pageNo - 1) * countPerPage + index + 1}.</td>
+          <td>
+            {(pageNo - 1) * countPerPage + index + 1 < 10
+              ? "0" + ((pageNo - 1) * countPerPage + index + 1)
+              : (pageNo - 1) * countPerPage + index + 1}
+            .
+          </td>
           <td className="text-start">{question.category}</td>
           <td
             className="text-start text-truncate"
@@ -235,10 +220,10 @@ export default function CreateAssessment({ darkMode }) {
                 ? "True/False"
                 : "Multiple Choice"
               : question.type === "essay"
-                ? "Essay"
-                : question.type === "coding"
-                  ? "Coding"
-                  : "Not-valid type"}
+              ? "Essay"
+              : question.type === "coding"
+              ? "Coding"
+              : "Not-valid type"}
           </td>
           <td className="text-start">
             <input
@@ -252,7 +237,7 @@ export default function CreateAssessment({ darkMode }) {
               value={
                 isChecked
                   ? assessment.questionsIds.find((q) => q.id === question.id)
-                    ?.mark || 0
+                      ?.mark || 0
                   : ""
               }
             />
@@ -277,7 +262,7 @@ export default function CreateAssessment({ darkMode }) {
                 value={
                   isChecked
                     ? assessment.questionsIds.find((q) => q.id === question.id)
-                      ?.options_count || 0
+                        ?.options_count || 0
                     : ""
                 }
               />
@@ -585,8 +570,9 @@ export default function CreateAssessment({ darkMode }) {
           {/** Questions to choose  */}
           <div className="table-responsive text-nowrap">
             <table
-              className={`table ${darkMode ? "table-dark " : "table-light"
-                } m-0`}
+              className={`table ${
+                darkMode ? "table-dark " : "table-light"
+              } m-0`}
             >
               <thead className={``}>
                 <tr>
@@ -609,7 +595,7 @@ export default function CreateAssessment({ darkMode }) {
                 </tr>
               </thead>
               <tbody className="table-border-bottom-0">
-                {renderQuestions()}
+                {isLoading ? loadingMessage : renderQuestions()}
               </tbody>
             </table>
           </div>
@@ -620,8 +606,9 @@ export default function CreateAssessment({ darkMode }) {
                 type="submit"
                 className="btn btn-success"
                 onClick={() => addAssessment()}
+                disabled={apiLoading}
               >
-                {isEditing ? "Update Assessment" : "Add Assessment"}
+                {apiLoading ? "Adding" : "Add Assessment"}
               </button>
             </div>
           </div>
