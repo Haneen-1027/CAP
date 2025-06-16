@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using CapApi.Data;
+using CapApi.Dtos.User; // Assuming GetUserDto is in this namespace
 
 namespace CapApi.Services.User;
 
 public class GetUserByIdService(CapDbContext context, ILogger<GetUserByIdService> logger)
 {
     private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-
-    private readonly ILogger<GetUserByIdService>
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-    // Constructor for dependency injection
+    private readonly ILogger<GetUserByIdService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<IActionResult> Handle(int id)
     {
@@ -33,7 +30,21 @@ public class GetUserByIdService(CapDbContext context, ILogger<GetUserByIdService
                 return new NotFoundObjectResult($"User with ID {id} not found.");
             }
 
-            return new OkObjectResult(user);
+            // Map user entity to DTO
+            var userDto = new GetUserDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                DateOfBirth = user.DateOfBirth,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt
+                
+            };
+
+            return new OkObjectResult(userDto);
         }
         catch (Exception ex)
         {

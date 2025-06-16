@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CapApi.Data;
-using CapApi.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using CapApi.Dtos.User;
 
 namespace CapApi.Services.User;
 
@@ -11,102 +12,82 @@ public class GetAllUsersService(CapDbContext context, ILogger<GetAllUsersService
     private readonly ILogger<GetAllUsersService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<IActionResult> Handle(
-        int page = 1, 
-        int pageSize = 10,
-        string searchTerm = "",
-        string roleFilter = "",
-        string sortBy = "Id",
-        bool ascending = true)
+        int page,
+        int pageSize,
+        string searchTerm,
+        string roleFilter,
+        string sortBy,
+        bool ascending)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            // Validate parameters
-            if (page < 1) page = 1;
-            if (pageSize < 1 || pageSize > 100) pageSize = 10;
-            
-            // Base query
+            // Validate pagination parameters
+            if (page < 1 || pageSize < 1)
+            {
+                _logger.LogWarning("Invalid pagination parameters: page={Page}, pageSize={PageSize}", page, pageSize);
+                return new BadRequestObjectResult("Page and pageSize must be greater than zero.");
+            }
+
+            // Start building the query
             var query = _context.Users.AsQueryable();
 
             // Apply search filter
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
-                query = query.Where(u => 
-                    (u.FirstName + " " + u.LastName).ToLower().Contains(searchTerm) ||
-                    u.Username.ToLower().Contains(searchTerm) ||
-                    u.Email.ToLower().Contains(searchTerm));
+                searchTerm = searchTerm.Trim().ToLower();
+                query = query.Where(u => u.FirstName.ToLower().Contains(searchTerm) ||
+                                        u.LastName.ToLower().Contains(searchTerm) ||
+                                        u.Email.ToLower().Contains(searchTerm));
             }
 
             // Apply role filter
-            if (!string.IsNullOrWhiteSpace(roleFilter) && roleFilter != "-999")
+            if (!string.IsNullOrWhiteSpace(roleFilter))
             {
                 query = query.Where(u => u.Role == roleFilter);
             }
 
-            // Apply sorting without dynamic LINQ
-            query = sortBy.ToLower() switch
+            // Apply sorting
+            if (!string.IsNullOrWhiteSpace(sortBy))
             {
-                "name" => ascending 
-                    ? query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
-                    : query.OrderByDescending(u => u.FirstName).ThenByDescending(u => u.LastName),
-                "username" => ascending 
-                    ? query.OrderBy(u => u.Username)
-                    : query.OrderByDescending(u => u.Username),
-                "email" => ascending 
-                    ? query.OrderBy(u => u.Email)
-                    : query.OrderByDescending(u => u.Email),
-                "role" => ascending 
-                    ? query.OrderBy(u => u.Role)
-                    : query.OrderByDescending(u => u.Role),
-                "createdat" => ascending 
-                    ? query.OrderBy(u => u.CreatedAt)
-                    : query.OrderByDescending(u => u.CreatedAt),
-                _ => ascending 
-                    ? query.OrderBy(u => u.Id)
-                    : query.OrderByDescending(u => u.Id)
-            };
+                string orderBy = ascending ? $"{sortBy} ASC" : $"{sortBy} DESC";
+                query = query.OrderBy(orderBy);
+            }
 
-            // Get total count after filtering
-            var totalCount = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            // Get total count for pagination
+            int totalCount = await query.CountAsync();
 
             // Apply pagination
             var users = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
+                .Select(user => new GetUserDto
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Role = user.Role,
+                    Username = user.Username,
+                    CreatedAt = user.CreatedAt,
+                    UpdatedAt = user.UpdatedAt
+                })
                 .ToListAsync();
 
-            // Response object
-            var response = new
+            // Return paginated result
+            var result = new
             {
-                Data = users,
-                Pagination = new
-                {
-                    TotalCount = totalCount,
-                    PageSize = pageSize,
-                    CurrentPage = page,
-                    TotalPages = totalPages,
-                    HasPrevious = page > 1,
-                    HasNext = page < totalPages
-                }
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                Users = users
             };
 
-            await transaction.CommitAsync();
-            return new OkObjectResult(response);
+            return new OkObjectResult(result);
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error fetching users");
-            return new ObjectResult(new 
-            { 
-                Message = "An error occurred while fetching users.",
-                Error = ex.Message 
-            }) 
-            { 
-                StatusCode = 500 
-            };
+            _logger.LogError(ex, "An error occurred while retrieving users.");
+            return new ObjectResult("An internal error occurred while retrieving users.") { StatusCode = 500 };
         }
     }
 }
