@@ -3,8 +3,6 @@ import Editor from "@monaco-editor/react";
 import { FilterableDropdown } from "../../../../../../componentsLoader/ComponentsLoader";
 import { executeCode } from "../../../../../../APIs/ApisHandaler";
 import Swal from "sweetalert2";
-import { ResizableBox } from "react-resizable";
-import "react-resizable/css/styles.css";
 
 export default function CodingQuestion({
   darkMode,
