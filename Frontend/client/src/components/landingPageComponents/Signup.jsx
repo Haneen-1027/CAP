@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { signUp } from "../../APIs/ApisHandaler";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 export default function Signup({ darkMode }) {
+  const navigate = useNavigate();
   const [userDetails, setNewUserDetails] = useState({
     username: "",
     firstName: "",
@@ -9,6 +12,7 @@ export default function Signup({ darkMode }) {
     email: "",
     password: "",
   });
+  const [apiLoading, setApiLoading] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -18,11 +22,25 @@ export default function Signup({ darkMode }) {
   function onSubmit(e) {
     e.preventDefault();
     try {
-      const res = signUp(userDetails);
+      setApiLoading(true);
+      let res = signUp(userDetails);
       console.log("sign Up: ", res);
+      setNewUserDetails({
+        username: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+      });
+      navigate("/login", {
+        state: {
+          justSignUp: true,
+        },
+      });
     } catch (e) {
       console.error(e);
     } finally {
+      setApiLoading(false);
     }
   }
 
@@ -87,8 +105,12 @@ export default function Signup({ darkMode }) {
             />
           </div>
 
-          <button type="submit" className="btn btn-success w-100 high-bold p-2">
-            Create Account
+          <button
+            type="submit"
+            className="btn btn-success w-100 high-bold p-2"
+            disabled={apiLoading}
+          >
+            {apiLoading ? "Creating ..." : "Create Account"}
           </button>
         </form>
       </div>

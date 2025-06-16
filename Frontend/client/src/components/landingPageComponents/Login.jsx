@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import Joi from "joi";
 import { loginUser } from "../../APIs/ApisHandaler";
+import { useLocation } from "react-router-dom";
 
 export default function Login({
   darkMode,
@@ -17,6 +18,8 @@ export default function Login({
   let [errorList, setErrorList] = useState([]);
   let [apiError, setApiError] = useState(null); // Changed to store error message
   const [apiLoading, setApiLoading] = useState(false);
+  const location = useLocation();
+  const { justSignUp } = location.state || false;
 
   /* Submite Function */
   async function onFormSubmit(e) {
@@ -111,7 +114,9 @@ export default function Login({
   return (
     <div className={`custom-form ${darkMode ? "spic-dark-mode" : ""}`}>
       <div className="my-4 w-100 d-flex justify-content-center">
-        <h1 className="custom-form-header">Welcome Back!</h1>
+        <h1 className="custom-form-header">
+          {justSignUp ? "Welcome in Our Family!" : "Welcome Back!"}
+        </h1>
       </div>
       <div className="w-50 position-relative my-4">
         <hr className="bold-hr mid-aligment" />
