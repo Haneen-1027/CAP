@@ -75,7 +75,9 @@ export default function Login({
   /* Get New Data Function */
   function getData(e) {
     setErrorList([]);
-    setApiError(null);
+    if (apiError) setApiError(null);
+    if (apiLoading) setApiLoading(false);
+
     let newUser = { ...user };
     newUser[e.target.name] = e.target.value;
     setUser(newUser);
