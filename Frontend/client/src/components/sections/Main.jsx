@@ -55,9 +55,33 @@ function Main({
   return (
     <main className="container mt-5">
       <Routes>
+        <Route
+          path={""}
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              {userDetailes.role === "Admin" ? (
+                <AdmDashboard darkMode={darkMode} />
+              ) : userDetailes.role === "Company" ? (
+                <CompDashboard darkMode={darkMode} />
+              ) : userDetailes.role === "Contributor" ? (
+                <ContDashboard darkMode={darkMode} />
+              ) : (
+                <LpHome darkMode={darkMode} />
+              )}
+            </Suspense>
+          }
+        ></Route>
         {/*** General Path - "..domain.../your_path" ***/}
         <Route
-          path="/"
+          path={"/"}
           element={
             <Suspense
               fallback={
