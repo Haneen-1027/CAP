@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Cors;
 using System.Text.RegularExpressions;
 using System.Linq;
 using CapApi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System;
+using System.Diagnostics;
 
 namespace CapApi.Controllers;
 
@@ -81,6 +84,8 @@ public class CodeController : ControllerBase
                 return WrapPythonCode(userCode, inputs, inputType);
             case 63: // JavaScript (Node.js)
                 return WrapJavaScriptCode(userCode, inputs, inputType);
+            case 74: // TypeScript
+                return WrapTypeScriptCode(userCode, inputs, inputType);
             default:
                 throw new NotSupportedException("Language not supported");
         }
@@ -139,6 +144,35 @@ if __name__ == '__main__':
 ";
     }
 
+
+    private string WrapTypeScriptCode(string userCode, List<string> inputs, Type inputType)
+    {
+        string functionName = ExtractFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => (char)('a' + i)));
+
+        string conversion = "";
+        if (inputType == typeof(int) || inputType == typeof(double))
+        {
+            conversion = ".map(x => Number(x))";
+        }
+
+        return $@"
+// TypeScript code with Node.js declarations
+declare function require(module: string): any;
+
+{userCode}
+
+// Main execution
+const fs = require('fs');
+const input = fs.readFileSync(0, 'utf-8').trim();
+const [{inputVariables}] = input.split(/\s+/){conversion};
+console.log({functionName}({inputVariables}));
+";
+    }
+
+
+
+
     private Type InferInputType(string expectedOutput)
     {
         if (int.TryParse(expectedOutput, out _))
@@ -155,15 +189,13 @@ if __name__ == '__main__':
         }
     }
 
+
     private string ExtractFunctionName(string userCode)
     {
-        // Python: def myFunc(...)
-        var pythonMatch = System.Text.RegularExpressions.Regex.Match(userCode, @"def\s+(\w+)\s*\(");
-        if (pythonMatch.Success) return pythonMatch.Groups[1].Value;
-
-        // JavaScript: function myFunc(...) or const myFunc = (...)
-        var jsMatch = System.Text.RegularExpressions.Regex.Match(userCode, @"(?:function|const|let|var)\s+(\w+)\s*[=(]");
-        if (jsMatch.Success) return jsMatch.Groups[1].Value;
+        // Covers: function add(...), const add = (...), let add = (...), var add = (...) and even def add(...) for Python
+        var match = Regex.Match(userCode, @"(?:def\s+|function\s+|const\s+|let\s+|var\s+)?(\w+)\s*(?:=|\()");
+        if (match.Success)
+            return match.Groups[1].Value;
 
         throw new ArgumentException("Function definition not found in the code.");
     }
