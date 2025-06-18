@@ -68,8 +68,9 @@ export default function PreviewUsers({ darkMode }) {
           searchValue,
           roleFilter
         );
-        setUsers(response.data.data || []);
-        setTotalCount(response.data.pagination.totalCount || 0);
+        console.log("RRR: ", response);
+        setUsers(response.data.users || []);
+        setTotalCount(response.data.totalCount || 0);
       } catch (err) {
         console.error("Fetching users failed", err);
         setApiError(true);
