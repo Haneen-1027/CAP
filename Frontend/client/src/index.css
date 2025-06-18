@@ -430,6 +430,12 @@ input:-webkit-autofill {
 .form-floating > .form-control:focus ~ label {
   color: inherit;
 }
+.prompt.btn-sm {
+  --bs-btn-padding-y: 0.25rem;
+  --bs-btn-padding-x: 0.35rem;
+  --bs-btn-font-size: 0.675rem;
+  --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
 
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */

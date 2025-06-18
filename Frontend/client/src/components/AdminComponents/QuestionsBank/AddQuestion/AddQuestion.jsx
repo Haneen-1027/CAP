@@ -13,7 +13,6 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const location = useLocation();
   const { data } = location.state || {};
   const { id } = useParams();
-  const [questionId, setQuestionId] = useState("");
   const [question, setQuestion] = useState({
     type: "",
     category: "",
@@ -23,9 +22,11 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const [details, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [apiLoading, setApiLoading] = useState(false);
 
   //
   let [errorList, setErrorList] = useState([]);
+  let [apiMessage, setApiMessage] = useState("ss");
   let [apiError, setApiError] = useState(false);
 
   //
@@ -59,6 +60,8 @@ export default function AddQuestion({ userdetails, darkMode }) {
 
   //
   const handleGeneralChange = (e) => {
+    setApiError(false);
+    setApiMessage(null);
     const { name, value } = e.target;
     setQuestion((prevQuestion) => ({
       ...prevQuestion,
@@ -67,6 +70,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
   };
 
   const addQuestion = async () => {
+    setApiLoading(true);
     // Call Validation Function
     let validateResult = validateForm();
     if (validateResult.error) {
@@ -85,42 +89,46 @@ export default function AddQuestion({ userdetails, darkMode }) {
         // Update?
         if (isEditing) {
           console.log("question before update:", newQuestion);
-          await updateQuestion(newQuestion)
-            .then((response) => {
-              console.log(`The axios response is: ${response}`);
-            })
-            .catch((e) => {
-              console.error(e);
-            });
+          await updateQuestion(newQuestion);
+          setApiMessage("Thq Question Updated Successfully!");
         }
         // Add
         else {
-          console.log("question before update for add:", newQuestion);
-          await addNewQuestion(newQuestion)
-            .then((response) => {
-              console.log(`The axios response is: ${response}`);
-            })
-            .catch((e) => {
-              console.error(e);
-            });
+          console.log("question before add:", newQuestion);
+          await addNewQuestion(newQuestion);
+          setApiMessage("Thq Question Addedd Successfully!");
         }
       } catch (e) {
         console.error(e);
+        setApiError(true);
+        setApiMessage("There is an Error! Please try again later.");
+      } finally {
+        setApiLoading(false);
       }
     }
   };
 
   ////////////////////
   useEffect(() => {
-    if (id) {
+    if (location.pathname === "/admin/questions_bank/add_question") {
+      setIsEditing(false);
+      setQuestion({
+        type: "",
+        category: "",
+        prompt: "",
+        details: {},
+      });
+      setQuestionDetails({});
+      setErrorList([]);
+      setApiMessage("");
+      setApiError(false);
+      setIsLoading(false);
+    } else if (id && data) {
       setIsEditing(true);
-      setQuestionId(id);
-      setQuestion(data); // Set the question state with the passed data
-    } else {
-      setIsLoading(false); // If not editing, no need to wait for data
+      setQuestion(data);
+      setQuestionDetails(data.details || {});
     }
-    console.log(`state data:`, data);
-  }, []);
+  }, [location]);
 
   // Track when the question state is fully set
   useEffect(() => {
@@ -128,6 +136,13 @@ export default function AddQuestion({ userdetails, darkMode }) {
       setIsLoading(false); // Data is ready
     }
   }, [question, isEditing]);
+  useEffect(() => {
+    setApiError(false);
+    setApiMessage("");
+  }, [question]);
+  useEffect(() => {
+    console.log("apiMessage: ", apiMessage);
+  }, [apiMessage]);
 
   ////////////////////
   return (
@@ -141,6 +156,17 @@ export default function AddQuestion({ userdetails, darkMode }) {
         ""
       )}
       <div className="position-relative p-4 d-flex flex-column">
+        {apiMessage ? (
+          <div
+            className={`alert ${
+              apiError ? "alert-danger" : "alert-success"
+            } text-center p-3`}
+          >
+            {apiMessage}
+          </div>
+        ) : (
+          ""
+        )}
         <div className="row flex-column flex-md-row align-items-center m-0">
           <div className="col-12 col-md-6 row m-0 justify-content-between">
             <div className="col-12 col-lg-5 form-floating p-0">
@@ -239,8 +265,15 @@ export default function AddQuestion({ userdetails, darkMode }) {
             type="submit"
             className="btn btn-success"
             onClick={() => addQuestion()}
+            disabled={apiLoading}
           >
-            {isEditing ? "Update Question" : "Add Question"}
+            {isEditing
+              ? apiLoading
+                ? "Updating ..."
+                : "Update Question"
+              : apiLoading
+              ? "Adding ..."
+              : "Add Question"}
           </button>
         </div>
       </div>
