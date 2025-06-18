@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 function Footer({ darkMode }) {
   return (
-    <footer className={`p-3`}>
+    <footer className={`p-3 mt-auto text-center`}>
       <p className="text-center m-0">
         © 2025 <span className="mid-bold text-success">MENA</span>, Test &
         Assessment. All rights reserved.
