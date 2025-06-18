@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
+import { useLocation } from "react-router-dom";
+
 import {
   BackBtn,
   FilterableDropdown,
@@ -7,11 +9,13 @@ import {
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 
-import attempts from "./Attempts.json";
 import { CalculateTimeInMinutes } from "../../../../Utils/CalculateTimeInMinutes";
 import { getAttempts } from "../../../../APIs/ApisHandaler";
 
 export default function AttemptsPreview({ darkMode }) {
+  const location = useLocation();
+  const { isUpComing } = location.state || {};
+
   // Component States
   const [apiAttempts, setApiAttempts] = useState([]);
   const { assessment_id } = useParams();
@@ -268,7 +272,13 @@ export default function AttemptsPreview({ darkMode }) {
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody className="table-border-bottom-0">{renderList()}</tbody>
+              <tbody className="table-border-bottom-0">
+                {isUpComing || visiblList.length === 0 ? (
+                  <div className="p-2 text-center">"No Attempts to Show."</div>
+                ) : (
+                  renderList()
+                )}
+              </tbody>
             </table>
           </div>
         </div>
