@@ -20,10 +20,10 @@ function App() {
   }
 
   /* log out: clear toke local storage, clear userDetails. */
-  function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("details");
-    setUserDetails({});
+  async function logout() {
+    await localStorage.removeItem("token");
+    await localStorage.removeItem("details");
+    await setUserDetails({});
     navigate({
       pathname: "/login",
     });
@@ -46,41 +46,48 @@ function App() {
     console.log("userDetails", userDetailes);
   }, [userDetailes]);
 
-  return (
-    <>
-      <Suspense
-        fallback={
-          <div className="center-container d-flex justify-content-center align-items-center w-100 h-100">
-            <div
-              className="spinner-border text-success d-flex justify-content-center align-items-center"
-              role="status"
-            >
-              <span className="sr-only">Loading...</span>
+  if (localStorage.getItem("token") && !userDetailes) {
+    return (
+      <div className="alert alert-danger text-center fs-3 p-4">
+        500 - Server Error!
+      </div>
+    );
+  } else
+    return (
+      <>
+        <Suspense
+          fallback={
+            <div className="center-container d-flex justify-content-center align-items-center w-100 h-100">
+              <div
+                className="spinner-border text-success d-flex justify-content-center align-items-center"
+                role="status"
+              >
+                <span className="sr-only">Loading...</span>
+              </div>
             </div>
+          }
+        >
+          <div className="position-relative">
+            {/* Header */}
+            <Header
+              userDetailes={userDetailes}
+              darkMode={darkMode}
+              logout={logout}
+            />
+            {/* Main */}
+            <Main
+              userDetailes={userDetailes}
+              setUserData={setUserData}
+              goToPage={goToPage}
+              setActiveId={setActiveId}
+              darkMode={darkMode}
+            />
+            {/* Footer */}
+            <Footer darkMode={darkMode} />
           </div>
-        }
-      >
-        <div className="position-relative">
-          {/* Header */}
-          <Header
-            userDetailes={userDetailes}
-            darkMode={darkMode}
-            logout={logout}
-          />
-          {/* Main */}
-          <Main
-            userDetailes={userDetailes}
-            setUserData={setUserData}
-            goToPage={goToPage}
-            setActiveId={setActiveId}
-            darkMode={darkMode}
-          />
-          {/* Footer */}
-          <Footer darkMode={darkMode} />
-        </div>
-      </Suspense>
-    </>
-  );
+        </Suspense>
+      </>
+    );
 }
 
 export default App;

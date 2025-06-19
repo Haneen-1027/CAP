@@ -29,7 +29,6 @@ import {
   AttemptAssessment,
   NotFoundPath,
   AuthorizeError,
-  InviteContributors,
   AddUser,
   PreviewUsers,
   PreviewUser,
@@ -644,22 +643,6 @@ function Main({
             }
           />
         </Route>
-        <Route
-          path={`/InviteContributors/:id`}
-          element={
-            <Suspense
-              fallback={
-                <div className="center-container">
-                  <div className="spinner-border text-success" role="status">
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                </div>
-              }
-            >
-              <InviteContributors darkMode={darkMode} user={userDetailes} />
-            </Suspense>
-          }
-        ></Route>
         {/* Catch-all for unauthorized access */}
         {/* AuthorizeError Componenet path: '/AuthorizeError' */}
         <Route

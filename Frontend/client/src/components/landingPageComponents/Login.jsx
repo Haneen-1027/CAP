@@ -69,6 +69,8 @@ export default function Login({
         // Something happened in setting up the request
         setApiError("An unexpected error occurred.");
       }
+    } finally {
+      setApiLoading(false);
     }
   }
 
