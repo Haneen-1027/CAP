@@ -20,10 +20,10 @@ function App() {
   }
 
   /* log out: clear toke local storage, clear userDetails. */
-  function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("details");
-    setUserDetails({});
+  async function logout() {
+    await localStorage.removeItem("token");
+    await localStorage.removeItem("details");
+    await setUserDetails({});
     navigate({
       pathname: "/login",
     });
