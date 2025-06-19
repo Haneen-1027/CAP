@@ -10,6 +10,8 @@ using CapApi.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 using System.Diagnostics;
+using Microsoft.VisualBasic;
+using System.Runtime.Intrinsics.X86;
 
 namespace CapApi.Controllers;
 
@@ -43,7 +45,9 @@ public class CodeController : ControllerBase
 
         foreach (var testCase in codingQuestion.TestCases)
         {
-            Type inputType = InferInputType(testCase.ExpectedOutput);
+            //Type inputType = InferInputType(testCase.ExpectedOutput);
+            Type inputType = InferInputType(testCase.Inputs.First());
+
             string stdinInput;
 
             // Handle input formatting based on type
@@ -80,6 +84,8 @@ public class CodeController : ControllerBase
     {
         switch (languageId)
         {
+            case 60: // Go (Golang)
+                return WrapGoCode(userCode, inputs, inputType);
             case 71: // Python
                 return WrapPythonCode(userCode, inputs, inputType);
             case 63: // JavaScript (Node.js)
@@ -171,22 +177,89 @@ console.log({functionName}({inputVariables}));
     }
 
 
-
-
-    private Type InferInputType(string expectedOutput)
+    private string WrapGoCode(string userCode, List<string> inputs, Type inputType)
     {
-        if (int.TryParse(expectedOutput, out _))
+        string functionName = ExtractGoFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
+
+        // Format the user's code with proper Go syntax
+        //userCode = FormatGoCode(userCode);
+
+        string inputParsing = "";
+        if (inputType == typeof(int))
         {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\targ{i}, err := strconv.Atoi(inputs[{i}])\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid input\")\n\t\treturn\n\t}}"));
+        }
+        else if (inputType == typeof(double))
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\targ{i}, err := strconv.ParseFloat(inputs[{i}], 64)\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid input\")\n\t\treturn\n\t}}"));
+        }
+
+        return $@"package main
+
+import (
+	""bufio""
+	""fmt""
+	""os""
+	""strings""
+	""strconv""
+)
+
+{userCode}
+
+func main() {{
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	input := scanner.Text()
+	inputs := strings.Fields(input)
+	
+{inputParsing}
+	
+	result := {functionName}({inputVariables})
+	fmt.Println(result)
+}}";
+    }
+
+    private string FormatGoCode(string userCode)
+    {
+        // Basic formatting for Go code
+        userCode = userCode
+            .Replace("{", "{\n\t")
+            .Replace("}", "\n}")
+            .Replace(";", "\n")
+            .Replace("return ", "\treturn ");
+
+        // Special handling for if statements
+        if (userCode.Contains("if "))
+        {
+            userCode = userCode.Replace("if ", "\tif ");
+        }
+
+        return userCode;
+    }
+
+
+
+
+    private string ExtractGoFunctionName(string userCode)
+    {
+        // Match Go function declarations like: func add(a int, b int) int
+        var match = Regex.Match(userCode, @"func\s+(\w+)\s*\(");
+        if (match.Success)
+            return match.Groups[1].Value;
+
+        throw new ArgumentException("Function definition not found in the Go code.");
+    }
+
+    private Type InferInputType(string sample)
+    {
+        if (int.TryParse(sample, out _))
             return typeof(int);
-        }
-        else if (double.TryParse(expectedOutput, out _))
-        {
+        if (double.TryParse(sample, out _))
             return typeof(double);
-        }
-        else
-        {
-            return typeof(string);
-        }
+        return typeof(string);
     }
 
 
