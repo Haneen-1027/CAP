@@ -86,6 +86,8 @@ public class CodeController : ControllerBase
         {
             case 51: // C#
                 return WrapCSharpCode(userCode, inputs, inputType);
+            case 54: // C++
+                return WrapCppCode(userCode, inputs, inputType);
             case 60: // Go (Golang)
                 return WrapGoCode(userCode, inputs, inputType);
             case 71: // Python
@@ -268,6 +270,56 @@ public class Program
     }
 
 
+    private string WrapCppCode(string userCode, List<string> inputs, Type inputType)
+    {
+        string functionName = ExtractCppFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
+
+        // Determine input parsing logic
+        string inputParsing = "";
+        if (inputType == typeof(int))
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\tint arg{i} = stoi(inputs[{i}]);"));
+        }
+        else if (inputType == typeof(double))
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\tdouble arg{i} = stod(inputs[{i}]);"));
+        }
+        else
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\tstring arg{i} = inputs[{i}];"));
+        }
+
+        return $@"#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+using namespace std;
+
+{userCode}
+
+int main() {{
+    string input;
+    getline(cin, input);
+    istringstream iss(input);
+    vector<string> inputs;
+    string token;
+    
+    while (iss >> token) {{
+        inputs.push_back(token);
+    }}
+    
+{inputParsing}
+    
+    auto result = {functionName}({inputVariables});
+    cout << result << endl;
+    return 0;
+}}";
+    }
+
     private string MakeFunctionStatic(string userCode)
     {
         // Insert "static" if it's missing
@@ -288,6 +340,18 @@ public class Program
             return match.Groups[1].Value;
 
         throw new ArgumentException("Function definition not found in the C# code.");
+    }
+
+    private string ExtractCppFunctionName(string userCode)
+    {
+        // Match C++ function declarations like: int add(int a, int b)
+        var match = Regex.Match(userCode,
+            @"\w+\s+(\w+)\s*\([^)]*\)\s*(?:const\s*)?(?:\{|;)");
+
+        if (match.Success)
+            return match.Groups[1].Value;
+
+        throw new ArgumentException("Function definition not found in the C++ code.");
     }
 
 
