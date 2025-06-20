@@ -84,6 +84,8 @@ public class CodeController : ControllerBase
     {
         switch (languageId)
         {
+            case 51: // C#
+                return WrapCSharpCode(userCode, inputs, inputType);
             case 60: // Go (Golang)
                 return WrapGoCode(userCode, inputs, inputType);
             case 71: // Python
@@ -221,6 +223,73 @@ func main() {{
 	fmt.Println(result)
 }}";
     }
+
+
+    private string WrapCSharpCode(string userCode, List<string> inputs, Type inputType)
+    {
+        string functionName = ExtractCSharpFunctionName(userCode);
+        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
+
+        // Determine input parsing logic
+        string inputParsing = "";
+        if (inputType == typeof(int))
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\t\tvar arg{i} = int.Parse(inputs[{i}]);"));
+        }
+        else if (inputType == typeof(double))
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\t\tvar arg{i} = double.Parse(inputs[{i}]);"));
+        }
+        else
+        {
+            inputParsing = string.Join("\n", Enumerable.Range(0, inputs.Count).Select(i =>
+                $"\t\tvar arg{i} = inputs[{i}];"));
+        }
+
+        return $@"using System;
+using System.Linq;
+
+public class Program
+{{
+    {MakeFunctionStatic(userCode)}
+
+    static void Main()
+    {{
+        var inputs = Console.ReadLine().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+{inputParsing}
+        
+        var result = {functionName}({inputVariables});
+        Console.WriteLine(result);
+    }}
+}}";
+    }
+
+
+    private string MakeFunctionStatic(string userCode)
+    {
+        // Insert "static" if it's missing
+        var pattern = @"(?<prefix>(public|private|protected|internal)?\s*)(?<returnType>\w+)\s+(?<name>\w+)\s*\(";
+        var replacement = "${prefix}static ${returnType} ${name}(";
+
+        return Regex.Replace(userCode, pattern, replacement);
+    }
+
+
+    private string ExtractCSharpFunctionName(string userCode)
+    {
+        // Match C# method declarations like: public static int Add(int a, int b)
+        var match = Regex.Match(userCode,
+            @"(?:public\s+|private\s+|protected\s+|internal\s+)?(?:static\s+)?\w+\s+(\w+)\s*\(");
+
+        if (match.Success)
+            return match.Groups[1].Value;
+
+        throw new ArgumentException("Function definition not found in the C# code.");
+    }
+
 
     private string FormatGoCode(string userCode)
     {
