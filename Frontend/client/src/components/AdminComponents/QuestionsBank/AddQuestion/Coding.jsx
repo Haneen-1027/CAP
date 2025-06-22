@@ -73,7 +73,6 @@ export default function Coding({
 
   //
   function renderInputs(index) {
-    console.log("Index: ", index);
     if (inputsCount === 0) {
       return;
     }

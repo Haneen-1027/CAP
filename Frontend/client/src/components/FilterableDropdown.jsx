@@ -30,7 +30,7 @@ export default function FilterableDropdown({
         style={{ width: "100%" }}
         onChange={(e) => handleEvent(e)}
         name={name}
-        value={selectedValue ? selectedValue : 0}
+        value={selectedValue}
         disabled={isDisabled ? isDisabled : false}
       >
         {items

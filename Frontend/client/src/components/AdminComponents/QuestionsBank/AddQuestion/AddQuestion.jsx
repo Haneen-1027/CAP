@@ -14,12 +14,15 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const { data } = location.state || {};
   const { id } = useParams();
   const [question, setQuestion] = useState({
-    type: "",
-    category: "",
+    type: "essay",
+    category: "HTML",
     prompt: "",
     details: {},
   });
   const [details, setQuestionDetails] = useState({});
+  const [codingDescription, setCodingDescription] = useState(
+    "This is a defualt description"
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [apiLoading, setApiLoading] = useState(false);
@@ -76,10 +79,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
     if (validateResult.error) {
       setErrorList(validateResult.error.details);
     } else {
-      const newDetails = {
-        ...details,
-        ["description"]: "this is static description",
-      };
+      const newDetails = { ...details, description: codingDescription };
       const newQuestion = {
         ...question,
         ["details"]: newDetails,
@@ -97,6 +97,18 @@ export default function AddQuestion({ userdetails, darkMode }) {
           console.log("question before add:", newQuestion);
           await addNewQuestion(newQuestion);
           setApiMessage("Thq Question Addedd Successfully!");
+          setQuestion({
+            type: "",
+            category: "",
+            prompt: "",
+            details: {},
+          });
+          setQuestionDetails({});
+          setCodingDescription("This is a defualt description");
+          setErrorList([]);
+          setApiMessage("");
+          setApiError(false);
+          setIsLoading(false);
         }
       } catch (e) {
         console.error(e);
@@ -119,6 +131,7 @@ export default function AddQuestion({ userdetails, darkMode }) {
         details: {},
       });
       setQuestionDetails({});
+      setCodingDescription("This is a defualt description");
       setErrorList([]);
       setApiMessage("");
       setApiError(false);
@@ -140,9 +153,6 @@ export default function AddQuestion({ userdetails, darkMode }) {
     setApiError(false);
     setApiMessage("");
   }, [question]);
-  useEffect(() => {
-    console.log("apiMessage: ", apiMessage);
-  }, [apiMessage]);
 
   ////////////////////
   return (
@@ -204,19 +214,48 @@ export default function AddQuestion({ userdetails, darkMode }) {
             {error.message}{" "}
           </div>
         ))}
-        <div className="details d-flex flex-column flex-start">
-          <div className="form-group">
-            <label className="h5 mid-bold" htmlFor="prompt">
-              Question:
-            </label>
-            <textarea
-              className="form-control my-2"
-              id="prompt"
-              name="prompt"
-              placeholder="Question ..."
-              onChange={(e) => handleGeneralChange(e)}
-              value={question.prompt}
-            />
+        <div className={`details d-flex flex-column flex-start`}>
+          <div
+            className={`row ${
+              question["type"] === "coding"
+                ? "justify-content-between"
+                : "justify-content-center"
+            } `}
+          >
+            <div
+              className={`col-12 ${
+                question["type"] === "coding" ? "col-md-5" : "col-md-8"
+              } form-group`}
+            >
+              <label className="h5 mid-bold" htmlFor="prompt">
+                Question:
+              </label>
+              <textarea
+                className="form-control my-2"
+                id="prompt"
+                name="prompt"
+                placeholder="Question ..."
+                onChange={(e) => handleGeneralChange(e)}
+                value={question.prompt}
+              />
+            </div>
+            {question["type"] === "coding" ? (
+              <div className="col-12 col-md-6 form-group">
+                <label className="h5 mid-bold" htmlFor="prompt">
+                  Description:
+                </label>
+                <textarea
+                  className="form-control my-2"
+                  id="description"
+                  name="description"
+                  placeholder="Brief Description about the Problem ..."
+                  onChange={(e) => setCodingDescription(e.target.value)}
+                  value={codingDescription}
+                />
+              </div>
+            ) : (
+              ""
+            )}
           </div>
 
           {isLoading ? (
