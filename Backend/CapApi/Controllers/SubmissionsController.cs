@@ -148,53 +148,194 @@ namespace CapApi.Controllers
         }
 
         // Helper method to detect programming language from code
-        private int DetectProgrammingLanguage(string code)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return 71; // Default to Python if empty
-            }
+private int DetectProgrammingLanguage(string code)
+{
+    if (string.IsNullOrWhiteSpace(code))
+    {
+        return 71; // Default to Python if empty
+    }
 
-            // Trim whitespace and normalize line endings
-            var normalizedCode = Regex.Replace(code.Trim(), @"\r\n|\n\r|\n|\r", "\n");
+    var normalizedCode = Regex.Replace(code.Trim(), @"\r\n|\n\r|\n|\r", "\n");
 
-            // Check for JavaScript patterns
-            var jsPatterns = new[]
-            {
-                @"\bfunction\b",   // function keyword
-                @"=>",             // arrow function
-                @"\bconsole\.",    // console.log
-                @"\bconst\b",      // const declaration
-                @"\blet\b",        // let declaration
-                @"\bvar\b",        // var declaration
-                @"/\*.*\*/",       // multi-line comment
-                @"//.*"            // single-line comment
-            };
-
-            // Check for Python patterns
-            var pythonPatterns = new[]
-            {
-                @"\bdef\b",        // def keyword
-                @"\bclass\b",      // class keyword
-                @"\blambda\b",    // lambda keyword
-                @"\bimport\b",    // import statement
-                @"\bfrom\b",       // from statement
-                @"#.*",            // Python comment
-                @"\bprint\s*\(",   // print function
-                @"\bwith\b"        // with statement
-            };
-
-            var jsMatches = jsPatterns.Count(pattern => Regex.IsMatch(normalizedCode, pattern));
-            var pythonMatches = pythonPatterns.Count(pattern => Regex.IsMatch(normalizedCode, pattern));
-
-            // More matches for JavaScript patterns
-            if (jsMatches > pythonMatches)
-            {
-                return 63; // JavaScript
-            }
-            // More matches for Python patterns or equal matches
-            return 71; // Python
+    var languagePatterns = new Dictionary<int, (string name, string[] patterns, string[] antiPatterns, string[] strongPatterns)>
+    {
+        { 51, ("C#", 
+            new[] { // Regular patterns
+                @"\bclass\s+\w+",
+                @"\bpublic\s+\w+",
+                @"\bprivate\s+\w+",
+                @"\bvoid\s+\w+\s*\(",
+                @"\breturn\b",
+                @"\bnew\s+\w+\s*\("
+            },
+            new[] { // Anti-patterns
+                @"#include", @"\bpackage\b", @"\bfunc\b", @"\bdef\b", @"=>"
+            },
+            new[] { // Strong patterns
+                @"\busing\s+[A-Za-z0-9_.]+\s*;",
+                @"\bnamespace\s+\w+\s*\{",
+                @"\[[A-Za-z]+\]",
+                @"\bvar\s+\w+\s*=\s*new\b",
+                @"\btypeof\b",
+                @"\bawait\b"
+            })
+        },
+        { 54, ("C++", 
+            new[] {
+                @"\bint\s+\w+\s*[;=)]",
+                @"\bdouble\s+\w+\s*[;=)]",
+                @"\breturn\b",
+                @"\b#include\b",
+                @"\busing\s+namespace\b",
+                @"\bstd::\w+\b"
+            },
+            new[] {
+                @"\bfunction\b", @"=>", @"`\$\{.*\}`",
+                @"\bpackage\b", @"\bfunc\b", @"\bdef\b", @"\blambda\b"
+            },
+            new[] {
+                @"\bauto\s+[\w<>]+\s*[=;)]",
+                @"\bauto\s*[\w]*\s*\(.*\)\s*[^{]*\{",
+                @"\btemplate\s*<[^>]+>",
+                @"\bnamespace\s+\w+\s*\{",
+                @"->\s*[\w<>]+\s*\{",
+                @"\bconstexpr\b",
+                @"\bnullptr\b",
+                @"\boperator\s*[+\-*/%&|^]+\s*\(",
+                @"\bdelete\b",
+                @"\bnew\s+[\w<>]+\s*\("
+            })
+        },
+        { 60, ("Go", 
+            new[] {
+                @"\bfunc\s+\w+\s*\(",
+                @"\breturn\b",
+                @"\bvar\s+\w+\s*[\w]+",
+                @"\bfor\s+\w+\s*:=",
+                @"\brange\b",
+                @"\bmap\[[^\]]+\]"
+            },
+            new[] {
+                @"#include", @"\busing\b", @"\bclass\b", @"\bdef\b", @"=>"
+            },
+            new[] {
+                @"\bpackage\s+main\b",
+                @"\w+\s*:=\s*.+",
+                @"\bdefer\s+\w+\s*\(.*\)",
+                @"\bgo\s+\w+\s*\(.*\)",
+                @"\bchan\s+\w+\b",
+                @"\binterface\{\}\b",
+                @"\bstruct\s+\w+\s*\{"
+            })
+        },
+        { 71, ("Python", 
+            new[] {
+                @"\bdef\s+\w+\s*\(",
+                @"\breturn\b",
+                @"\bimport\s+\w+\b",
+                @"\bfrom\s+\w+\s+import\b",
+                @"\bfor\s+\w+\s+in\b",
+                @"\bwith\b"
+            },
+            new[] {
+                @"#include", @"\busing\b", @"\bpackage\b", @"\{", @"\}", @";"
+            },
+            new[] {
+                @"\bclass\s+\w+\s*\(?\w*\)?\s*:",
+                @"\blambda\b.*:",
+                @"\bprint\s*\(.*\)",
+                @"\b__\w+__\b",
+                @"\bwith\s+\w+\s+as\b",
+                @"\bexcept\s+\w+\s*:",
+                @"\bself\b"
+            })
+        },
+        { 63, ("JavaScript", 
+            new[] {
+                @"\bfunction\s*\w*\s*\(",
+                @"\breturn\b",
+                @"\bvar\s+\w+\s*=",
+                @"\bfor\s*\(.*\)",
+                @"\bif\s*\(.*\)",
+                @"\bconsole\.log\b"
+            },
+            new[] {
+                @"#include", @"\bpackage\b", @"\busing\b", @"\bdef\b", @"\bclass\s+\w+\s*:"
+            },
+            new[] {
+                @"=>\s*\{.*\}",
+                @"`\$\{.*\}`",
+                @"\bconst\b|\blet\b",
+                @"\bexport\s+(default\s+)?\w+\b",
+                @"\bimport\s+\w+\s+from\b",
+                @"\/\/.*",
+                @"\/\*.*\*\/"
+            })
+        },
+        { 74, ("TypeScript", 
+            new[] {
+                @"\bfunction\s*\w*\s*\(",
+                @"\breturn\b",
+                @"\bvar\s+\w+\s*:",
+                @"\binterface\s+\w+\s*\{",
+                @"\btype\s+\w+\s*=",
+                @"\bclass\s+\w+\s*\{"
+            },
+            new[] {
+                @"#include", @"\bpackage\b", @"\busing\b", @"\bdef\b", @"=>"
+            },
+            new[] {
+                @":\s*\w+\s*[;=]",
+                @"<[A-Za-z0-9_,\s]+>",
+                @"\bdeclare\s+module\b",
+                @"\bas\s+const\b",
+                @"\breadonly\b",
+                @"\bnamespace\s+\w+\s*\{",
+                @"\bimplements\b"
+            })
         }
+    };
+
+    var languageScores = new Dictionary<int, int>();
+    foreach (var lang in languagePatterns)
+    {
+        int score = 0;
+        
+        // Strong patterns (3 points each)
+        foreach (var pattern in lang.Value.strongPatterns)
+        {
+            score += Regex.Matches(normalizedCode, pattern).Count * 3;
+        }
+        
+        // Regular patterns (1 point each)
+        foreach (var pattern in lang.Value.patterns)
+        {
+            score += Regex.Matches(normalizedCode, pattern).Count;
+        }
+        
+        // Anti-patterns (disqualify if any match)
+        foreach (var antiPattern in lang.Value.antiPatterns)
+        {
+            if (Regex.IsMatch(normalizedCode, antiPattern))
+            {
+                score = -1;
+                break;
+            }
+        }
+        
+        if (score >= 0)
+        {
+            languageScores[lang.Key] = score;
+        }
+    }
+
+    if (languageScores.Count == 0)
+    {
+        return 71; // Default to Python
+    }
+
+    return languageScores.OrderByDescending(ls => ls.Value).First().Key;
+}
 
         [HttpGet("check-submission")]
         public async Task<IActionResult> CheckExistingSubmission(

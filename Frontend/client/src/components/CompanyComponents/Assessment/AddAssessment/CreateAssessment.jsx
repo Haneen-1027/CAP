@@ -10,7 +10,6 @@ import {
   getAllQuestionsByFilter,
 } from "../../../../APIs/ApisHandaler";
 import { Link } from "react-router";
-import Swal from "sweetalert2";
 
 export default function CreateAssessment({ darkMode }) {
   // Static categories and question types
@@ -62,6 +61,18 @@ export default function CreateAssessment({ darkMode }) {
     questionsIds: [],
   });
 
+  // Error messages
+  const apiErrorMessage = (
+    <div className="w-100 h-100 d-flex flex-column align-items-center">
+      <div className="alert alert-danger my-4 mid-bold w-100 d-flex justify-content-center">
+        Error!!!
+      </div>
+      <div className="my-4 mid-bold">
+        There's a problem! Please wait for us to solve the problem.
+      </div>
+    </div>
+  );
+
   const loadingMessage = (
     <div className="d-flex justify-content-center align-items-center my-4">
       <div className="spinner-border text-success" role="status">
@@ -108,29 +119,8 @@ export default function CreateAssessment({ darkMode }) {
   }, [pageNo, countPerPage, category, questionType]);
 
   const addAssessment = async () => {
-    const confirmation = await Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to add a new assessment.",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, add assessment!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    });
-
-    if (!confirmation.isConfirmed) {
-      await Swal.fire({
-        title: "Cancelled",
-        text: "Assessment creation was cancelled.",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
-      return;
-    }
-    setAPIloading(true);
     try {
+      setAPIloading(true);
       const formatTimeFields = (time) => {
         if (!time) return "00:00:00";
         return time.length === 5 ? `${time}:00` : time;
@@ -145,33 +135,16 @@ export default function CreateAssessment({ darkMode }) {
         duration: formatTimeFields(assessment.duration),
       };
 
-      const res = await addNewAssessment(preparedAssessment);
-      await Swal.fire({
-        title: "Success!",
-        text: "A new Assessment has been added successfully.",
-        icon: "success",
-        confirmButtonText: "Great!",
-      });
-      setAssessment({
-        name: "",
-        duration: "",
-        time: "",
-        startTime: "",
-        endTime: "",
-        totalMark: 0,
-        questionsCount: 0,
-        questionsIds: [],
-      });
+      console.log("assessment before Adding:", preparedAssessment);
+      await addNewAssessment(preparedAssessment)
+        .then((response) => {
+          console.log(`The axios response is: ${response}`);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     } catch (e) {
       console.error(e);
-      await Swal.fire({
-        title: "Error!",
-        text:
-          e.response?.data?.message ||
-          "Failed to add assessment. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
     } finally {
       setAPIloading(false);
     }
@@ -424,9 +397,6 @@ export default function CreateAssessment({ darkMode }) {
   useEffect(() => {
     handleSearching();
   }, [searchValue]);
-  useEffect(() => {
-    console.log(Swal); // Check if `Swal.fire` exists
-  }, []);
 
   if (isLoading) {
     return (

@@ -134,7 +134,7 @@ export const CompDashboard = lazy(() =>
 //// Assessments Components:
 // Outlet
 export const AssessmentOutlet = lazy(() =>
-  import("../components/CompanyComponents/Assessment/AssessmentOutlet.jsx")
+  import("../components/CompanyComponents/Assessment/ViewAssessment/AssessmentOutlet.jsx")
 );
 //Create Assessment
 export const CreateAssessment = lazy(() =>

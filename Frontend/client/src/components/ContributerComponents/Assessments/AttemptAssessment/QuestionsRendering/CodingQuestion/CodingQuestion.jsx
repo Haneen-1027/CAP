@@ -20,11 +20,19 @@ export default function CodingQuestion({
   const languageIds = {
     python: 71,
     javascript: 63,
+    typescript: 74,
+    csharp: 51,
+    cpp: 54,
+    golang: 60,
   };
 
   const items = [
     { name: "Python", value: "python" },
     { name: "JavaScript", value: "javascript" },
+    { name: "TypeScript", value: "typescript" },
+    { name: "C#", value: "csharp" },
+    { name: "C++", value: "cpp" },
+    { name: "Go", value: "golang" },
   ];
 
   function handleCodeUpdate(newValue) {
@@ -95,12 +103,27 @@ export default function CodingQuestion({
     setLanguage(selectedLanguage);
 
     let code = "";
-    if (selectedLanguage === "python") {
-      code = "def solution():\n    pass";
-    } else if (selectedLanguage === "javascript") {
-      code = "function solution() {\n    return;\n}";
-    } else {
-      code = "Error!!!";
+    switch (selectedLanguage) {
+      case "python":
+        code = "def solution():\n    pass";
+        break;
+      case "javascript":
+        code = "function solution() {\n    return;\n}";
+        break;
+      case "typescript":
+        code = "function solution(): any {\n    return;\n}";
+        break;
+      case "csharp":
+        code = "//update function type if needed\n\nobject solution() {\n return null;\n}";
+        break;
+      case "cpp":
+        code = "//update function type if needed\n\nvoid solution() {\n    return;\n}";
+        break;
+      case "golang":
+        code = "func solution() interface{} {\n    return nil\n}";
+        break;
+      default:
+        code = "// Unsupported language";
     }
 
     setCode(code);
@@ -192,7 +215,7 @@ export default function CodingQuestion({
             <div>
               <Editor
                 height="400px"
-                language={language}
+                language={language === "csharp" ? "csharp" : language} // Monaco uses 'csharp' for C#
                 theme={darkMode ? "vs-dark" : "vs-light"}
                 value={code}
                 onChange={(newValue) => handleCodeUpdate(newValue)}
