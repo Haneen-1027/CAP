@@ -37,6 +37,7 @@ public class GetUserByIdService(CapDbContext context, ILogger<GetUserByIdService
                 Username = user.Username,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Role = user.Role,
                 Email = user.Email,
                 DateOfBirth = user.DateOfBirth,
                 CreatedAt = user.CreatedAt,

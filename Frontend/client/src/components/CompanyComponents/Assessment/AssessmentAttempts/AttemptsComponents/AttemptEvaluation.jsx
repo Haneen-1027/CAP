@@ -162,7 +162,6 @@ const handleNewEvaluation = async () => {
   if (saved) {
     // Optional: You could add additional logic here for final submission
     Swal.fire("Submitted!", "Evaluation has been submitted successfully.", "success").then(()=>{
-      window.location.href = `/attempts/${assessment_id}`;
       navigate(`/attempts/${assessment_id}`)
     });
   }

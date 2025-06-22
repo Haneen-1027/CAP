@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 import {
   FilterableDropdown,
   PaginationNav,
@@ -70,16 +71,42 @@ const fetchQuestions = async () => {
     fetchQuestions();
   }, [pageNo, countPerPage, category, questionType]);
 
-  const handleDelete = async (id) => {
+const handleDelete = async (id) => {
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  });
+
+  // If user confirms, proceed with deletion
+  if (result.isConfirmed) {
     try {
       await deleteQuestion(id);
+      // Show success message
+      Swal.fire(
+        'Deleted!',
+        'Your question has been deleted.',
+        'success'
+      );
       // Refresh the questions after deletion
       fetchQuestions();
-      console.log("Question deleted successfully");
     } catch (error) {
       console.error("Error deleting question:", error);
+      // Show error message
+      Swal.fire(
+        'Error!',
+        'There was an error deleting the question.',
+        'error'
+      );
     }
-  };
+  }
+};
 
   function renderQuestions() {
     if (loading) {

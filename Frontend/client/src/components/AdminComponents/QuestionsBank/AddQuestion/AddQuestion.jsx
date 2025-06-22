@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 import Joi from "joi";
 import { addNewQuestion, updateQuestion } from "../../../../APIs/ApisHandaler";
 import {
@@ -7,7 +8,7 @@ import {
   FilterableDropdown,
   MultipleChoice,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 export default function AddQuestion({ userdetails, darkMode }) {
   const location = useLocation();
@@ -23,6 +24,8 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const [details, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const navigate = useNavigate();
+
 
   //
   let [errorList, setErrorList] = useState([]);
@@ -66,49 +69,94 @@ export default function AddQuestion({ userdetails, darkMode }) {
     }));
   };
 
-  const addQuestion = async () => {
-    // Call Validation Function
-    let validateResult = validateForm();
-    if (validateResult.error) {
-      setErrorList(validateResult.error.details);
-    } else {
-      const newDetails = {
-        ...details,
-        ["description"]: "this is static description",
-      };
-      const newQuestion = {
-        ...question,
-        ["details"]: newDetails,
-      };
+const addQuestion = async () => {
+  // First validate the form
+  let validateResult = validateForm();
+  if (validateResult.error) {
+    setErrorList(validateResult.error.details);
+    return; // Exit if validation fails
+  }
 
-      try {
-        // Update?
-        if (isEditing) {
-          console.log("question before update:", newQuestion);
-          await updateQuestion(newQuestion)
-            .then((response) => {
-              console.log(`The axios response is: ${response}`);
-            })
-            .catch((e) => {
-              console.error(e);
+  // Show confirmation dialog
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: isEditing ? 'Do you want to update this question?' : 'Do you want to add this question?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: isEditing ? 'Yes, update it!' : 'Yes, add it!',
+    cancelButtonText: 'Cancel'
+  });
+
+  // If user confirms, proceed with the operation
+  if (result.isConfirmed) {
+    const newDetails = {
+      ...details,
+      ["description"]: "this is static description",
+    };
+    const newQuestion = {
+      ...question,
+      ["details"]: newDetails,
+    };
+
+    try {
+      // Update?
+      if (isEditing) {
+        console.log("question before update:", newQuestion);
+        await updateQuestion(newQuestion)
+          .then((response) => {
+            console.log(`The axios response is: ${response}`);
+            Swal.fire(
+              'Updated!',
+              'Your question has been updated.',
+              'success'
+            ).then(() => {
+              navigate('/admin/questions_bank/preview');
             });
-        }
-        // Add
-        else {
-          console.log("question before update for add:", newQuestion);
-          await addNewQuestion(newQuestion)
-            .then((response) => {
-              console.log(`The axios response is: ${response}`);
-            })
-            .catch((e) => {
-              console.error(e);
-            });
-        }
-      } catch (e) {
-        console.error(e);
+          })
+          .catch((e) => {
+            console.error(e);
+            Swal.fire(
+              'Error!',
+              'There was an error updating the question.',
+              'error'
+            );
+          });
       }
+      // Add
+      else {
+        console.log("question before update for add:", newQuestion);
+        await addNewQuestion(newQuestion)
+          .then((response) => {
+            console.log(`The axios response is: ${response}`);
+            Swal.fire(
+              'Added!',
+              'Your question has been added.',
+              'success'
+            ).then(() => {
+              navigate('/admin/questions_bank/preview');
+            });
+          })
+          .catch((e) => {
+            console.error(e);
+            Swal.fire(
+              'Error!',
+              'There was an error adding the question.',
+              'error'
+            );
+          });
+      }
+    } catch (e) {
+      console.error(e);
+      Swal.fire(
+        'Error!',
+        'An unexpected error occurred.',
+        'error'
+      );
     }
-  };
+  }
+};
 
   ////////////////////
   useEffect(() => {

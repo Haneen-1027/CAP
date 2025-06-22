@@ -11,7 +11,7 @@ export default function Home({ darkMode }) {
       <div className="text-center">
         {/* Header Section */}
         <h1 className="display-4 fw-bold">
-          Join <span className="text-success">MENA’s</span> Engineering Team
+          Join <span className="text-success">MENA</span> Engineering Team
         </h1>
         <p className={`lead ${darkMode ? "text-white" : "text-muted"} fw-bold`}>
           Show Us Your Skills — Not Just Your CV
@@ -26,7 +26,7 @@ export default function Home({ darkMode }) {
         {/* Features Section */}
         <div className="row">
           <h1 className="h2 fw-bold mb-4">
-            💡 Why <span className="text-success">MENA’s</span> Does It
+            💡 Why <span className="text-success">MENA</span> Does It
             Differently
           </h1>
           <div className="col-md-4">
