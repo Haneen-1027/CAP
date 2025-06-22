@@ -14,7 +14,6 @@ public class Submission
     [MaxLength(5000)]
     public string? Answer { get; init; }
     
-    public List<string> VisibleOptions { get; init; }
     public DateTime StartedAt { get; init; }
     public DateTime SubmittedAt { get; init; }
     
