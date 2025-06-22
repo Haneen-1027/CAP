@@ -9,6 +9,7 @@ import {
   addNewAssessment,
   getAllQuestionsByFilter,
 } from "../../../../APIs/ApisHandaler";
+import { Link } from "react-router";
 
 export default function CreateAssessment({ darkMode }) {
   // Static categories and question types
@@ -212,6 +213,14 @@ export default function CreateAssessment({ darkMode }) {
             style={{ maxWidth: "20rem" }}
             title={question.prompt}
           >
+            {" "}
+            <Link
+              to={`/admin/questions_bank/preview/${question.id}`}
+              className="prompt btn btn-sm btn-outline-success me-2"
+              title="Edit Question"
+            >
+              <i className="fas fa-edit"></i>
+            </Link>{" "}
             <strong className="text-truncate">{question.prompt}</strong>
           </td>
           <td className="text-start">

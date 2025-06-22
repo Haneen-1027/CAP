@@ -73,14 +73,7 @@ export const UserProfile = lazy(() =>
 );
 // Mode Button
 export const ModeButton = lazy(() => import("../components/ModeButton.jsx"));
-// Modals
-export const LargeModal = lazy(() =>
-  import("../components/LargeModal/LargeModal.jsx")
-);
-// Modals Content - Large
-export const InviteContributors = lazy(() =>
-  import("../components/LargeModal/ModalContent/InviteContributors.jsx")
-);
+
 ///////////////////////////////////////////////////////////
 //// Admin Page Components:
 export const AdmDashboard = lazy(() =>
@@ -141,7 +134,7 @@ export const CompDashboard = lazy(() =>
 //// Assessments Components:
 // Outlet
 export const AssessmentOutlet = lazy(() =>
-  import("../components/CompanyComponents/Assessment/AssessmentOutlet.jsx")
+  import("../components/CompanyComponents/Assessment/ViewAssessment/AssessmentOutlet.jsx")
 );
 //Create Assessment
 export const CreateAssessment = lazy(() =>

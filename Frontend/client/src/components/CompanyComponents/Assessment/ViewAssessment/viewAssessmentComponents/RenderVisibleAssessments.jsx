@@ -56,21 +56,21 @@ export default function RenderVisibleAssessments({
           </td>
           <td>
             <div className="d-flex gap-2 justify-content-center">
-              {isUpComing ? null : <Link
+              <Link
                 className="btn btn-sm btn-success"
-                to={
-                  isUpComing
-                    ? `/InviteContributors/${assess.id}`
-                    : `/attempts/${assess.id}`
-                }
-                title="Invite Contributors"
+                to={{
+                  pathname: `/attempts/${assess.id}`,
+                  state: {
+                    isUpComing: isUpComing, // passing isUpComing flag
+                  },
+                }}
+                title="Preview Attempts"
               >
                 <i
-                  className={`text-light fas ${isUpComing ? "fa-user-plus" : "fa-circle-info"
-                    }`}
+                  className={`text-light fas fa-circle-info
+                  `}
                 ></i>
-              </Link>}
-
+              </Link>
               <Link
                 to={`/assessment/${assess.id}`}
                 className="btn btn-sm btn-outline-success"
@@ -94,8 +94,9 @@ export default function RenderVisibleAssessments({
 
   return (
     <div
-      className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""
-        }`}
+      className={`table-responsive text-nowrap ${
+        darkMode ? "spic-dark-mode" : ""
+      }`}
     >
       <table className={`table ${darkMode ? "table-dark " : "table-light"}`}>
         <thead className={darkMode ? "spic-dark-mode" : "table-light"}>

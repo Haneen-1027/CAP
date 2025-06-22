@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
 import Joi from "joi";
 import { addNewQuestion, updateQuestion } from "../../../../APIs/ApisHandaler";
 import {
@@ -8,13 +7,12 @@ import {
   FilterableDropdown,
   MultipleChoice,
 } from "../../../../componentsLoader/ComponentsLoader";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function AddQuestion({ userdetails, darkMode }) {
   const location = useLocation();
   const { data } = location.state || {};
   const { id } = useParams();
-  const [questionId, setQuestionId] = useState("");
   const [question, setQuestion] = useState({
     type: "",
     category: "",
@@ -24,11 +22,11 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const [details, setQuestionDetails] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
-  const navigate = useNavigate();
-
+  const [apiLoading, setApiLoading] = useState(false);
 
   //
   let [errorList, setErrorList] = useState([]);
+  let [apiMessage, setApiMessage] = useState("ss");
   let [apiError, setApiError] = useState(false);
 
   //
@@ -62,6 +60,8 @@ export default function AddQuestion({ userdetails, darkMode }) {
 
   //
   const handleGeneralChange = (e) => {
+    setApiError(false);
+    setApiMessage(null);
     const { name, value } = e.target;
     setQuestion((prevQuestion) => ({
       ...prevQuestion,
@@ -69,106 +69,66 @@ export default function AddQuestion({ userdetails, darkMode }) {
     }));
   };
 
-const addQuestion = async () => {
-  // First validate the form
-  let validateResult = validateForm();
-  if (validateResult.error) {
-    setErrorList(validateResult.error.details);
-    return; // Exit if validation fails
-  }
+  const addQuestion = async () => {
+    setApiLoading(true);
+    // Call Validation Function
+    let validateResult = validateForm();
+    if (validateResult.error) {
+      setErrorList(validateResult.error.details);
+    } else {
+      const newDetails = {
+        ...details,
+        ["description"]: "this is static description",
+      };
+      const newQuestion = {
+        ...question,
+        ["details"]: newDetails,
+      };
 
-  // Show confirmation dialog
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: isEditing ? 'Do you want to update this question?' : 'Do you want to add this question?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: isEditing ? 'Yes, update it!' : 'Yes, add it!',
-    cancelButtonText: 'Cancel'
-  });
-
-  // If user confirms, proceed with the operation
-  if (result.isConfirmed) {
-    const newDetails = {
-      ...details,
-      ["description"]: "this is static description",
-    };
-    const newQuestion = {
-      ...question,
-      ["details"]: newDetails,
-    };
-
-    try {
-      // Update?
-      if (isEditing) {
-        console.log("question before update:", newQuestion);
-        await updateQuestion(newQuestion)
-          .then((response) => {
-            console.log(`The axios response is: ${response}`);
-            Swal.fire(
-              'Updated!',
-              'Your question has been updated.',
-              'success'
-            ).then(() => {
-              navigate('/admin/questions_bank/preview');
-            });
-          })
-          .catch((e) => {
-            console.error(e);
-            Swal.fire(
-              'Error!',
-              'There was an error updating the question.',
-              'error'
-            );
-          });
+      try {
+        // Update?
+        if (isEditing) {
+          console.log("question before update:", newQuestion);
+          await updateQuestion(newQuestion);
+          setApiMessage("Thq Question Updated Successfully!");
+        }
+        // Add
+        else {
+          console.log("question before add:", newQuestion);
+          await addNewQuestion(newQuestion);
+          setApiMessage("Thq Question Addedd Successfully!");
+        }
+      } catch (e) {
+        console.error(e);
+        setApiError(true);
+        setApiMessage("There is an Error! Please try again later.");
+      } finally {
+        setApiLoading(false);
       }
-      // Add
-      else {
-        console.log("question before update for add:", newQuestion);
-        await addNewQuestion(newQuestion)
-          .then((response) => {
-            console.log(`The axios response is: ${response}`);
-            Swal.fire(
-              'Added!',
-              'Your question has been added.',
-              'success'
-            ).then(() => {
-              navigate('/admin/questions_bank/preview');
-            });
-          })
-          .catch((e) => {
-            console.error(e);
-            Swal.fire(
-              'Error!',
-              'There was an error adding the question.',
-              'error'
-            );
-          });
-      }
-    } catch (e) {
-      console.error(e);
-      Swal.fire(
-        'Error!',
-        'An unexpected error occurred.',
-        'error'
-      );
     }
-  }
-};
+  };
 
   ////////////////////
   useEffect(() => {
-    if (id) {
+    if (location.pathname === "/admin/questions_bank/add_question") {
+      setIsEditing(false);
+      setQuestion({
+        type: "",
+        category: "",
+        prompt: "",
+        details: {},
+      });
+      setQuestionDetails({});
+      setErrorList([]);
+      setApiMessage("");
+      setApiError(false);
+      setIsLoading(false);
+    } else if (id && data) {
       setIsEditing(true);
-      setQuestionId(id);
-      setQuestion(data); // Set the question state with the passed data
-    } else {
-      setIsLoading(false); // If not editing, no need to wait for data
+      setQuestion(data);
+      setQuestionDetails(data.details || {});
     }
-    console.log(`state data:`, data);
-  }, []);
+  }, [location]);
 
   // Track when the question state is fully set
   useEffect(() => {
@@ -176,6 +136,13 @@ const addQuestion = async () => {
       setIsLoading(false); // Data is ready
     }
   }, [question, isEditing]);
+  useEffect(() => {
+    setApiError(false);
+    setApiMessage("");
+  }, [question]);
+  useEffect(() => {
+    console.log("apiMessage: ", apiMessage);
+  }, [apiMessage]);
 
   ////////////////////
   return (
@@ -189,6 +156,17 @@ const addQuestion = async () => {
         ""
       )}
       <div className="position-relative p-4 d-flex flex-column">
+        {apiMessage ? (
+          <div
+            className={`alert ${
+              apiError ? "alert-danger" : "alert-success"
+            } text-center p-3`}
+          >
+            {apiMessage}
+          </div>
+        ) : (
+          ""
+        )}
         <div className="row flex-column flex-md-row align-items-center m-0">
           <div className="col-12 col-md-6 row m-0 justify-content-between">
             <div className="col-12 col-lg-5 form-floating p-0">
@@ -287,8 +265,15 @@ const addQuestion = async () => {
             type="submit"
             className="btn btn-success"
             onClick={() => addQuestion()}
+            disabled={apiLoading}
           >
-            {isEditing ? "Update Question" : "Add Question"}
+            {isEditing
+              ? apiLoading
+                ? "Updating ..."
+                : "Update Question"
+              : apiLoading
+              ? "Adding ..."
+              : "Add Question"}
           </button>
         </div>
       </div>
