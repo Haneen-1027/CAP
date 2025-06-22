@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   AssessmentsTableHeaders,
@@ -12,12 +12,10 @@ import {
 export default function CompAssessment({ user, darkMode }) {
   const [assessments, setAssessments] = useState([]);
   const [showSchdAssessments, setShowSchdAssessments] = useState(true);
-  const [visibleList, setVisibleList] = useState([]);
   const [countPerPage, setCountPerPage] = useState(25);
   const [pageNo, setPageNo] = useState(1);
   const [assessmentsListCount, setAssessmentsListCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const [curDate, setCurDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -34,26 +32,14 @@ export default function CompAssessment({ user, darkMode }) {
       if (Array.isArray(response.data)) {
         setAssessments(response.data);
         setAssessmentsListCount(response.data.length);
-        filterAssessments(response.data, showSchdAssessments);
       } else {
         console.error("API did not return an array:", response.data);
         setAssessments([]);
-        setVisibleList([]);
       }
     } catch (error) {
       console.error("Error fetching assessments:", error);
       setAssessments([]);
-      setVisibleList([]);
     }
-  };
-
-  const filterAssessments = (assessmentsToFilter, showUpcoming) => {
-    const currentDate = new Date().toISOString().split("T")[0];
-    const filtered = assessmentsToFilter.filter((asses) =>
-      showUpcoming ? asses.time >= currentDate : asses.time < currentDate
-    );
-
-    setVisibleList(filtered);
   };
 
   const handleCountPerPageMenu = (e) => {
@@ -61,12 +47,7 @@ export default function CompAssessment({ user, darkMode }) {
   };
 
   const handleSearchValue = (value) => {
-    if (value.trim() === "") {
-      setSearchResults([]);
-      setSearchValue(value);
-    } else {
-      setSearchValue(value);
-    }
+    setSearchValue(value);
   };
 
   const handleDateFilter = (e) => {
@@ -90,11 +71,31 @@ export default function CompAssessment({ user, darkMode }) {
     getAssessments();
   }, []);
 
-  useEffect(() => {
-    if (Array.isArray(assessments)) {
-      filterAssessments(assessments, showSchdAssessments);
+  const visibleList = useMemo(() => {
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    let filtered = assessments.filter((asses) =>
+      showSchdAssessments ? asses.time >= currentDate : asses.time < currentDate
+    );
+
+    filtered = filtered.filter((asses) => {
+      return (
+        asses.time >= timeFilteration.start_date &&
+        asses.time <= timeFilteration.end_date
+      );
+    });
+
+    if (searchValue.trim()) {
+      console.log("searchValue: ", searchValue);
+      console.log("filtered: ", filtered);
+      const searchLower = searchValue.toLowerCase();
+      filtered = filtered.filter((asses) =>
+        (asses.name || "").toLowerCase().includes(searchLower)
+      );
     }
-  }, [showSchdAssessments, assessments]);
+
+    return filtered;
+  }, [assessments, showSchdAssessments, timeFilteration, searchValue]);
 
   return (
     <>
@@ -120,6 +121,7 @@ export default function CompAssessment({ user, darkMode }) {
             Add New Assessment
           </Link>
         </div>
+
         <AssessmentsTableHeaders
           darkMode={darkMode}
           countPerPage={countPerPage}
@@ -135,6 +137,7 @@ export default function CompAssessment({ user, darkMode }) {
           showSchdAssessments={showSchdAssessments}
           setShowSchdAssessments={setShowSchdAssessments}
         />
+
         <RenderVisibleAssessments
           darkMode={darkMode}
           assessments={visibleList}
