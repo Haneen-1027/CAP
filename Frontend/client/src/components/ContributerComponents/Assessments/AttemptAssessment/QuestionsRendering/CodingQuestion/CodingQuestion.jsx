@@ -11,6 +11,7 @@ export default function CodingQuestion({
   userAnswer,
 }) {
   const [code, setCode] = useState("def solution():\n\n pass");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCodeEditting, setIsCodeEditting] = useState(true);
   const [language, setLanguage] = useState("python");
   const [isRunning, setIsRunning] = useState(false);
@@ -114,10 +115,12 @@ export default function CodingQuestion({
         code = "function solution(): any {\n    return;\n}";
         break;
       case "csharp":
-        code = "//update function type if needed\n\nobject solution() {\n return null;\n}";
+        code =
+          "//update function type if needed\n\nobject solution() {\n return null;\n}";
         break;
       case "cpp":
-        code = "//update function type if needed\n\nvoid solution() {\n    return;\n}";
+        code =
+          "//update function type if needed\n\nvoid solution() {\n    return;\n}";
         break;
       case "golang":
         code = "func solution() interface{} {\n    return nil\n}";
@@ -138,58 +141,55 @@ export default function CodingQuestion({
 
   return (
     <>
-      <div className="row overflow-xAxis">
-        <button
-          className="btn btn-primary mb-2"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#descriptionPanel"
-          aria-expanded="true"
-          aria-controls="descriptionPanel"
-          onClick={() => setIsDescriptionToggled(!isDescriptionToggled)}
-        >
-          Toggle Description Panel
-        </button>
-        <div
-          className="col-4 row border m-0 collapse show"
-          id="descriptionPanel"
-        >
-          <div className="p-2 col-12">
-            <span className="">
-              <strong>Description:</strong>
-            </span>
-            <hr className="mt-0 mb-4" />
-            {question.detailes.description
-              ? question.detailes.description
-              : "Old Question: Description is not supported!"}
-          </div>
+      <div className="row flex-grow-1 overflow-xAxis">
+        <div className="col-4">
+          {" "}
+          <button
+            className="btn btn-primary mb-2"
+            onClick={() => setIsDescriptionToggled(!isDescriptionToggled)}
+          >
+            Toggle Description Panel
+          </button>
+          <div
+            className={`border m-0   ${isDescriptionToggled ? "d-none" : ""}`}
+          >
+            <div className="p-2 col-12">
+              <span className="">
+                <strong>Description:</strong>
+              </span>
+              <hr className="mt-0 mb-4" />
+              {question.detailes.description
+                ? question.detailes.description
+                : "Old Question: Description is not supported!"}
+            </div>
 
-          <div className="col-12">
-            <span className="">
-              <strong>Examples:</strong>
-            </span>
-            <hr className="m-0" />
-            <ul>
-              {question.detailes.testCases.map((testCase, index) => {
-                if (index < 2) {
-                  return (
-                    <li key={index} className="my-2">
-                      Inputs:{" "}
-                      <strong>
-                        {testCase.inputs.map(
-                          (input, i) =>
-                            input +
-                            (i === testCase.inputs.length - 1 ? "" : ", ")
-                        )}
-                      </strong>{" "}
-                      - Expected Output:{" "}
-                      <strong>{testCase.expectedOutput}</strong>
-                    </li>
-                  );
-                }
-                return null;
-              })}
-            </ul>
+            <div className="col-12">
+              <span className="">
+                <strong>Examples:</strong>
+              </span>
+              <hr className="m-0" />
+              <ul>
+                {question.detailes.testCases.map((testCase, index) => {
+                  if (index < 2) {
+                    return (
+                      <li key={index} className="my-2">
+                        Inputs:{" "}
+                        <strong>
+                          {testCase.inputs.map(
+                            (input, i) =>
+                              input +
+                              (i === testCase.inputs.length - 1 ? "" : ", ")
+                          )}
+                        </strong>{" "}
+                        - Expected Output:{" "}
+                        <strong>{testCase.expectedOutput}</strong>
+                      </li>
+                    );
+                  }
+                  return null;
+                })}
+              </ul>
+            </div>
           </div>
         </div>
 

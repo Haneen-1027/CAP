@@ -225,14 +225,6 @@ export default function AttemptsPreview({ darkMode }) {
                 val={searchValue}
               />
             </div>
-            <div className="col-12 col-md-3 col-lg-2">
-              <FilterableDropdown
-                items={items}
-                handleFunction={handleStatus}
-                selectedValue={status}
-                filterType={"Select Status:"}
-              />
-            </div>
           </div>
           <div
             className={`card-header row m-0 p-3 ${

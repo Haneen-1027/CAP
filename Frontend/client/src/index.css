@@ -437,6 +437,15 @@ input:-webkit-autofill {
   --bs-btn-border-radius: var(--bs-border-radius-sm);
 }
 
+/* ***Side Bar**** */
+.sidebar {
+  width: 250px;
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar-hidden {
+  margin-right: -250px; /* For RTL: sidebar hides by sliding to the right */
+}
 /*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Animations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ***/
 /* Important */
 @keyframes alert {
