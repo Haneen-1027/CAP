@@ -27,8 +27,12 @@ export default function AttemptEvaluation({ darkMode }) {
 
   // Language mapping
   const languageMap = {
+    51: { monaco: "csharp", name: "C#" },
+    54: { monaco: "cpp", name: "C++" },
+    60: { monaco: "Go", name: "Go" },
     71: { monaco: "python", name: "Python" },
     63: { monaco: "javascript", name: "JavaScript" },
+    74: { monaco: "typescript", name: "TypeScript" },
   };
 
   // Fetch the specific attempt data
