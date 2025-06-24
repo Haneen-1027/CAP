@@ -180,11 +180,11 @@ export const deleteUser = async (id) => {
   });
 };
 export const updateUser = async (id, data) => {
-  return (
-    await axios.put(`${BASE_URL}/users/${id}`),
-    data,
-    { headers: { "Content-Type": "application/json" } }
-  );
+  return await axios.put(`${BASE_URL}/users/${id}`, data, { 
+    headers: { 
+      "Content-Type": "application/json" 
+    } 
+  });
 };
 /** Code Execution API */
 export const executeCode = async (questionId, sourceCode, languageId) => {

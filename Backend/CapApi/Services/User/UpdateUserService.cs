@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using CapApi.Data;
+using CapApi.DTOs;
+using CapApi.Dtos.User;
+using System.Text.Json.Serialization;
 
 namespace CapApi.Services.User;
 
@@ -8,14 +11,12 @@ public class UpdateUserService(CapDbContext context, ILogger<UpdateUserService> 
     private readonly CapDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly ILogger<UpdateUserService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    // Constructor for dependency injection
-
-    public async Task<IActionResult> Handle(int id, Models.User? updatedUser)
+    public async Task<IActionResult> Handle(int id, UserUpdateDto updatedUser)
     {
-        if (id <= 0)
+        if (id <= 0 || id != updatedUser.Id)
         {
             _logger.LogWarning("Invalid user ID provided: {Id}", id);
-            return new BadRequestObjectResult("Invalid user ID. It must be greater than zero.");
+            return new BadRequestObjectResult("Invalid user ID. ID must match and be greater than zero.");
         }
 
         if (updatedUser == null)
@@ -27,53 +28,81 @@ public class UpdateUserService(CapDbContext context, ILogger<UpdateUserService> 
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            // Retrieve the user by ID
             var user = await _context.Users.FindAsync(id);
-
             if (user == null)
             {
                 _logger.LogWarning("User with ID {Id} not found.", id);
                 return new NotFoundObjectResult($"User with ID {id} not found.");
             }
 
-            // Validate required fields (assumed required: FirstName, LastName, Email)
-            if (string.IsNullOrWhiteSpace(updatedUser.FirstName) ||
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(updatedUser.Username) ||
+                string.IsNullOrWhiteSpace(updatedUser.FirstName) ||
                 string.IsNullOrWhiteSpace(updatedUser.LastName) ||
                 string.IsNullOrWhiteSpace(updatedUser.Email))
             {
-                _logger.LogWarning("User update request contains empty required fields for ID {Id}", id);
-                return new BadRequestObjectResult("First name, last name, and email are required.");
+                _logger.LogWarning("Missing required fields for user ID {Id}", id);
+                return new BadRequestObjectResult("Username, first name, last name, and email are required.");
             }
 
-            // Ensure the email is valid
+            // Validate email format
             if (!IsValidEmail(updatedUser.Email))
             {
                 _logger.LogWarning("Invalid email format for ID {Id}: {Email}", id, updatedUser.Email);
                 return new BadRequestObjectResult("Invalid email format.");
             }
 
-            // Update user properties
+            // Validate role
+            var validRoles = new[] { "Admin", "Contributor", "Viewer" };
+            if (!validRoles.Contains(updatedUser.Role))
+            {
+                _logger.LogWarning("Invalid role '{Role}' provided for user ID {Id}", updatedUser.Role, id);
+                return new BadRequestObjectResult("Invalid user role specified.");
+            }
+
+            // Update user properties (excluding password and timestamps)
+            user.Username = updatedUser.Username;
             user.FirstName = updatedUser.FirstName;
             user.LastName = updatedUser.LastName;
             user.Email = updatedUser.Email;
+            user.Role = updatedUser.Role;
             user.DateOfBirth = updatedUser.DateOfBirth;
+            user.UpdatedAt = DateTime.UtcNow; // Auto-update timestamp
 
-            // Save changes
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            _logger.LogInformation("User with ID {Id} successfully updated.", id);
-            return new NoContentResult();
+            _logger.LogInformation("User with ID {Id} updated successfully", id);
+            
+            // Return updated user data (excluding sensitive fields)
+            return new OkObjectResult(new
+            {
+                user.Id,
+                user.Username,
+                user.FirstName,
+                user.LastName,
+                user.Email,
+                user.Role,
+                user.DateOfBirth,
+                user.CreatedAt,
+                user.UpdatedAt
+            });
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync(); // Rollback transaction in case of failure
-            _logger.LogError(ex, "An error occurred while updating user with ID {Id}.", id);
-            return new ObjectResult("An internal error occurred while updating the user.") { StatusCode = 500 };
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Error updating user {Id}", id);
+            return new ObjectResult(new 
+            {
+                Message = "An error occurred while updating the user.",
+                Error = ex.Message
+            }) 
+            { 
+                StatusCode = 500 
+            };
         }
     }
 
-    // Email validation helper method
     private bool IsValidEmail(string email)
     {
         try

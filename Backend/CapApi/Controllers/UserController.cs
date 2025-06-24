@@ -1,4 +1,5 @@
-﻿using CapApi.Models;
+﻿using CapApi.Dtos.User;
+using CapApi.Models;
 using CapApi.Services.User;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -75,10 +76,12 @@ public class UserController(
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] User? updatedUser)
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto updatedUser)
     {
-        if (updatedUser == null || !ModelState.IsValid)
+        if (updatedUser == null || id != updatedUser.Id || !ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         try
         {
@@ -86,8 +89,10 @@ public class UserController(
         }
         catch (Exception ex)
         {
-            return StatusCode(500,
-                new { Message = "An error occurred while updating the user.", Error = ex.Message });
+            return StatusCode(500, new { 
+                Message = "An error occurred while updating the user.", 
+                Error = ex.Message 
+            });
         }
     }
 
