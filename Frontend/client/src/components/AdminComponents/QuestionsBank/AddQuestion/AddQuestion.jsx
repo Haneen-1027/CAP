@@ -76,16 +76,16 @@ export default function AddQuestion({ userdetails, darkMode }) {
   const addQuestion = async () => {
     // First show confirmation dialog
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: isEditing
-        ? "You are about to update this question"
-        : "You are about to add a new question",
-      icon: "question",
+      title: 'Are you sure?',
+      text: isEditing 
+        ? 'You are about to update this question' 
+        : 'You are about to add a new question',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: isEditing ? "Yes, update it!" : "Yes, add it!",
-      cancelButtonText: "No, cancel!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: isEditing ? 'Yes, update it!' : 'Yes, add it!',
+      cancelButtonText: 'No, cancel!'
     });
 
     // If user cancels, return early
@@ -100,10 +100,10 @@ export default function AddQuestion({ userdetails, darkMode }) {
       setErrorList(validateResult.error.details);
       setApiLoading(false);
       Swal.fire({
-        icon: "error",
-        title: "Validation Error",
-        text: "Please fill all required fields correctly",
-        confirmButtonColor: "#3085d6",
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fill all required fields correctly',
+        confirmButtonColor: '#3085d6',
       });
       return;
     }
@@ -120,20 +120,20 @@ export default function AddQuestion({ userdetails, darkMode }) {
         await updateQuestion(newQuestion);
         setApiMessage("The Question Updated Successfully!");
         Swal.fire({
-          icon: "success",
-          title: "Updated!",
-          text: "Your question has been updated.",
-          confirmButtonColor: "#3085d6",
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Your question has been updated.',
+          confirmButtonColor: '#3085d6',
         });
       } else {
         console.log("question before add:", newQuestion);
         await addNewQuestion(newQuestion);
         setApiMessage("The Question Added Successfully!");
         Swal.fire({
-          icon: "success",
-          title: "Added!",
-          text: "Your question has been added.",
-          confirmButtonColor: "#3085d6",
+          icon: 'success',
+          title: 'Added!',
+          text: 'Your question has been added.',
+          confirmButtonColor: '#3085d6',
         });
         setQuestion({
           type: "",
@@ -153,15 +153,16 @@ export default function AddQuestion({ userdetails, darkMode }) {
       setApiError(true);
       setApiMessage("There is an Error! Please try again later.");
       Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "There was an error processing your request. Please try again later.",
-        confirmButtonColor: "#3085d6",
+        icon: 'error',
+        title: 'Error!',
+        text: 'There was an error processing your request. Please try again later.',
+        confirmButtonColor: '#3085d6',
       });
     } finally {
       setApiLoading(false);
     }
   };
+
 
   ////////////////////
   useEffect(() => {
