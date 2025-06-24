@@ -263,7 +263,7 @@ export default function UpdateAssessment({ darkMode }) {
                 <td className="text-start text-truncate" title={q.prompt}>
                   {" "}
                   <Link
-                    to={`/admin/questions_bank/preview/${q.id}`}
+                    to={`/questions_bank/${q.id}`}
                     className="prompt btn btn-sm btn-outline-success me-2"
                     title="Edit Question"
                   >

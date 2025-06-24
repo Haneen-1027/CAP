@@ -3,7 +3,7 @@ import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
 import { Link, useParams } from "react-router-dom";
 import { getQuestionById } from "../../../../APIs/ApisHandaler";
 
-export default function PreviewQuestion({ darkMode }) {
+export default function PreviewQuestion({ user, darkMode }) {
   const { id } = useParams();
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +25,10 @@ export default function PreviewQuestion({ darkMode }) {
 
     fetchQuestion();
   }, [id]);
+
+  useEffect(() => {
+    console.log("User Details: ", user);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -97,15 +101,19 @@ export default function PreviewQuestion({ darkMode }) {
               <div>No Details Available</div>
             )}
           </div>
-          <div className="mid-aligment d-flex justify-content-center w-50 my-4">
-            <Link
-              to={`/admin/questions_bank/update_question/${id}`} // Use the id from the URL
-              state={{ data: question }}
-              className="btn btn-success"
-            >
-              Update Question
-            </Link>
-          </div>
+          {user.role === "Admin" ? (
+            <div className="mid-aligment d-flex justify-content-center w-50 my-4">
+              <Link
+                to={`/admin/questions_bank/update_question/${id}`} // Use the id from the URL
+                state={{ data: question }}
+                className="btn btn-success"
+              >
+                Update Question
+              </Link>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

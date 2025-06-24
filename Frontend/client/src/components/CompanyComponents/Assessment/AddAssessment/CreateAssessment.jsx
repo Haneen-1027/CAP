@@ -242,11 +242,15 @@ export default function CreateAssessment({ darkMode }) {
           >
             {" "}
             <Link
-              to={`/admin/questions_bank/preview/${question.id}`}
+              to={`/questions_bank/${question.id}`}
               className="prompt btn btn-sm btn-outline-success me-2"
               title="Edit Question"
             >
-              <i className="fas fa-edit"></i>
+              <i
+                className={`fas ${
+                  user.role === "Admin" ? "fa-edit" : "fa-eye"
+                }`}
+              ></i>
             </Link>{" "}
             <strong className="text-truncate">{question.prompt}</strong>
           </td>

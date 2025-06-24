@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import {
   FilterableDropdown,
   PaginationNav,
 } from "../../../../componentsLoader/ComponentsLoader";
 import { Link } from "react-router-dom";
-import { getAllQuestionsByFilter, deleteQuestion } from "../../../../APIs/ApisHandaler";
+import {
+  getAllQuestionsByFilter,
+  deleteQuestion,
+} from "../../../../APIs/ApisHandaler";
 
 export default function ViewQuestions({ userDetailes, darkMode }) {
   const categories = [
@@ -18,13 +21,13 @@ export default function ViewQuestions({ userDetailes, darkMode }) {
     { name: "Angular", value: "Angular" },
     { name: "React", value: "React" },
   ];
-  
-const questionTypes = [
-  { name: "All Types", value: "" },
-  { name: "Multiple Choice", value: "mc" },
-  { name: "Essay Question", value: "essay" },
-  { name: "Coding Question", value: "coding" },
-];
+
+  const questionTypes = [
+    { name: "All Types", value: "" },
+    { name: "Multiple Choice", value: "mc" },
+    { name: "Essay Question", value: "essay" },
+    { name: "Coding Question", value: "coding" },
+  ];
   const countPerPageValues = [10, 15, 25, 50, 75, 100];
   const [countPerPage, setCountPerPage] = useState(10);
   const [pageNo, setPageNo] = useState(1);
@@ -36,77 +39,77 @@ const questionTypes = [
   const [category, setCategory] = useState("");
   const [noResults, setNoResults] = useState(false);
 
-const fetchQuestions = async () => {
-  setLoading(true);
-  setNoResults(false);
-  
-  try {
-    const response = await getAllQuestionsByFilter(
-      pageNo,
-      countPerPage,
-      category,
-      questionType
-    );
-    
-    console.log("API Response:", response);
-    
-    if (response && response.questions) {
-      setQuestionsList(response.questions);
-      setTotalQuestions(response.totalCategoryQuestions || response.totalTypeQuestions || response.questions.length);
-      setNoResults(response.questions.length === 0);
-    } else {
+  const fetchQuestions = async () => {
+    setLoading(true);
+    setNoResults(false);
+
+    try {
+      const response = await getAllQuestionsByFilter(
+        pageNo,
+        countPerPage,
+        category,
+        questionType
+      );
+
+      console.log("API Response:", response);
+
+      if (response && response.questions) {
+        setQuestionsList(response.questions);
+        setTotalQuestions(
+          response.totalCategoryQuestions ||
+            response.totalTypeQuestions ||
+            response.questions.length
+        );
+        setNoResults(response.questions.length === 0);
+      } else {
+        setNoResults(true);
+        setQuestionsList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching questions:", error);
       setNoResults(true);
       setQuestionsList([]);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching questions:", error);
-    setNoResults(true);
-    setQuestionsList([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchQuestions();
   }, [pageNo, countPerPage, category, questionType]);
 
-const handleDelete = async (id) => {
-  // Show confirmation dialog
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'Cancel'
-  });
+  const handleDelete = async (id) => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
-  // If user confirms, proceed with deletion
-  if (result.isConfirmed) {
-    try {
-      await deleteQuestion(id);
-      // Show success message
-      Swal.fire(
-        'Deleted!',
-        'Your question has been deleted.',
-        'success'
-      );
-      // Refresh the questions after deletion
-      fetchQuestions();
-    } catch (error) {
-      console.error("Error deleting question:", error);
-      // Show error message
-      Swal.fire(
-        'Error!',
-        'There was an error deleting the question.',
-        'error'
-      );
+    // If user confirms, proceed with deletion
+    if (result.isConfirmed) {
+      try {
+        await deleteQuestion(id);
+        // Show success message
+        Swal.fire("Deleted!", "Your question has been deleted.", "success");
+        // Refresh the questions after deletion
+        fetchQuestions();
+      } catch (error) {
+        console.error("Error deleting question:", error);
+        // Show error message
+        Swal.fire(
+          "Error!",
+          "There was an error deleting the question.",
+          "error"
+        );
+      }
     }
-  }
-};
+  };
 
   function renderQuestions() {
     if (loading) {
@@ -134,22 +137,29 @@ const handleDelete = async (id) => {
     return questionsList.map((q, index) => (
       <tr key={q.id}>
         <td className="text-start">
-          {((pageNo - 1) * countPerPage + index + 1).toString().padStart(2, '0')}.
+          {((pageNo - 1) * countPerPage + index + 1)
+            .toString()
+            .padStart(2, "0")}
+          .
         </td>
         <td className="">{q.category || "Null"}</td>
         <td className="text-start text-truncate" style={{ maxWidth: "15rem" }}>
           {q.prompt || "There is no valid question."}
         </td>
         <td className="text-start">
-          {q.type === "mc" 
-            ? q.details?.isTrueFalse ? "True/False" : "Multiple Choice"
-            : q.type === "essay" ? "Essay"
-            : q.type === "coding" ? "Coding"
+          {q.type === "mc"
+            ? q.details?.isTrueFalse
+              ? "True/False"
+              : "Multiple Choice"
+            : q.type === "essay"
+            ? "Essay"
+            : q.type === "coding"
+            ? "Coding"
             : "Not-valid type"}
         </td>
         <td className="gap-2">
           <Link
-            to={`/admin/questions_bank/preview/${q.id}`}
+            to={`/questions_bank/${q.id}`}
             state={{ question: q }}
             className={`btn view-button ${darkMode ? "text-light" : ""}`}
           >
@@ -183,7 +193,11 @@ const handleDelete = async (id) => {
 
   return (
     <div className={`card ${darkMode ? " spic-dark-mode" : ""}`}>
-      <div className={`p-3 card-header d-flex align-items-center ${darkMode ? " spic-dark-mode" : ""}`}>
+      <div
+        className={`p-3 card-header d-flex align-items-center ${
+          darkMode ? " spic-dark-mode" : ""
+        }`}
+      >
         <h5 className="text-center mb-0">
           <strong>Questions:</strong>
         </h5>
@@ -236,7 +250,11 @@ const handleDelete = async (id) => {
         </div>
       </div>
 
-      <div className={`table-responsive text-nowrap ${darkMode ? "spic-dark-mode" : ""}`}>
+      <div
+        className={`table-responsive text-nowrap ${
+          darkMode ? "spic-dark-mode" : ""
+        }`}
+      >
         <table className={`table ${darkMode ? "table-dark " : "table-light"}`}>
           <thead>
             <tr>
@@ -247,9 +265,7 @@ const handleDelete = async (id) => {
               <th className="">Actions</th>
             </tr>
           </thead>
-          <tbody className="table-border-bottom-0">
-            {renderQuestions()}
-          </tbody>
+          <tbody className="table-border-bottom-0">{renderQuestions()}</tbody>
         </table>
       </div>
     </div>

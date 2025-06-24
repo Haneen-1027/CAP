@@ -55,6 +55,22 @@ function Main({
     <main className="container mt-5">
       <Routes>
         <Route
+          path="/questions_bank/:id"
+          element={
+            <Suspense
+              fallback={
+                <div className="center-container">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              }
+            >
+              <PreviewQuestion user={userDetailes} darkMode={darkMode} />
+            </Suspense>
+          }
+        />
+        <Route
           path={""}
           element={
             <Suspense
@@ -314,25 +330,6 @@ function Main({
                   }
                 >
                   <ViewQuestions user={userDetailes} darkMode={darkMode} />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/admin/questions_bank/preview/:id"
-              element={
-                <Suspense
-                  fallback={
-                    <div className="center-container">
-                      <div
-                        className="spinner-border text-success"
-                        role="status"
-                      >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  }
-                >
-                  <PreviewQuestion darkMode={darkMode} />
                 </Suspense>
               }
             />
