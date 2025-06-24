@@ -7,11 +7,8 @@ using Microsoft.AspNetCore.Cors;
 using System.Text.RegularExpressions;
 using System.Linq;
 using CapApi.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
-using System.Diagnostics;
-using Microsoft.VisualBasic;
-using System.Runtime.Intrinsics.X86;
+using System.Collections.Generic;
 
 namespace CapApi.Controllers;
 
@@ -79,7 +76,17 @@ public class CodeController : ControllerBase
     {
         if (inputs == null || inputs.Count == 0) return "";
 
-        // Handle input formatting based on type
+        // Handle array inputs (should be provided as single JSON string)
+        if (inputType.IsArray)
+        {
+            if (inputs.Count != 1)
+            {
+                throw new ArgumentException("Array input should be provided as a single string");
+            }
+            return inputs[0];
+        }
+
+        // Handle scalar inputs
         if (inputType == typeof(int))
         {
             return string.Join(" ", inputs.Select(i => int.Parse(i).ToString()));
@@ -90,9 +97,29 @@ public class CodeController : ControllerBase
         }
         else // string
         {
-            // If single string, pass directly; else join with spaces
             return inputs.Count == 1 ? inputs[0] : string.Join(" ", inputs);
         }
+    }
+
+    private Type InferInputType(string sample)
+    {
+        if (string.IsNullOrEmpty(sample)) return typeof(string);
+        
+        // Check for array/list notation
+        if (sample.StartsWith("[") && sample.EndsWith("]"))
+        {
+            string innerContent = sample.Trim('[', ']').Trim();
+            if (string.IsNullOrEmpty(innerContent)) return typeof(object[]);
+            
+            string firstElement = innerContent.Split(',')[0].Trim();
+            if (int.TryParse(firstElement, out _)) return typeof(int[]);
+            if (double.TryParse(firstElement, out _)) return typeof(double[]);
+            return typeof(string[]);
+        }
+        
+        if (int.TryParse(sample, out _)) return typeof(int);
+        if (double.TryParse(sample, out _)) return typeof(double);
+        return typeof(string);
     }
 
     private string WrapUserCode(string userCode, List<string> inputs, int languageId, Type inputType)
@@ -128,186 +155,141 @@ public class CodeController : ControllerBase
         }
     }
 
-    private string GetLanguageName(int languageId)
-    {
-        return languageId switch
-        {
-            51 => "C#",
-            54 => "C++",
-            60 => "Go",
-            71 => "Python",
-            63 => "JavaScript",
-            74 => "TypeScript",
-            _ => $"Unknown (ID: {languageId})"
-        };
-    }
+    #region Language-Specific Wrappers
 
-    #region JavaScript/TypeScript Wrapping
+    // JavaScript
     private string WrapJavaScriptCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractFunctionName(userCode);
         var paramNames = ExtractFunctionParameters(userCode, "javascript");
         ValidateParameterCount(paramNames, inputs.Count);
 
-        string inputVariables = string.Join(", ", paramNames);
+        if (inputType.IsArray)
+        {
+            return $@"
+{userCode}
+
+const input = require('fs').readFileSync(0, 'utf-8').trim();
+const {paramNames[0]} = JSON.parse(input);
+console.log(JSON.stringify({functionName}({paramNames[0]})));
+";
+        }
+
         string conversion = GetJavaScriptTypeConversion(inputType);
+        string inputVars = string.Join(", ", paramNames);
 
         return $@"
 {userCode}
 
 const input = require('fs').readFileSync(0, 'utf-8').trim();
-const [{inputVariables}] = input.split(/\s+/){conversion};
-console.log({functionName}({inputVariables}));
+const [{inputVars}] = input.split(/\s+/){conversion};
+console.log({functionName}({inputVars}));
 ";
     }
 
+    // TypeScript
     private string WrapTypeScriptCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractFunctionName(userCode);
         var paramNames = ExtractFunctionParameters(userCode, "typescript");
         ValidateParameterCount(paramNames, inputs.Count);
 
-        string inputVariables = string.Join(", ", paramNames);
-        string conversion = GetJavaScriptTypeConversion(inputType);
-
-        return $@"
-// TypeScript code with Node.js declarations
-declare function require(module: string): any;
-
+        if (inputType.IsArray)
+        {
+            return $@"
 {userCode}
 
-const fs = require('fs');
-const input = fs.readFileSync(0, 'utf-8').trim();
-const [{inputVariables}] = input.split(/\s+/){conversion};
-console.log({functionName}({inputVariables}));
+const input = require('fs').readFileSync(0, 'utf-8').trim();
+const {paramNames[0]} = JSON.parse(input);
+console.log(JSON.stringify({functionName}({paramNames[0]})));
+";
+        }
+
+        string conversion = GetJavaScriptTypeConversion(inputType);
+        string inputVars = string.Join(", ", paramNames);
+
+        return $@"
+{userCode}
+
+const input = require('fs').readFileSync(0, 'utf-8').trim();
+const [{inputVars}] = input.split(/\s+/){conversion};
+console.log({functionName}({inputVars}));
 ";
     }
 
-    private string GetJavaScriptTypeConversion(Type inputType)
-    {
-        return inputType == typeof(int) ? ".map(x => parseInt(x, 10))" :
-               inputType == typeof(double) ? ".map(x => parseFloat(x))" :
-               "";
-    }
-    #endregion
-
-    #region Python Wrapping
+    // Python
     private string WrapPythonCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractFunctionName(userCode);
         var paramNames = ExtractFunctionParameters(userCode, "python");
         ValidateParameterCount(paramNames, inputs.Count);
 
-        string inputVariables = string.Join(", ", paramNames);
+        if (inputType.IsArray)
+        {
+            return $@"
+{userCode}
 
-        // Special handling for string inputs
-        if (inputType == typeof(string) && inputs.Count == 1)
+import json
+if __name__ == '__main__':
+    {paramNames[0]} = json.loads(input())
+    print(json.dumps({functionName}({paramNames[0]})))
+";
+        }
+        else if (inputType == typeof(string) && inputs.Count == 1)
         {
             return $@"
 {userCode}
 
 if __name__ == '__main__':
     {paramNames[0]} = input()
-    print({functionName}({inputVariables}))
+    print({functionName}({paramNames[0]}))
 ";
         }
 
         string conversionLogic = GetPythonConversionLogic(inputType);
-
         return $@"
 {userCode}
 
 if __name__ == '__main__':
-    {inputVariables} = {conversionLogic}
-    print({functionName}({inputVariables}))
+    {paramNames[0]} = {conversionLogic}
+    print({functionName}({paramNames[0]}))
 ";
     }
 
-    private string GetPythonConversionLogic(Type inputType)
-    {
-        return inputType == typeof(int) ? "map(int, input().split())" :
-               inputType == typeof(double) ? "map(float, input().split())" :
-               "input().split()";
-    }
-    #endregion
-
-    #region Go Wrapping
-    private string WrapGoCode(string userCode, List<string> inputs, Type inputType)
-    {
-        string functionName = ExtractGoFunctionName(userCode);
-        var paramNames = ExtractFunctionParameters(userCode, "go");
-        ValidateParameterCount(paramNames, inputs.Count);
-
-        string inputVariables = string.Join(", ", paramNames);
-        string inputParsing = GetGoInputParsing(paramNames, inputType);
-        string imports = GetGoRequiredImports(inputType);
-
-        return $@"package main
-
-import (
-	""bufio""
-	""fmt""
-	""os""
-	""strings""
-	{imports}
-)
-
-{userCode}
-
-func main() {{
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	input := scanner.Text()
-	inputs := strings.Fields(input)
-	
-{inputParsing}
-	
-	result := {functionName}({inputVariables})
-	fmt.Println(result)
-}}";
-    }
-
-    private string GetGoInputParsing(List<string> paramNames, Type inputType)
-    {
-        if (inputType == typeof(int))
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\t{name}, err := strconv.Atoi(inputs[{i}])\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid integer input\")\n\t\tos.Exit(1)\n\t}}"));
-        }
-        else if (inputType == typeof(double))
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\t{name}, err := strconv.ParseFloat(inputs[{i}], 64)\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid float input\")\n\t\tos.Exit(1)\n\t}}"));
-        }
-        else
-        {
-            if (paramNames.Count == 1)
-            {
-                return $"\t{paramNames[0]} := strings.Join(inputs, \" \")";
-            }
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\t{name} := inputs[{i}]"));
-        }
-    }
-
-    private string GetGoRequiredImports(Type inputType)
-    {
-        return inputType == typeof(int) || inputType == typeof(double) ? "\"strconv\"" : "";
-    }
-    #endregion
-
-    #region C# Wrapping
+    // C#
     private string WrapCSharpCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractCSharpFunctionName(userCode);
         var paramNames = ExtractFunctionParameters(userCode, "csharp");
         ValidateParameterCount(paramNames, inputs.Count);
 
-        string inputVariables = string.Join(", ", paramNames);
-        string inputParsing = GetCSharpInputParsing(paramNames, inputType);
-        string staticModifier = userCode.Contains(" static ") ? "" : "static ";
+        if (inputType.IsArray)
+        {
+            string elementType = inputType.GetElementType()?.Name ?? "object";
+            return $@"
+using System;
+using System.Linq;
+using System.Text.Json;
 
-        return $@"using System;
+public class Program
+{{
+    {MakeFunctionStatic(userCode)}
+
+    static void Main()
+    {{
+        string json = Console.ReadLine();
+        {elementType}[] {paramNames[0]} = JsonSerializer.Deserialize<{elementType}[]>(json);
+        var result = {functionName}({paramNames[0]});
+        Console.WriteLine(JsonSerializer.Serialize(result));
+    }}
+}}";
+        }
+
+        string inputParsing = GetCSharpInputParsing(paramNames, inputType);
+        string inputVars = string.Join(", ", paramNames);
+
+        return $@"
+using System;
 using System.Linq;
 
 public class Program
@@ -326,43 +308,46 @@ public class Program
 
 {inputParsing}
         
-        var result = {functionName}({inputVariables});
+        var result = {functionName}({inputVars});
         Console.WriteLine(result);
     }}
 }}";
     }
 
-    private string GetCSharpInputParsing(List<string> paramNames, Type inputType)
-    {
-        if (inputType == typeof(int))
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tif (!int.TryParse(inputs[{i}], out var {name}))\n\t{{\n\t\tConsole.WriteLine(\"Invalid integer input\");\n\t\treturn;\n\t}}"));
-        }
-        else if (inputType == typeof(double))
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tif (!double.TryParse(inputs[{i}], out var {name}))\n\t{{\n\t\tConsole.WriteLine(\"Invalid double input\");\n\t\treturn;\n\t}}"));
-        }
-        else
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tvar {name} = inputs.Length > {i} ? inputs[{i}] : \"\";"));
-        }
-    }
-    #endregion
-
-    #region C++ Wrapping
+    // C++
     private string WrapCppCode(string userCode, List<string> inputs, Type inputType)
     {
         string functionName = ExtractCppFunctionName(userCode);
         var paramNames = ExtractFunctionParameters(userCode, "cpp");
         ValidateParameterCount(paramNames, inputs.Count);
 
-        string inputVariables = string.Join(", ", paramNames);
-        string inputParsing = GetCppInputParsing(paramNames, inputType);
+        if (inputType.IsArray)
+        {
+            return $@"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
-        return $@"#include <iostream>
+{userCode}
+
+int main() {{
+    std::string input;
+    std::getline(std::cin, input);
+    auto j = json::parse(input);
+    std::vector<int> arr = j.get<std::vector<int>>();
+    auto result = {functionName}(arr);
+    std::cout << json(result).dump();
+    return 0;
+}}";
+        }
+
+        string inputParsing = GetCppInputParsing(paramNames, inputType);
+        string inputVars = string.Join(", ", paramNames);
+
+        return $@"
+#include <iostream>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -389,33 +374,89 @@ int main() {{
 
 {inputParsing}
     
-    auto result = {functionName}({inputVariables});
+    auto result = {functionName}({inputVars});
     cout << result << endl;
     return 0;
 }}";
     }
 
-    private string GetCppInputParsing(List<string> paramNames, Type inputType)
+    // Go
+    private string WrapGoCode(string userCode, List<string> inputs, Type inputType)
     {
-        if (inputType == typeof(int))
+        string functionName = ExtractGoFunctionName(userCode);
+        var paramNames = ExtractFunctionParameters(userCode, "go");
+        ValidateParameterCount(paramNames, inputs.Count);
+
+        if (inputType.IsArray)
         {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tint {name};\n\ttry {{\n\t\t{name} = stoi(inputs[{i}]);\n\t}} catch (...) {{\n\t\tcerr << \"Invalid integer input\" << endl;\n\t\treturn 1;\n\t}}"));
+            return $@"package main
+
+import (
+	""encoding/json""
+	""fmt""
+	""os""
+	""io/ioutil""
+)
+
+{userCode}
+
+func main() {{
+	data, _ := ioutil.ReadAll(os.Stdin)
+	var {paramNames[0]} []int
+	json.Unmarshal(data, &{paramNames[0]})
+	result := {functionName}({paramNames[0]})
+	jsonResult, _ := json.Marshal(result)
+	fmt.Println(string(jsonResult))
+}}";
         }
-        else if (inputType == typeof(double))
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tdouble {name};\n\ttry {{\n\t\t{name} = stod(inputs[{i}]);\n\t}} catch (...) {{\n\t\tcerr << \"Invalid double input\" << endl;\n\t\treturn 1;\n\t}}"));
-        }
-        else
-        {
-            return string.Join("\n", paramNames.Select((name, i) =>
-                $"\tstring {name} = inputs.size() > {i} ? inputs[{i}] : \"\";"));
-        }
+
+        string inputParsing = GetGoInputParsing(paramNames, inputType);
+        string imports = GetGoRequiredImports(inputType);
+        string inputVars = string.Join(", ", paramNames);
+
+        return $@"package main
+
+import (
+	""bufio""
+	""fmt""
+	""os""
+	""strings""
+	{imports}
+)
+
+{userCode}
+
+func main() {{
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	input := scanner.Text()
+	inputs := strings.Fields(input)
+	
+{inputParsing}
+	
+	result := {functionName}({inputVars})
+	fmt.Println(result)
+}}";
     }
+
     #endregion
 
-    #region Common Helper Methods
+    #region Helper Methods
+
+    private string GetLanguageName(int languageId)
+    {
+        return languageId switch
+        {
+            51 => "C#",
+            54 => "C++",
+            60 => "Go",
+            71 => "Python",
+            63 => "JavaScript",
+            74 => "TypeScript",
+            _ => $"Unknown (ID: {languageId})"
+        };
+    }
+
     private List<string> ExtractFunctionParameters(string userCode, string language)
     {
         string pattern = language switch
@@ -451,7 +492,6 @@ int main() {{
 
     private string ExtractFunctionName(string userCode)
     {
-        // Try multiple patterns for different language styles
         var patterns = new[]
         {
             @"function\s+(\w+)\s*\(",          // JavaScript function
@@ -503,12 +543,85 @@ int main() {{
         return Regex.Replace(userCode, pattern, replacement);
     }
 
-    private Type InferInputType(string sample)
+    private string GetJavaScriptTypeConversion(Type inputType)
     {
-        if (string.IsNullOrEmpty(sample)) return typeof(string);
-        if (int.TryParse(sample, out _)) return typeof(int);
-        if (double.TryParse(sample, out _)) return typeof(double);
-        return typeof(string);
+        return inputType == typeof(int) ? ".map(x => parseInt(x, 10))" :
+               inputType == typeof(double) ? ".map(x => parseFloat(x))" :
+               "";
     }
+
+    private string GetPythonConversionLogic(Type inputType)
+    {
+        return inputType == typeof(int) ? "map(int, input().split())" :
+               inputType == typeof(double) ? "map(float, input().split())" :
+               "input().split()";
+    }
+
+    private string GetGoInputParsing(List<string> paramNames, Type inputType)
+    {
+        if (inputType == typeof(int))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\t{name}, err := strconv.Atoi(inputs[{i}])\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid integer input\")\n\t\tos.Exit(1)\n\t}}"));
+        }
+        else if (inputType == typeof(double))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\t{name}, err := strconv.ParseFloat(inputs[{i}], 64)\n\tif err != nil {{\n\t\tfmt.Println(\"Invalid float input\")\n\t\tos.Exit(1)\n\t}}"));
+        }
+        else
+        {
+            if (paramNames.Count == 1)
+            {
+                return $"\t{paramNames[0]} := strings.Join(inputs, \" \")";
+            }
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\t{name} := inputs[{i}]"));
+        }
+    }
+
+    private string GetGoRequiredImports(Type inputType)
+    {
+        return inputType == typeof(int) || inputType == typeof(double) ? "\"strconv\"" : "";
+    }
+
+    private string GetCSharpInputParsing(List<string> paramNames, Type inputType)
+    {
+        if (inputType == typeof(int))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tif (!int.TryParse(inputs[{i}], out var {name}))\n\t{{\n\t\tConsole.WriteLine(\"Invalid integer input\");\n\t\treturn;\n\t}}"));
+        }
+        else if (inputType == typeof(double))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tif (!double.TryParse(inputs[{i}], out var {name}))\n\t{{\n\t\tConsole.WriteLine(\"Invalid double input\");\n\t\treturn;\n\t}}"));
+        }
+        else
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tvar {name} = inputs.Length > {i} ? inputs[{i}] : \"\";"));
+        }
+    }
+
+    private string GetCppInputParsing(List<string> paramNames, Type inputType)
+    {
+        if (inputType == typeof(int))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tint {name};\n\ttry {{\n\t\t{name} = stoi(inputs[{i}]);\n\t}} catch (...) {{\n\t\tcerr << \"Invalid integer input\" << endl;\n\t\treturn 1;\n\t}}"));
+        }
+        else if (inputType == typeof(double))
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tdouble {name};\n\ttry {{\n\t\t{name} = stod(inputs[{i}]);\n\t}} catch (...) {{\n\t\tcerr << \"Invalid double input\" << endl;\n\t\treturn 1;\n\t}}"));
+        }
+        else
+        {
+            return string.Join("\n", paramNames.Select((name, i) =>
+                $"\tstring {name} = inputs.size() > {i} ? inputs[{i}] : \"\";"));
+        }
+    }
+
     #endregion
 }
