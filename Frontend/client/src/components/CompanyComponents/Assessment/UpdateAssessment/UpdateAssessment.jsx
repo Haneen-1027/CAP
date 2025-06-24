@@ -11,7 +11,7 @@ import {
 } from "../../../../APIs/ApisHandaler";
 import Swal from "sweetalert2";
 
-export default function UpdateAssessment({ darkMode }) {
+export default function UpdateAssessment({ user, darkMode }) {
   const { id } = useParams();
   const [assessment, setAssessment] = useState({
     name: "",
@@ -267,7 +267,11 @@ export default function UpdateAssessment({ darkMode }) {
                     className="prompt btn btn-sm btn-outline-success me-2"
                     title="Edit Question"
                   >
-                    <i className="fas fa-edit"></i>
+                    <i
+                      className={`fas fa-edit ${
+                        user.role === "Admin" ? "fa-edit" : "fa-eye"
+                      }`}
+                    ></i>
                   </Link>{" "}
                   {q.prompt}
                 </td>
