@@ -8,6 +8,7 @@ import {
   MultipleChoice,
 } from "../../../../componentsLoader/ComponentsLoader";
 import { useLocation, useParams } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 export default function AddQuestion({ userdetails, darkMode }) {
   const location = useLocation();
@@ -73,52 +74,95 @@ export default function AddQuestion({ userdetails, darkMode }) {
   };
 
   const addQuestion = async () => {
+    // First show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: isEditing 
+        ? 'You are about to update this question' 
+        : 'You are about to add a new question',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: isEditing ? 'Yes, update it!' : 'Yes, add it!',
+      cancelButtonText: 'No, cancel!'
+    });
+
+    // If user cancels, return early
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setApiLoading(true);
     // Call Validation Function
     let validateResult = validateForm();
     if (validateResult.error) {
       setErrorList(validateResult.error.details);
-    } else {
-      const newDetails = { ...details, description: codingDescription };
-      const newQuestion = {
-        ...question,
-        ["details"]: newDetails,
-      };
+      setApiLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fill all required fields correctly',
+        confirmButtonColor: '#3085d6',
+      });
+      return;
+    }
 
-      try {
-        // Update?
-        if (isEditing) {
-          console.log("question before update:", newQuestion);
-          await updateQuestion(newQuestion);
-          setApiMessage("Thq Question Updated Successfully!");
-        }
-        // Add
-        else {
-          console.log("question before add:", newQuestion);
-          await addNewQuestion(newQuestion);
-          setApiMessage("Thq Question Addedd Successfully!");
-          setQuestion({
-            type: "",
-            category: "",
-            prompt: "",
-            details: {},
-          });
-          setQuestionDetails({});
-          setCodingDescription("This is a defualt description");
-          setErrorList([]);
-          setApiMessage("");
-          setApiError(false);
-          setIsLoading(false);
-        }
-      } catch (e) {
-        console.error(e);
-        setApiError(true);
-        setApiMessage("There is an Error! Please try again later.");
-      } finally {
-        setApiLoading(false);
+    const newDetails = { ...details, description: codingDescription };
+    const newQuestion = {
+      ...question,
+      ["details"]: newDetails,
+    };
+
+    try {
+      if (isEditing) {
+        console.log("question before update:", newQuestion);
+        await updateQuestion(newQuestion);
+        setApiMessage("The Question Updated Successfully!");
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Your question has been updated.',
+          confirmButtonColor: '#3085d6',
+        });
+      } else {
+        console.log("question before add:", newQuestion);
+        await addNewQuestion(newQuestion);
+        setApiMessage("The Question Added Successfully!");
+        Swal.fire({
+          icon: 'success',
+          title: 'Added!',
+          text: 'Your question has been added.',
+          confirmButtonColor: '#3085d6',
+        });
+        setQuestion({
+          type: "",
+          category: "",
+          prompt: "",
+          details: {},
+        });
+        setQuestionDetails({});
+        setCodingDescription("This is a defualt description");
+        setErrorList([]);
+        setApiMessage("");
+        setApiError(false);
+        setIsLoading(false);
       }
+    } catch (e) {
+      console.error(e);
+      setApiError(true);
+      setApiMessage("There is an Error! Please try again later.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'There was an error processing your request. Please try again later.',
+        confirmButtonColor: '#3085d6',
+      });
+    } finally {
+      setApiLoading(false);
     }
   };
+
 
   ////////////////////
   useEffect(() => {
