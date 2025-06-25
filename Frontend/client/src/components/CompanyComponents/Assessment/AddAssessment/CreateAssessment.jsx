@@ -12,7 +12,7 @@ import {
 import { Link } from "react-router";
 import Swal from "sweetalert2";
 
-export default function CreateAssessment({ darkMode }) {
+export default function CreateAssessment({ user, darkMode }) {
   // Static categories and question types
   const categories = [
     { name: "HTML", value: "HTML" },
