@@ -68,25 +68,54 @@ export default function PreviewQuestion({ user, darkMode }) {
             <hr className="bold-hr mid-aligment" />
           </div>
           <div className="details d-flex flex-column flex-start">
-            <div className="form-group">
-              <label className="h5 mid-bold" htmlFor="prompt">
-                Question:
-              </label>
-              <textarea
-                className="form-control mt-2 mb-4"
-                id="prompt"
-                name="questionPrompt"
-                placeholder="Question ..."
-                value={question ? question.prompt : "Question Prompt ..."}
-                disabled
-              />
+            <div
+              className={`row ${
+                question["type"] === "coding"
+                  ? "justify-content-between"
+                  : "justify-content-center"
+              } `}
+            >
+              <div
+                className={`col-12 ${
+                  question["type"] === "coding" ? "col-md-5" : "col-md-8"
+                } form-group`}
+              >
+                <label className="h5 mid-bold" htmlFor="prompt">
+                  Question:
+                </label>
+                <textarea
+                  className="form-control my-2"
+                  id="prompt"
+                  name="prompt"
+                  placeholder="Question ..."
+                  value={question.prompt}
+                  disabled
+                />
+              </div>
+              {question["type"] === "coding" ? (
+                <div className="col-12 col-md-6 form-group">
+                  <label className="h5 mid-bold" htmlFor="prompt">
+                    Description:
+                  </label>
+                  <textarea
+                    className="form-control my-2"
+                    id="description"
+                    name="description"
+                    placeholder="Brief Description about the Problem ..."
+                    value={question.details.description}
+                    disabled
+                  />
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             {question?.type === "mc" ? ( // Use optional chaining
               <MC details={question.details} darkMode={darkMode} />
             ) : question?.type === "essay" ? (
               <div>Essay Question Details</div>
             ) : question?.type === "coding" ? (
-              <div>
+              <div className="my-4">
                 <h5>Test Cases:</h5>
                 {question.details.testCases.map((testCase, index) => (
                   <div key={index}>
