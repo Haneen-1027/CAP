@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BackBtn } from "../../../../componentsLoader/ComponentsLoader";
 import { Link, useParams } from "react-router-dom";
 import { getQuestionById } from "../../../../APIs/ApisHandaler";
+import MC from "./DetailsComponents/MC";
 
 export default function PreviewQuestion({ user, darkMode }) {
   const { id } = useParams();
@@ -46,7 +47,7 @@ export default function PreviewQuestion({ user, darkMode }) {
         <div className="position-relative p-4 d-flex flex-column">
           <div className="general d-flex flex-column flex-md-row align-items-center justify-content-between">
             <div className="d-flex flex-column flex-md-row gap-4 mb-4 m-md-0">
-              <div className="">
+              <div className="badge bg-secondary fs-6">
                 {question
                   ? question.type === "mc"
                     ? "Multiple Choice"
@@ -57,7 +58,9 @@ export default function PreviewQuestion({ user, darkMode }) {
                     : "Non-valid Type"
                   : "No Data"}
               </div>
-              <div className="">{question ? question.category : "No Data"}</div>
+              <div className="badge bg-success fs-6">
+                {question ? question.category : "No Data"}
+              </div>
             </div>
           </div>
           <div className="w-50 position-relative my-3">
@@ -79,7 +82,7 @@ export default function PreviewQuestion({ user, darkMode }) {
               />
             </div>
             {question?.type === "mc" ? ( // Use optional chaining
-              <div>Multiple Choice Question Details</div>
+              <MC details={question.details} darkMode={darkMode} />
             ) : question?.type === "essay" ? (
               <div>Essay Question Details</div>
             ) : question?.type === "coding" ? (
