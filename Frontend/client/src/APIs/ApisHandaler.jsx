@@ -2,7 +2,7 @@ import axios from "axios";
 
 /////////
 
-const BASE_URL = "http://localhost:5104";
+const BASE_URL = "https://localhost:7199";
 
 //
 export const loginUser = async (email, password) => {
