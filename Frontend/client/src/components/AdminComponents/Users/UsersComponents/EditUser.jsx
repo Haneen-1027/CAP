@@ -54,7 +54,7 @@ export default function EditUser({ darkMode }) {
     
     if (!user.dateOfBirth) newErrors.dateOfBirth = "Birth date is required";
     if (!user.role) newErrors.role = "Role is required";
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

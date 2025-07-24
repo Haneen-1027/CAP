@@ -6,4 +6,6 @@ public class TestCaseResultDto
     public string? ExpectedOutput { get; set; }
     public string? ActualOutput { get; set; }
     public string? Error { get; set; }
+    public bool IsPassed { get; set; }
+    public decimal ExecutionTime { get; set; }
 }

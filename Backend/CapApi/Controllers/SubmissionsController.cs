@@ -26,126 +26,126 @@ namespace CapApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<AssessmentSubmissionResponseDto>>> GetSubmissionsByAssessment(int assessmentId)
+public async Task<ActionResult<IEnumerable<object>>> GetSubmissionsByAssessment(int assessmentId)
+{
+    try
+    {
+        // Get assessment with total marks
+        var assessment = await _context.Assessments
+            .FirstOrDefaultAsync(a => a.Id == assessmentId);
+        
+        if (assessment == null)
         {
-            try
-            {
-                // Validate assessment exists
-                var assessmentExists = await _context.Assessments.AnyAsync(a => a.Id == assessmentId);
-                if (!assessmentExists)
-                {
-                    _logger.LogWarning("Assessment with ID {AssessmentId} not found", assessmentId);
-                    return NotFound(new { error = $"Assessment with ID {assessmentId} does not exist" });
-                }
-
-                // Get all submissions for this assessment with related data
-                var submissions = await _context.Submissions
-                    .Where(s => s.AssessmentId == assessmentId)
-                    .Include(s => s.User)
-                    .Include(s => s.Question)
-                        .ThenInclude(q => q.McqQuestion)
-                    .Include(s => s.Question)
-                        .ThenInclude(q => q.CodingQuestion)
-                    .ToListAsync();
-
-                if (!submissions.Any())
-                {
-                    return Ok(new List<AssessmentSubmissionResponseDto>());
-                }
-
-                // Get all assessment questions to get the total marks for each question
-                var assessmentQuestions = await _context.AssessmentQuestions
-                    .Where(aq => aq.AssessmentId == assessmentId)
-                    .ToDictionaryAsync(aq => aq.QuestionId);
-
-                // Group submissions by user
-                var groupedSubmissions = submissions
-                    .GroupBy(s => s.UserId)
-                    .Select(g => new AssessmentSubmissionResponseDto
-                    {
-                        user_id = g.Key,
-                        username = g.First().User?.Username ?? "unknown",
-                        firstName = g.First().User?.FirstName ?? "Unknown",
-                        lastName = g.First().User?.LastName ?? "User",
-                        assessment_id = assessmentId,
-                        Answers = g.Select(s =>
-                        {
-                            var question = s.Question;
-                            var assessmentQuestion = assessmentQuestions.GetValueOrDefault(s.QuestionId);
-                            var totalMark = assessmentQuestion?.Mark ?? 0;
-
-                            // Build question details based on type
-                            object questionDetails = null;
-                            if (question?.Type?.ToLower() == "mc" && question.McqQuestion != null)
-                            {
-                                var visibleOptions = new List<string>();
-                                if (question.McqQuestion.CorrectAnswer != null)
-                                {
-                                    visibleOptions.AddRange(question.McqQuestion.CorrectAnswer);
-                                }
-                                if (question.McqQuestion.WrongOptions != null)
-                                {
-                                    visibleOptions.AddRange(question.McqQuestion.WrongOptions);
-                                }
-
-                                questionDetails = new
-                                {
-                                    question_type = "mc",
-                                    visible_options = visibleOptions
-                                };
-                            }
-                            else if (question?.Type?.ToLower() == "coding" && question.CodingQuestion != null)
-                            {
-                                // Detect language from answer content
-                                int detectedLanguageId = DetectProgrammingLanguage(s.Answer);
-
-                                questionDetails = new
-                                {
-                                    question_type = "coding",
-                                    used_langauage = detectedLanguageId,
-                                    test_cases = new
-                                    {
-                                        tests_parameters = new List<string>(),
-                                        excpected_output = new List<string>(),
-                                        tests_count = question.CodingQuestion.TestCases?.Count ?? 0,
-                                        test_passed = 0 // This would need to come from submission data
-                                    }
-                                };
-                            }
-                            else if (question?.Type?.ToLower() == "essay")
-                            {
-                                questionDetails = new
-                                {
-                                    question_type = "essay"
-                                };
-                            }
-
-                            return new AnswerDto
-                            {
-                                question_id = s.QuestionId,
-                                prompt = question?.Prompt ?? "Unknown question",
-                                contributor_answer = s.Answer ?? string.Empty,
-                                question_details = questionDetails,
-                                new_mark = (int)(s.Mark ?? -99), // -99 indicates not graded
-                                total_mark = totalMark
-                            };
-                        }).ToList(),
-                        started_time = g.Min(s => s.StartedAt),
-                        submitted_time = g.Max(s => s.SubmittedAt)
-                    })
-                    .ToList();
-
-                _logger.LogInformation("Retrieved {Count} user submissions for assessment {AssessmentId}", groupedSubmissions.Count, assessmentId);
-
-                return Ok(groupedSubmissions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(0, ex, "Error retrieving submissions for assessment {AssessmentId}", assessmentId);
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new { error = "An error occurred while retrieving submissions" });
-            }
+            return NotFound(new { error = $"Assessment with ID {assessmentId} not found" });
         }
+
+        // Get all submissions for this assessment with related data
+        var submissions = await _context.Submissions
+            .Where(s => s.AssessmentId == assessmentId)
+            .Include(s => s.User)
+            .Include(s => s.Question)
+                .ThenInclude(q => q.McqQuestion)
+            .Include(s => s.Question)
+                .ThenInclude(q => q.CodingQuestion)
+            .ToListAsync();
+
+        if (!submissions.Any())
+        {
+            return Ok(new List<object>());
+        }
+
+        // Get all assessment questions to get the total marks for each question
+        var assessmentQuestions = await _context.AssessmentQuestions
+            .Where(aq => aq.AssessmentId == assessmentId)
+            .ToDictionaryAsync(aq => aq.QuestionId);
+
+        // Group submissions by user and format response
+        var result = submissions
+            .GroupBy(s => s.UserId)
+            .Select(g => new
+            {
+                user_id = g.Key,
+                username = g.First().User?.Username ?? "unknown",
+                firstName = g.First().User?.FirstName ?? "Unknown",
+                lastName = g.First().User?.LastName ?? "User",
+                assessment_id = assessmentId,
+                total_mark = assessment.TotalMark, // Add assessment's total mark here
+                answers = g.Select(s =>
+                {
+                    var question = s.Question;
+                    var assessmentQuestion = assessmentQuestions.GetValueOrDefault(s.QuestionId);
+                    var totalMark = assessmentQuestion?.Mark ?? 0;
+
+                    // Build question details based on type
+                    object questionDetails = null;
+                    if (question?.Type?.ToLower() == "mc" && question.McqQuestion != null)
+                    {
+                        var visibleOptions = new List<string>();
+                        if (question.McqQuestion.CorrectAnswer != null)
+                        {
+                            visibleOptions.AddRange(question.McqQuestion.CorrectAnswer);
+                        }
+                        if (question.McqQuestion.WrongOptions != null)
+                        {
+                            visibleOptions.AddRange(question.McqQuestion.WrongOptions);
+                        }
+
+                        questionDetails = new
+                        {
+                            question_type = "mc",
+                            visible_options = visibleOptions
+                        };
+                    }
+                    else if (question?.Type?.ToLower() == "coding" && question.CodingQuestion != null)
+                    {
+                        int detectedLanguageId = DetectProgrammingLanguage(s.Answer);
+                        questionDetails = new
+                        {
+                            question_type = "coding",
+                            used_langauage = detectedLanguageId,
+                            test_cases = new
+                            {
+                                tests_parameters = new List<string>(),
+                                excpected_output = new List<string>(),
+                                tests_count = question.CodingQuestion.TestCases?.Count ?? 0,
+                                test_passed = 0
+                            }
+                        };
+                    }
+                    else if (question?.Type?.ToLower() == "essay")
+                    {
+                        questionDetails = new
+                        {
+                            question_type = "essay"
+                        };
+                    }
+
+                    return new
+                    {
+                        question_id = s.QuestionId,
+                        contributor_answer = s.Answer ?? string.Empty,
+                        question_type = (string)null,
+                        test_pass = (int?)null,
+                        total_test_case = (int?)null,
+                        prompt = question?.Prompt ?? "Unknown question",
+                        question_details = questionDetails,
+                        new_mark = (int)(s.Mark ?? -99),
+                        total_mark = totalMark
+                    };
+                }).ToList(),
+                started_time = g.Min(s => s.StartedAt),
+                submitted_time = g.Max(s => s.SubmittedAt)
+            })
+            .ToList();
+
+        return Ok(result);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error retrieving submissions");
+        return StatusCode(500, new { error = "Error retrieving submissions" });
+    }
+}
 
         // Helper method to detect programming language from code
 private int DetectProgrammingLanguage(string code)
