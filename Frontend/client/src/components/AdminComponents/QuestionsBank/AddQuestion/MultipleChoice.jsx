@@ -10,12 +10,12 @@ export default function MultipleChoice({
   const [details, setDetails] = useState(detailes);
   const [isTrueFalse, setIsTrueFalse] = useState(detailes.isTrueFalse);
   const [wrongOptionsCount, setWrongOptionsCount] = useState(
-    detailes.wrongOptions.length >= 3 ? detailes.wrongOptions.length : 3
+    detailes.wrongOptions.length >= 1 ? detailes.wrongOptions.length : 1
   );
   const [wrongOptions, setWrongOptions] = useState(
     detailes?.wrongOptions
       ? [...detailes.wrongOptions]
-      : Array.from({ length: 3 }, () => "")
+      : Array.from({ length: 1 }, () => "")
   );
   const [correctAnswersCount, setCorrectAnswersCount] = useState(
     detailes.correctAnswer.length >= 1 ? detailes.correctAnswer.length : 1
@@ -166,7 +166,6 @@ export default function MultipleChoice({
 
   // Update question details when details change
   useEffect(() => {
-    console.log("Details of MC: ", details);
     setQuestionDetails(details);
   }, [details]);
 
@@ -211,7 +210,7 @@ export default function MultipleChoice({
               <label className="form-label m-0" htmlFor="wrongQuestionsCount">
                 Correct Answers Count:
               </label>
-              <input
+              <input 
                 className="form-input flex-1 w-25"
                 type="number"
                 id="wrongQuestionsCount"
@@ -245,15 +244,15 @@ export default function MultipleChoice({
                 className="form-input flex-1 w-25"
                 type="number"
                 id="wrongQuestionsCount"
-                min={3}
+                min={1}
                 max={20}
                 value={wrongOptionsCount}
                 onChange={(e) =>
                   setWrongOptionsCount(
                     e.target.value >= 20
                       ? 20
-                      : e.target.value <= 3
-                      ? 3
+                      : e.target.value <= 1
+                      ? 1
                       : e.target.value
                   )
                 }
