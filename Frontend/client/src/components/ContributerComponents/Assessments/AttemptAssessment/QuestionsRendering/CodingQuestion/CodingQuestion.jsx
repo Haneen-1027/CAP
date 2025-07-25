@@ -133,6 +133,12 @@ export default function CodingQuestion({
     setIsCodeEditting(true);
   }
 
+  useEffect(()=>{
+    setCode("def solution():\n\n pass");
+    setTestResults([]);
+    setLanguage("python");
+  },[question])
+
   useEffect(() => {
     if (userAnswer) {
       setCode(userAnswer);

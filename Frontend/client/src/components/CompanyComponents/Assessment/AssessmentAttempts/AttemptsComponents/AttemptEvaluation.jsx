@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import {
   BackBtn,
   MultipleChoiceReview,
+  FilterableDropdown,
 } from "../../../../../componentsLoader/ComponentsLoader";
 import { useParams, useNavigate } from "react-router";
 import {
@@ -22,20 +23,55 @@ export default function AttemptEvaluation({ darkMode }) {
   const [isRunning, setIsRunning] = useState(false);
   const [testResults, setTestResults] = useState([]);
   const [code, setCode] = useState("");
+  const [selectedLanguageId, setSelectedLanguageId] = useState(71); // Default to Python
 
   const navigate = useNavigate();
 
-  // Language mapping
+  // Language mapping with templates
   const languageMap = {
-    51: { monaco: "csharp", name: "C#" },
-    54: { monaco: "cpp", name: "C++" },
-    60: { monaco: "Go", name: "Go" },
-    71: { monaco: "python", name: "Python" },
-    63: { monaco: "javascript", name: "JavaScript" },
-    74: { monaco: "typescript", name: "TypeScript" },
+    51: { 
+      monaco: "csharp", 
+      name: "C#", 
+      template: "// Update function type if needed\n\nobject solution() {\n  return null;\n}" 
+    },
+    54: { 
+      monaco: "cpp", 
+      name: "C++", 
+      template: "// Update function type if needed\n\nvoid solution() {\n  return;\n}" 
+    },
+    60: { 
+      monaco: "go", 
+      name: "Go", 
+      template: "func solution() interface{} {\n  return nil\n}" 
+    },
+    71: { 
+      monaco: "python", 
+      name: "Python", 
+      template: "def solution():\n  pass" 
+    },
+    63: { 
+      monaco: "javascript", 
+      name: "JavaScript", 
+      template: "function solution() {\n  return;\n}" 
+    },
+    74: { 
+      monaco: "typescript", 
+      name: "TypeScript", 
+      template: "function solution(): any {\n  return;\n}" 
+    },
   };
 
-  // Fetch the specific attempt data
+  // Language dropdown items
+  const languageItems = [
+    { name: "Python", value: 71 },
+    { name: "JavaScript", value: 63 },
+    { name: "TypeScript", value: 74 },
+    { name: "C#", value: 51 },
+    { name: "C++", value: 54 },
+    { name: "Go", value: 60 },
+  ];
+
+  // Fetch attempt data
   useEffect(() => {
     const fetchAttempt = async () => {
       try {
@@ -48,15 +84,16 @@ export default function AttemptEvaluation({ darkMode }) {
               Answers: selectedAttempt.answers.map((answer) => ({
                 ...answer,
                 total_mark: answer.total_mark || answer.new_mark,
-                new_mark: answer.new_mark || 0, // Initialize new_mark if not present
+                new_mark: answer.new_mark || 0,
               })),
             });
-            // Set initial code for coding questions
+            // Set initial code and language for coding questions
             if (
-              selectedAttempt.answers[0]?.question_details?.question_type ===
-              "coding"
+              selectedAttempt.answers[0]?.question_details?.question_type === "coding"
             ) {
+              const langId = selectedAttempt.answers[0].question_details.used_langauage;
               setCode(selectedAttempt.answers[0].contributor_answer);
+              setSelectedLanguageId(langId);
             }
           } else {
             setError("Attempt not found");
@@ -79,10 +116,11 @@ export default function AttemptEvaluation({ darkMode }) {
   useEffect(() => {
     if (
       attempt &&
-      attempt.Answers[currentQuestionIndex]?.question_details?.question_type ===
-        "coding"
+      attempt.Answers[currentQuestionIndex]?.question_details?.question_type === "coding"
     ) {
+      const langId = attempt.Answers[currentQuestionIndex].question_details.used_langauage;
       setCode(attempt.Answers[currentQuestionIndex].contributor_answer);
+      setSelectedLanguageId(langId);
     }
   }, [currentQuestionIndex, attempt]);
 
@@ -102,7 +140,6 @@ export default function AttemptEvaluation({ darkMode }) {
       );
 
       if (response.success) {
-        // Update local state to reflect the change
         setAttempt((prevAttempt) => ({
           ...prevAttempt,
           Answers: prevAttempt.Answers.map((q) =>
@@ -129,10 +166,8 @@ export default function AttemptEvaluation({ darkMode }) {
   const handleNext = async () => {
     if (!attempt || currentQuestionIndex >= attempt.Answers.length - 1) return;
 
-    // Always save the current question before moving to the next
     const saved = await saveCurrentQuestionMark();
 
-    // Only proceed if save was successful or if there were no changes to save
     if (
       saved ||
       attempt.Answers[currentQuestionIndex].new_mark ===
@@ -146,10 +181,8 @@ export default function AttemptEvaluation({ darkMode }) {
   const handlePrevious = async () => {
     if (currentQuestionIndex <= 0) return;
 
-    // Always save the current question before moving to the previous
     const saved = await saveCurrentQuestionMark();
 
-    // Only proceed if save was successful or if there were no changes to save
     if (
       saved ||
       attempt.Answers[currentQuestionIndex].new_mark ===
@@ -179,11 +212,9 @@ export default function AttemptEvaluation({ darkMode }) {
   };
 
   const handleNewEvaluation = async () => {
-    // Save the current question first
     const saved = await saveCurrentQuestionMark(true);
 
     if (saved) {
-      // Optional: You could add additional logic here for final submission
       Swal.fire(
         "Submitted!",
         "Evaluation has been submitted successfully.",
@@ -193,6 +224,7 @@ export default function AttemptEvaluation({ darkMode }) {
       });
     }
   };
+
   const handleRunCode = async () => {
     if (!code.trim()) {
       Swal.fire("Error", "Please write some code before running", "error");
@@ -205,13 +237,12 @@ export default function AttemptEvaluation({ darkMode }) {
       const response = await executeCode(
         currentQuestion.question_id,
         code,
-        currentQuestion.question_details.used_langauage
+        selectedLanguageId // Use the currently selected language
       );
 
       const results = response.data;
       setTestResults(results);
 
-      // Calculate passed test cases
       const passedCount = results.filter(
         (test) => test.actualOutput === test.expectedOutput && !test.error
       ).length;
@@ -242,6 +273,17 @@ export default function AttemptEvaluation({ darkMode }) {
     setCode(newValue);
   };
 
+  const handleLanguageChange = (e) => {
+    const newLanguageId = parseInt(e.target.value);
+    setSelectedLanguageId(newLanguageId);
+    
+    // Only update the code if it's the default template
+    const currentTemplate = languageMap[selectedLanguageId]?.template || "";
+    if (code.trim() === currentTemplate.trim()) {
+      setCode(languageMap[newLanguageId]?.template || "");
+    }
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center my-4">
@@ -264,22 +306,17 @@ export default function AttemptEvaluation({ darkMode }) {
 
   const currentQuestion = attempt.Answers[currentQuestionIndex];
   const isCodingQuestion =
-    currentQuestion.question_details?.question_type === "coding";
-  const languageId = currentQuestion.question_details?.used_langauage;
-  const editorLanguage = languageMap[languageId]?.monaco || "python";
-  const languageName = languageMap[languageId]?.name || "Unknown";
+    currentQuestion?.question_details?.question_type === "coding";
+  const editorLanguage = languageMap[selectedLanguageId]?.monaco || "python";
+  const languageName = languageMap[selectedLanguageId]?.name || "Unknown";
 
   return (
     <>
       <BackBtn />
-      <div
-        className={`card my-4 ${darkMode ? "spic-dark-mode border-light" : ""}`}
-      >
-        <div
-          className={`p-4 card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center ${
-            darkMode ? "border-light" : ""
-          }`}
-        >
+      <div className={`card my-4 ${darkMode ? "spic-dark-mode border-light" : ""}`}>
+        <div className={`p-4 card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center ${
+          darkMode ? "border-light" : ""
+        }`}>
           <div className="d-flex flex-column flex-md-row align-items-md-center gap-3">
             <div>
               <p className={`${darkMode ? "text-light" : "text-muted"} m-0`}>
@@ -325,11 +362,9 @@ export default function AttemptEvaluation({ darkMode }) {
           </div>
         </div>
 
-        <div
-          className={`p-4 card-header d-flex flex-column flex-md-row gap-3 align-md-center ${
-            darkMode ? "border-light" : ""
-          }`}
-        >
+        <div className={`p-4 card-header d-flex flex-column flex-md-row gap-3 align-md-center ${
+          darkMode ? "border-light" : ""
+        }`}>
           {currentQuestion.question_details?.question_type === "mc" ? (
             <MultipleChoiceReview
               isTrueFalse={
@@ -345,8 +380,16 @@ export default function AttemptEvaluation({ darkMode }) {
           ) : isCodingQuestion ? (
             <div className="w-100">
               <div className="mb-3 d-flex justify-content-between align-items-center">
-                <div>
-                  <span className="badge bg-primary me-2">{languageName}</span>
+                <div className="d-flex align-items-center">
+                  <div className="me-2" style={{ minWidth: "150px" }}>
+                    <FilterableDropdown
+                      darkMode={darkMode}
+                      items={languageItems}
+                      handleFunction={handleLanguageChange}
+                      selectedValue={selectedLanguageId}
+                      noExtraOption={true}
+                    />
+                  </div>
                   <span>Code Solution:</span>
                 </div>
                 <button
@@ -384,7 +427,6 @@ export default function AttemptEvaluation({ darkMode }) {
                 }}
               />
 
-              {/* Test Results Section */}
               {testResults.length > 0 && (
                 <div className="mt-3">
                   <h5>Test Results:</h5>
@@ -443,11 +485,9 @@ export default function AttemptEvaluation({ darkMode }) {
           )}
         </div>
 
-        <div
-          className={`d-flex justify-content-between card-header ${
-            darkMode ? "spic-dark-mode border-light" : ""
-          }`}
-        >
+        <div className={`d-flex justify-content-between card-header ${
+          darkMode ? "spic-dark-mode border-light" : ""
+        }`}>
           <button
             style={{ width: "10rem" }}
             className={`btn btn-dark`}

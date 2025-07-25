@@ -11,6 +11,7 @@
     "cra-template": "1.2.0",
     "joi": "^17.13.3",
     "jwt-decode": "^4.0.0",
+    "prism-react-renderer": "^2.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-resizable": "^3.0.5",

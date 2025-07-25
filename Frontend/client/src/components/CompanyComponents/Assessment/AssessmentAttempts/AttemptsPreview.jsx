@@ -75,24 +75,10 @@ export default function AttemptsPreview({ darkMode }) {
 
   const calculateTotalEarnedMark = (answers) => {
     let new_mark = 0;
-    answers.forEach((answer, index) => {
-      console.log(
-        "answer.new_mark: ",
-        answer.new_mark,
-        " and it's type is: ",
-        typeof answer.new_mark
-      );
-      new_mark += parseInt(answer.new_mark);
+    answers.forEach((answer) => {
+      new_mark += parseInt(answer.new_mark) || 0;
     });
     return new_mark;
-  };
-
-  const calculateTotalMark = (answers) => {
-    let tot_mark = 0;
-    answers.forEach((answer, index) => {
-      tot_mark += parseInt(answer.total_mark);
-    });
-    return tot_mark;
   };
 
   // getUsersAttempts
@@ -152,7 +138,7 @@ export default function AttemptsPreview({ darkMode }) {
                 className={`${darkMode ? "#ccc" : "text-muted"}`}
                 style={{ fontSize: "0.85rem" }}
               >
-                / {calculateTotalMark(attempt.answers)}
+                / {attempt.total_mark}
               </span>
             </td>
             <td>
