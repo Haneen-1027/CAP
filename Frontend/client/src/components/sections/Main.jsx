@@ -36,6 +36,9 @@ import {
   AttemptDetails,
   AttemptEvaluation,
   EditUser,
+  UsersController,
+  PreviewCompanyUsers,
+  AddNewCompanyUser,
 } from "../../componentsLoader/ComponentsLoader";
 import Admin from "../../pages/Admin/Admin";
 import Company from "../../pages/Company/Company";
@@ -553,6 +556,62 @@ function Main({
               </Suspense>
             }
           />
+          {/* Users Handling */}
+          <Route
+            path="/company/users"
+            element={
+              <Suspense
+                fallback={
+                  <div className="center-container">
+                    <div className="spinner-border text-success" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <UsersController />
+              </Suspense>
+            }
+          >
+            <Route
+              path="/company/users/preview"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <PreviewCompanyUsers darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/company/users/addNewUser"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="center-container">
+                      <div
+                        className="spinner-border text-success"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <AddNewCompanyUser darkMode={darkMode} />
+                </Suspense>
+              }
+            />
+          </Route>
         </Route>
         {/* Assessments Page */}
         <Route

@@ -28,6 +28,7 @@ function Header({ darkMode, userDetailes, logout }) {
   const compNavBarValues = [
     { id: 1, text: "Home", path: "/company/home" },
     { id: 2, text: "Assessment", path: "/assessment" },
+    { id: 3, text: "Users", path: "/company/users" },
     { id: 0, text: "|", path: null },
   ];
 

@@ -2,7 +2,7 @@ import axios from "axios";
 
 /////////
 
-const BASE_URL = "https://localhost:7199";
+const BASE_URL = "http://localhost:5104";
 
 //
 export const loginUser = async (email, password) => {
@@ -180,10 +180,10 @@ export const deleteUser = async (id) => {
   });
 };
 export const updateUser = async (id, data) => {
-  return await axios.put(`${BASE_URL}/users/${id}`, data, { 
-    headers: { 
-      "Content-Type": "application/json" 
-    } 
+  return await axios.put(`${BASE_URL}/users/${id}`, data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 /** Code Execution API */

@@ -130,6 +130,20 @@ export const CompDashboard = lazy(() =>
   import("../components/CompanyComponents/CompDashboard.jsx")
 );
 
+//// Users Handling
+// Outlet
+export const UsersController = lazy(() =>
+  import("../components/CompanyComponents/Users/UsersController.jsx")
+);
+export const PreviewCompanyUsers = lazy(() =>
+  import(
+    "../components/CompanyComponents/Users/UsersComponents/PreviewUsers.jsx"
+  )
+);
+export const AddNewCompanyUser = lazy(() =>
+  import("../components/CompanyComponents/Users/UsersComponents/AddNewUser.jsx")
+);
+
 ///////////////////////////////////////////////////////////
 //// Assessments Components:
 // Outlet
