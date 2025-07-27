@@ -37,7 +37,8 @@ public class GetAllUsersService(CapDbContext context, ILogger<GetAllUsersService
                 searchTerm = searchTerm.Trim().ToLower();
                 query = query.Where(u => u.FirstName.ToLower().Contains(searchTerm) ||
                                         u.LastName.ToLower().Contains(searchTerm) ||
-                                        u.Email.ToLower().Contains(searchTerm));
+                                        u.Email.ToLower().Contains(searchTerm) ||
+                                        u.Username.ToLower().Contains(searchTerm));
             }
 
             // Apply role filter
