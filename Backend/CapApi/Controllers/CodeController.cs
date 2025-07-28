@@ -193,63 +193,158 @@ public class CodeController : ControllerBase
     private string WrapCSharpCode(string userCode, List<string> inputs, List<Type> inputTypes)
     {
         string functionName = ExtractCSharpFunctionName(userCode);
-        string inputVariables = string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
+        
+        // Check if this is a void function with no parameters (empty input or single empty string)
+        bool isVoidFunction = inputs.Count == 0 || (inputs.Count == 1 && string.IsNullOrEmpty(inputs[0]));
+        string inputVariables = isVoidFunction ? "" : string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
 
         var inputParsing = new List<string>();
-        var usingStatements = new List<string> { "using System;", "using System.Linq;", "using System.Text.Json;" };
+        var usingStatements = new List<string> 
+        { 
+            "using System;", 
+            "using System.Linq;",
+            "using System.Collections.Generic;"
+        };
 
-        for (int i = 0; i < inputs.Count; i++)
+        // Only process inputs if it's not a void function
+        if (!isVoidFunction)
         {
-            var type = inputTypes[i];
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                var type = inputTypes[i];
 
-            if (type == typeof(int))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = int.Parse(inputs[{i}]);");
-            }
-            else if (type == typeof(double))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = double.Parse(inputs[{i}]);");
-            }
-            else if (type == typeof(bool))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = bool.Parse(inputs[{i}]);");
-            }
-            else if (type == typeof(int[]))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = JsonSerializer.Deserialize<int[]>(inputs[{i}]);");
-            }
-            else if (type == typeof(double[]))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = JsonSerializer.Deserialize<double[]>(inputs[{i}]);");
-            }
-            else if (type == typeof(string[]))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = JsonSerializer.Deserialize<string[]>(inputs[{i}]);");
-            }
-            else if (type == typeof(bool[]))
-            {
-                inputParsing.Add($"\t\tvar arg{i} = JsonSerializer.Deserialize<bool[]>(inputs[{i}]);");
-            }
-            else // string
-            {
-                inputParsing.Add($"\t\tvar arg{i} = inputs[{i}];");
+                if (type == typeof(int))
+                {
+                    inputParsing.Add($"            var arg{i} = int.Parse(inputs[{i}]);");
+                }
+                else if (type == typeof(double))
+                {
+                    inputParsing.Add($"            var arg{i} = double.Parse(inputs[{i}], System.Globalization.CultureInfo.InvariantCulture);");
+                }
+                else if (type == typeof(bool))
+                {
+                    inputParsing.Add($"            var arg{i} = bool.Parse(inputs[{i}]);");
+                }
+                else if (type == typeof(int[]))
+                {
+                    inputParsing.Add($@"            var arg{i} = ParseIntArray(inputs[{i}]);");
+                }
+                else if (type == typeof(double[]))
+                {
+                    inputParsing.Add($@"            var arg{i} = ParseDoubleArray(inputs[{i}]);");
+                }
+                else if (type == typeof(string[]))
+                {
+                    inputParsing.Add($@"            var arg{i} = ParseStringArray(inputs[{i}]);");
+                }
+                else if (type == typeof(bool[]))
+                {
+                    inputParsing.Add($@"            var arg{i} = ParseBoolArray(inputs[{i}]);");
+                }
+                else // string
+                {
+                    inputParsing.Add($"            var arg{i} = inputs[{i}];");
+                }
             }
         }
 
+        // Generate the function call based on whether it's void or returns a value
+        string functionCall = isVoidFunction 
+            ? $"{functionName}();" 
+            : $"var result = {functionName}({inputVariables});\n            Console.WriteLine(result);";
+
+        // Only read inputs if we actually need them
+        string inputReading = isVoidFunction 
+            ? "" 
+            : "var inputs = Console.In.ReadToEnd().Split('\\n', StringSplitOptions.RemoveEmptyEntries);\n\n";
+        
         return $@"{string.Join("\n", usingStatements)}
 
 public class Program
 {{
+    static List<int> ParseIntArray(string input)
+    {{
+        var result = new List<int>();
+        if (string.IsNullOrEmpty(input)) return result;
+        
+        // Remove brackets and split by comma
+        var cleaned = input.Trim().Trim('[', ']');
+        if (string.IsNullOrEmpty(cleaned)) return result;
+        
+        var parts = cleaned.Split(',');
+        foreach (var part in parts)
+        {{
+            if (int.TryParse(part.Trim(), out int value))
+                result.Add(value);
+        }}
+        return result;
+    }}
+    
+    static List<double> ParseDoubleArray(string input)
+    {{
+        var result = new List<double>();
+        if (string.IsNullOrEmpty(input)) return result;
+        
+        var cleaned = input.Trim().Trim('[', ']');
+        if (string.IsNullOrEmpty(cleaned)) return result;
+        
+        var parts = cleaned.Split(',');
+        foreach (var part in parts)
+        {{
+            if (double.TryParse(part.Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double value))
+                result.Add(value);
+        }}
+        return result;
+    }}
+    
+    static List<string> ParseStringArray(string input)
+    {{
+        var result = new List<string>();
+        if (string.IsNullOrEmpty(input)) return result;
+        
+        var cleaned = input.Trim().Trim('[', ']');
+        if (string.IsNullOrEmpty(cleaned)) return result;
+        
+        var parts = cleaned.Split(',');
+        foreach (var part in parts)
+        {{
+            var trimmed = part.Trim().Trim('""');
+            result.Add(trimmed);
+        }}
+        return result;
+    }}
+    
+    static List<bool> ParseBoolArray(string input)
+    {{
+        var result = new List<bool>();
+        if (string.IsNullOrEmpty(input)) return result;
+        
+        var cleaned = input.Trim().Trim('[', ']');
+        if (string.IsNullOrEmpty(cleaned)) return result;
+        
+        var parts = cleaned.Split(',');
+        foreach (var part in parts)
+        {{
+            if (bool.TryParse(part.Trim(), out bool value))
+                result.Add(value);
+        }}
+        return result;
+    }}
+
     {MakeFunctionStatic(userCode)}
 
     static void Main()
     {{
-        var inputs = Console.In.ReadToEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        try
+        {{
+            {inputReading}{string.Join("\n", inputParsing)}
 
-{string.Join("\n", inputParsing)}
-
-        var result = {functionName}({inputVariables});
-        Console.WriteLine(result);
+            {functionCall}
+        }}
+        catch (Exception ex)
+        {{
+            Console.WriteLine($""Error: {{ex.Message}}"");
+        }}
     }}
 }}";
     }
@@ -695,20 +790,49 @@ console.log({functionName}({inputVariables}));";
     // Helper methods
     private string MakeFunctionStatic(string userCode)
     {
-        var pattern = @"(?<prefix>(public|private|protected|internal)?\s*)(?<returnType>\w+)\s+(?<name>\w+)\s*\(";
-        var replacement = "${prefix}static ${returnType} ${name}(";
-        return Regex.Replace(userCode, pattern, replacement);
+        // More robust regex to handle various C# function declarations
+        var patterns = new[]
+        {
+            @"(?<prefix>(public|private|protected|internal)\s+)?(?<returnType>\w+(?:<[^>]+>)?(?:\[\])?)\s+(?<name>\w+)\s*\(",
+            @"(?<prefix>(public|private|protected|internal)\s+)?(?<returnType>List<\w+>|Dictionary<\w+,\s*\w+>|IEnumerable<\w+>)\s+(?<name>\w+)\s*\("
+        };
+
+        foreach (var pattern in patterns)
+        {
+            var match = Regex.Match(userCode, pattern);
+            if (match.Success)
+            {
+                var prefix = match.Groups["prefix"].Value;
+                var returnType = match.Groups["returnType"].Value;
+                var name = match.Groups["name"].Value;
+                
+                var replacement = $"{prefix}static {returnType} {name}(";
+                return Regex.Replace(userCode, pattern, replacement);
+            }
+        }
+
+        // If no match found, try to add static to any method-like structure
+        var fallbackPattern = @"(\w+\s+\w+\s*\([^)]*\)\s*\{)";
+        return Regex.Replace(userCode, fallbackPattern, "static $1");
     }
 
     private string ExtractCSharpFunctionName(string userCode)
     {
-        var match = Regex.Match(userCode,
-            @"(?:public\s+|private\s+|protected\s+|internal\s+)?(?:static\s+)?\w+\s+(\w+)\s*\(");
+        var patterns = new[]
+        {
+            @"(?:public\s+|private\s+|protected\s+|internal\s+)?(?:static\s+)?void\s+(\w+)\s*\(",
+            @"(?:public\s+|private\s+|protected\s+|internal\s+)?(?:static\s+)?(?:\w+(?:<[^>]+>)?(?:\[\])?)\s+(\w+)\s*\(",
+            @"(?:public\s+|private\s+|protected\s+|internal\s+)?(?:static\s+)?(?:List<\w+>|Dictionary<\w+,\s*\w+>|IEnumerable<\w+>)\s+(\w+)\s*\("
+        };
 
-        if (match.Success)
-            return match.Groups[1].Value;
+        foreach (var pattern in patterns)
+        {
+            var match = Regex.Match(userCode, pattern);
+            if (match.Success)
+                return match.Groups[1].Value;
+        }
 
-        throw new ArgumentException("Function definition not found in the C# code.");
+        throw new ArgumentException("Function definition not found in the C# code. Please ensure your function follows standard C# syntax.");
     }
 
     private string ExtractCppFunctionName(string userCode)
