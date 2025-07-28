@@ -193,15 +193,15 @@ public class CodeController : ControllerBase
     private string WrapCSharpCode(string userCode, List<string> inputs, List<Type> inputTypes)
     {
         string functionName = ExtractCSharpFunctionName(userCode);
-        
+
         // Check if this is a void function with no parameters (empty input or single empty string)
         bool isVoidFunction = inputs.Count == 0 || (inputs.Count == 1 && string.IsNullOrEmpty(inputs[0]));
         string inputVariables = isVoidFunction ? "" : string.Join(", ", Enumerable.Range(0, inputs.Count).Select(i => $"arg{i}"));
 
         var inputParsing = new List<string>();
-        var usingStatements = new List<string> 
-        { 
-            "using System;", 
+        var usingStatements = new List<string>
+        {
+            "using System;",
             "using System.Linq;",
             "using System.Collections.Generic;"
         };
@@ -249,15 +249,15 @@ public class CodeController : ControllerBase
         }
 
         // Generate the function call based on whether it's void or returns a value
-        string functionCall = isVoidFunction 
-            ? $"{functionName}();" 
+        string functionCall = isVoidFunction
+            ? $"{functionName}();"
             : $"var result = {functionName}({inputVariables});\n            Console.WriteLine(result);";
 
         // Only read inputs if we actually need them
-        string inputReading = isVoidFunction 
-            ? "" 
+        string inputReading = isVoidFunction
+            ? ""
             : "var inputs = Console.In.ReadToEnd().Split('\\n', StringSplitOptions.RemoveEmptyEntries);\n\n";
-        
+
         return $@"{string.Join("\n", usingStatements)}
 
 public class Program
@@ -805,7 +805,7 @@ console.log({functionName}({inputVariables}));";
                 var prefix = match.Groups["prefix"].Value;
                 var returnType = match.Groups["returnType"].Value;
                 var name = match.Groups["name"].Value;
-                
+
                 var replacement = $"{prefix}static {returnType} {name}(";
                 return Regex.Replace(userCode, pattern, replacement);
             }
